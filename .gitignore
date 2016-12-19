@@ -1,0 +1,8 @@
+DS_Store
+node_modules/
+bower_components/
+*.sublime*
+.idea
+.nyc_output
+coverage/
+*.log
