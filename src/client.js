@@ -1,2 +1,3 @@
 import Client from './client/Client'
-export { Client }
+let client = { Client }
+export { client }
