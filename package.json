@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "test": "echo 'todo'",
-    "develop": "BUILD_ENV=develop BUILD_TARGET=client rollup -c && BUILD_TARGET=service rollup -c",
+    "develop": "BUILD_ENV=develop BUILD_TARGET=client rollup -c && BUILD_TARGET=legacy rollup -c && BUILD_TARGET=service rollup -c",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s"
   },
   "bug": {
