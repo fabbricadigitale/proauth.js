@@ -1,6 +1,6 @@
 {
   "name": "proauth.js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -27,11 +27,9 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "babel-preset-es2015-rollup": "^3.0.0",
     "conventional-changelog-cli": "^1.2.0",
     "git-scripts": "^0.2.1",
     "rollup": "^0.37.0",
-    "rollup-plugin-babel": "^2.7.1",
     "validate-commit": "^2.3.2"
   }
 }
