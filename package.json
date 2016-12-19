@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "test": "echo 'todo'",
-    "develop": "BUILD_ENV=develop rollup -c rollup.config.js",
+    "develop": "BUILD_ENV=develop BUILD_TARGET=client rollup -c",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s"
   },
   "bug": {
