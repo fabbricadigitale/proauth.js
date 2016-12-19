@@ -14,11 +14,11 @@ var babelOpts = {
 }
 
 var rollupOpts = {
-  entry: 'index.m.js',
+  entry: 'src/client.js',
   moduleName: 'proauth',
   format: 'umd',
   plugins: [ babel(babelOpts) ],
-  dest: 'index.js'
+  dest: 'dist/client.js'
 }
 
 if (inDevelopment()) {
