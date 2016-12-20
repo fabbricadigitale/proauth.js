@@ -1,14 +1,15 @@
 import fetch from './legacy/fetch'
-import Worker from './legacy/Worker'
+import ServiceWorker from './legacy/ServiceWorker'
 import Controller from './service/Controller'
 
-// Init legacy elements
-let worker = new Worker(); // Fake serviceWorker
-fetch.install(worker);  // FetchAPI proxy
+// Init elements for legacy mode
+const serviceWorker = new ServiceWorker(); // Fake serviceWorker
+fetch.install(serviceWorker);  // FetchAPI proxy
 
 // Setup service environment
-let controller = new Controller(worker, fetch.fetch);
-proauth.client.service = worker;
+const controller = new Controller(serviceWorker, fetch.fetch);
+proauth.client.serviceWorker = serviceWorker;
 
-const legacy = { fetch, worker, controller }
-export default { legacy, client: proauth.client }
+const legacy = { fetch, serviceWorker }
+const service = { controller }
+export default { legacy, service, client: proauth.client }

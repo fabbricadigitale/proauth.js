@@ -1,4 +1,4 @@
-let sendMessage = (service, message) => {
+let sendMessage = (serviceWorker, message) => {
   // This wraps the message posting/response in a promise, which will resolve if the response doesn't
   // contain an error, and reject with the error if it does. If you'd prefer, it's possible to call
   // controller.postMessage() and set up the onmessage handler independently of a promise, but this is
@@ -17,7 +17,7 @@ let sendMessage = (service, message) => {
     // The service worker can then use the transferred port to reply via postMessage(), which
     // will in turn trigger the onmessage handler on messageChannel.port1.
     // See https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage
-    service.controller.postMessage(message,
+    serviceWorker.controller.postMessage(message,
       [messageChannel.port2]);
   });
 }
@@ -37,30 +37,30 @@ export default class Client {
   }
 
   get ready() {
-    return this._service && this._ready;
+    return this._serviceWorker && this._ready;
   }
 
-  get service() {
-    if (!this._service) {
+  get serviceWorker() {
+    if (!this._serviceWorker) {
       throw Error('proauth.js is not ready: service has been not registered yet.')
     }
-    return this._service;
+    return this._serviceWorker;
   }
 
-  set service(c) {
-    if (this._service) {
-      this._service.removeEventListener('message', this.onmessage);
+  set serviceWorker(sw) {
+    if (this._serviceWorker) {
+      this._serviceWorker.removeEventListener('message', this.onmessage);
     }
 
     this._ready = false
-    this._service = c
+    this._serviceWorker = sw
 
-    sendMessage(c, {
+    sendMessage(sw, {
       namespace: this._config.namespace,
       command: "init",
       params: [this._config]
     }).then(data => {
-      this._service.addEventListener('message', onMessage.bind(this))
+      this._serviceWorker.addEventListener('message', onMessage.bind(this))
       this._ready = !!data
       //TODO: dispatch global READY event
       console.log('proauth.js is ready!')
@@ -68,7 +68,7 @@ export default class Client {
   }
 
   setSession(data) {
-    return sendMessage(this.service, {
+    return sendMessage(this.serviceWorker, {
       namespace: this._config.namespace,
       command: "setSession",
       params: [this._config.namespace, data]

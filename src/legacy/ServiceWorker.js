@@ -1,6 +1,6 @@
-class Worker {
+class ServiceWorker {
   constructor() {
-    let worker = this
+    let serviceWorker = this
     // Controller
     this.controller = new class {
       postMessage(aMessage, transferList) {
@@ -21,10 +21,10 @@ class Worker {
             return ret.length > 0 ? ret : null
           }
         }
-        if (worker.onmessage) {
-          worker.onmessage(e);
+        if (serviceWorker.onmessage) {
+          serviceWorker.onmessage(e);
         }
-        worker.dispatchEvent(e);
+        serviceWorker.dispatchEvent(e);
       }
     }
 
@@ -32,14 +32,11 @@ class Worker {
       matchAll() {
         return new Promise(r => {
           r([{
-            postMessage: worker.controller.postMessage
+            postMessage: serviceWorker.controller.postMessage
           }])
         })
       }
     }
-
-
-
   }
 
 }
@@ -47,7 +44,7 @@ class Worker {
 // EventTarget
 let delegate = document.createDocumentFragment();
 for (let [, fx] of ['addEventListener', 'dispatchEvent', 'removeEventListener'].entries()) {
-  Worker.prototype[fx] = (...xs) => delegate[fx](...xs)
+  ServiceWorker.prototype[fx] = (...xs) => delegate[fx](...xs)
 }
 
-export default Worker;
+export default ServiceWorker;
