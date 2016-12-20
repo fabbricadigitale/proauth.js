@@ -20,7 +20,8 @@ let boot = () => {
   let settings = {
     // Put defaults here
     legacyMode: false,
-    legacyScript: "lib/legacy.js" // FIXME: default path should be computed
+    legacyScript: "lib/legacy.js", // FIXME: default path should be computed
+    namespace: document.origin && document.origin != "null" ? document.origin : ""
   };
   // Copy user settings
   Object.assign(settings, window.proauth || {});

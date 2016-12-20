@@ -22,6 +22,15 @@ let sendMessage = (service, message) => {
   });
 }
 
+let onMessage = function (event) {
+  let {broadcast, namespace, command, params} = event.data;
+  if (!broadcast || namespace != this._config.namespace) {
+    return
+  }
+  console.log('proauth.js client received a broadcast message', event.data)
+  // TODO: set session race condition must be avoided, dirty-checking data may be a solution
+}
+
 export default class Client {
   constructor(config) {
     this._config = config;
@@ -39,28 +48,35 @@ export default class Client {
   }
 
   set service(c) {
-    this._service = c
+    if (this._service) {
+      this._service.removeEventListener('message', this.onmessage);
+    }
+
     this._ready = false
+    this._service = c
+
     sendMessage(c, {
+      namespace: this._config.namespace,
       command: "init",
       params: [this._config]
     }).then(data => {
+      this._service.addEventListener('message', onMessage.bind(this))
       this._ready = !!data
       //TODO: dispatch global READY event
       console.log('proauth.js is ready!')
     })
   }
 
-  hasSession() {
+  setSession(data) {
     return sendMessage(this.service, {
-      command: "hasSession"
+      namespace: this._config.namespace,
+      command: "setSession",
+      params: [this._config.namespace, data]
     })
   }
 
   clearSession() {
-    return sendMessage(this.service, {
-      command: "clearSession"
-    })
+    return this.setSession({})
   }
 
 }
