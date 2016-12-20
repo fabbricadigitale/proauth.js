@@ -4,15 +4,15 @@ import OAuth2Handler from './OAuth2Handler'
 export default class Controller {
   constructor(target, fetch) {
 
-    var init = (controller, target, fetch, config) => {
+    let init = (controller, target, fetch, config) => {
       controller.session = {}
       controller.handler = new OAuth2Handler(target, fetch);
     }
 
     target.addEventListener('message', (e) => {
       let command = e.data.command,
-          params = e.data.params,
-          reply = (...args) => e.ports[0].postMessage(...args);
+        params = e.data.params,
+        reply = (...args) => e.ports[0].postMessage(...args);
 
       try {
         switch (command) {
@@ -31,8 +31,8 @@ export default class Controller {
             reply(true);
             break;
         }
-      } catch(error) {
-        reply({error})
+      } catch (error) {
+        reply({ error })
       }
     })
   }

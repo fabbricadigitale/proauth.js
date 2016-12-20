@@ -1,6 +1,6 @@
 class Worker {
   constructor() {
-    var worker = this
+    let worker = this
     // Controller
     this.controller = new class {
       postMessage(aMessage, transferList) {
@@ -13,7 +13,7 @@ class Worker {
             return aMessage
           }
           get ports() {
-            var ret = [];
+            let ret = [];
             for (let transfer of (transferList || [])) {
               if (transfer instanceof MessagePort) {
                 ret.push(transfer)
@@ -35,7 +35,7 @@ class Worker {
 }
 
 // EventTarget
-var delegate = document.createDocumentFragment();
+let delegate = document.createDocumentFragment();
 for (let [, fx] of ['addEventListener', 'dispatchEvent', 'removeEventListener'].entries()) {
   Worker.prototype[fx] = (...xs) => delegate[fx](...xs)
 }
