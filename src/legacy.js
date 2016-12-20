@@ -11,4 +11,4 @@ let controller = new Controller(worker, fetch.fetch);
 proauth.client.service = worker;
 
 const legacy = { fetch, worker, controller }
-export default { legacy }
+export default { legacy, client: proauth.client }
