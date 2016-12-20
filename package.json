@@ -4,18 +4,18 @@
   "description": "",
   "private": true,
   "scripts": {
-    "test": "exit 1",
-    "clean": "shx rm -rf *.log dist/",
+    "dev": "npm run dev:client && npm run dev:legacy && npm run dev:service",
     "dev:client": "BUILD_ENV=develop BUILD_TARGET=client rollup -c",
     "dev:legacy": "BUILD_ENV=develop BUILD_TARGET=legacy rollup -c",
     "dev:service": "BUILD_ENV=devlop BUILD_TARGET=service rollup -c",
     "predev": "npm run clean",
-    "dev": "npm run dev:client && npm run dev:legacy && npm run dev:service",
     "lib:client": "BUILD_TARGET=client rollup -c",
     "lib:legacy": "BUILD_TARGET=legacy rollup -c",
     "lib:service": "BUILD_TARGET=service rollup -c",
     "prelib": "npm run clean",
     "lib": "npm run lib:client && npm run lib:legacy && npm run lib:service",
+    "test": "exit 1",
+    "clean": "shx rm -rf *.log dist/",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s"
   },
   "bug": {
