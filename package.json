@@ -2,11 +2,20 @@
   "name": "proauth.js",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "echo 'todo'",
-    "develop": "BUILD_ENV=develop BUILD_TARGET=client rollup -c && BUILD_TARGET=legacy rollup -c && BUILD_TARGET=service rollup -c",
+    "test": "exit 1",
+    "clean": "shx rm -rf *.log dist/",
+    "dev:client": "BUILD_ENV=develop BUILD_TARGET=client rollup -c",
+    "dev:legacy": "BUILD_ENV=develop BUILD_TARGET=legacy rollup -c",
+    "dev:service": "BUILD_ENV=devlop BUILD_TARGET=service rollup -c",
+    "predev": "npm run clean",
+    "dev": "npm run dev:client && npm run dev:legacy && npm run dev:service",
+    "lib:client": "BUILD_TARGET=client rollup -c",
+    "lib:legacy": "BUILD_TARGET=legacy rollup -c",
+    "lib:service": "BUILD_TARGET=service rollup -c",
+    "prelib": "npm run clean",
+    "lib": "npm run lib:client && npm run lib:legacy && npm run lib:service",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s"
   },
   "bug": {
@@ -30,6 +39,7 @@
     "conventional-changelog-cli": "^1.2.0",
     "git-scripts": "^0.2.1",
     "rollup": "^0.37.0",
+    "shx": "^0.2.1",
     "validate-commit": "^2.3.2"
   }
 }
