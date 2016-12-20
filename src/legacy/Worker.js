@@ -2,11 +2,9 @@ export default class Worker {
   constructor() {
     // EventTarget
     var delegate = document.createDocumentFragment();
-    [
-      'addEventListener',
-      'dispatchEvent',
-      'removeEventListener'
-    ].forEach(f => /*this[f]*/ Worker.prototype[f] = (...xs) => delegate[f](...xs))
+    for (let [, fx] of [ 'addEventListener', 'dispatchEvent', 'removeEventListener'].entries()) {
+      Worker.prototype[fx] = (...xs) => delegate[fx](...xs)
+    }
   }
   postMessage(aMessage, transferList) {
     let e = new class extends CustomEvent {
@@ -18,11 +16,11 @@ export default class Worker {
       }
       get ports() {
         let ret = []
-        (transferList || []).forEach(transfer => {
-          if (transfer instanceof MessagePort) {
-            ret.push(transfer)
-          }
-        })
+	for (let [, transfer] of (transferList || []).entries()) {
+	  if (transfer instanceof MessagePort) {
+	    ret.push(transfer)
+	  }
+	}
         return ret.length > 0 ? ret : null
       }
     };
