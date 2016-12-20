@@ -2,8 +2,8 @@ import Client from './client/Client'
 
 let loadScript = (url, callback = () => { }) => {
   // Adding the script tag to the head as suggested before
-  var head = document.getElementsByTagName('head')[0];
-  var script = document.createElement('script');
+  let head = document.getElementsByTagName('head')[0];
+  let script = document.createElement('script');
   script.type = 'text/javascript';
   script.src = url;
 
@@ -16,7 +16,7 @@ let loadScript = (url, callback = () => { }) => {
   head.appendChild(script);
 }
 
-var boot = () => {
+let boot = () => {
   let settings = {
     // Put defaults here
     legacyMode: false,

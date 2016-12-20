@@ -1,13 +1,11 @@
-
-
-function sendMessage(service, message) {
+let sendMessage = (service, message) => {
   // This wraps the message posting/response in a promise, which will resolve if the response doesn't
   // contain an error, and reject with the error if it does. If you'd prefer, it's possible to call
   // controller.postMessage() and set up the onmessage handler independently of a promise, but this is
   // a convenient wrapper.
-  return new Promise(function(resolve, reject) {
-    var messageChannel = new MessageChannel();
-    messageChannel.port1.onmessage = function(event) {
+  return new Promise((resolve, reject) => {
+    let messageChannel = new MessageChannel();
+    messageChannel.port1.onmessage = event => {
       if (event.data.error) {
         reject(event.data.error);
       } else {
@@ -23,7 +21,6 @@ function sendMessage(service, message) {
       [messageChannel.port2]);
   });
 }
-
 
 export default class Client {
   constructor(config) {
@@ -47,7 +44,7 @@ export default class Client {
     sendMessage(c, {
       command: "init",
       params: [this._config]
-    }).then((data) => {
+    }).then(data => {
       this._ready = !!data
       //TODO: dispatch global READY event
       console.log('proauth.js is ready!')
@@ -65,6 +62,5 @@ export default class Client {
       command: "clearSession"
     })
   }
-
 
 }
