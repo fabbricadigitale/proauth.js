@@ -4,7 +4,6 @@ class Worker {
     // Controller
     this.controller = new class {
       postMessage(aMessage, transferList) {
-
         let e = new class extends CustomEvent {
           constructor() {
             super('message', { bubbles: false, cancelable: true })
@@ -21,15 +20,26 @@ class Worker {
             }
             return ret.length > 0 ? ret : null
           }
-        };
-
-        if (this.onmessage) {
+        }
+        if (worker.onmessage) {
           worker.onmessage(e);
         }
-
         worker.dispatchEvent(e);
       }
     }
+
+    this.clients = {
+      matchAll() {
+        return new Promise(r => {
+          r([{
+            postMessage: worker.controller.postMessage
+          }])
+        })
+      }
+    }
+
+
+
   }
 
 }
