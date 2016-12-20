@@ -1,7 +1,7 @@
 <html>
 <head>
-  <script src="dist/legacy.js"></script>
-  <script src="dist/client.js"></script>
+  <script src="lib/legacy.js"></script>
+  <script src="lib/client.js"></script>
 </head>
 <body>
   <script>
@@ -9,11 +9,15 @@
         w = new pl.Worker(),
         h = new pl.OAuth2Handler(window.fetch);
 
-    // Legacy boot
-    h.register(w); // Attach the handler to the Worker
-    pl.fetch.install(w); // Forward ajax(s) request to the Worker
+    /* LEGACY BOOT */ 
 
-    //TODO: in order to use this demo, open the console and try to use fetch()
+    // Attach the handler to the Worker
+    h.register(w); 
+    
+    // Forward ajax(s) request to the Worker
+    pl.fetch.install(w);
+
+    // (note) : in order to use this demo, open the console and try to use fetch()
 
   </script>
 </body>
