@@ -6,4 +6,4 @@ bower_components/
 .nyc_output
 coverage/
 *.log
-dist/
+lib/
