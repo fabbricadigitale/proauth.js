@@ -1,7 +1,8 @@
 {
   "name": "proauth.js",
   "version": "0.1.0",
-  "description": "",
+  "description": "Lightweight OAuth 2.0 client with automatic session handling",
+  "main": "lib/client.js",
   "private": true,
   "scripts": {
     "dev": "npm run dev:client && npm run dev:legacy && npm run dev:service",
