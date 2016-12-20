@@ -16,6 +16,7 @@
     "lib": "npm run lib:client && npm run lib:legacy && npm run lib:service",
     "test": "exit 1",
     "clean": "shx rm -rf *.log dist/",
+    "lint": "eslint src/*.js",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s"
   },
   "bug": {
@@ -32,14 +33,24 @@
   },
   "keywords": [
     "auth",
-    "client"
+    "authentication",
+    "client",
+    "browser"
   ],
   "license": "MIT",
   "devDependencies": {
+    "babel-eslint": "^7.1.1",
     "conventional-changelog-cli": "^1.2.0",
+    "eslint": "^3.12.2",
+    "eslint-config-walmart": "^1.1.0",
+    "eslint-plugin-filenames": "^1.1.0",
     "git-scripts": "^0.2.1",
     "rollup": "^0.37.0",
     "shx": "^0.2.1",
     "validate-commit": "^2.3.2"
+  },
+  "eslintConfig": {
+    "extends": "walmart/configurations/es6-browser",
+    "parser": "babel-eslint"
   }
 }
