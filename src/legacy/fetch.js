@@ -1,6 +1,6 @@
 let originalFetch = window.fetch
 
-let fetch = function(input, init) {
+let fetch = function (input, init) {
   var self = this
   return new Promise((resolve, reject) => {
     var request = new Request(input, init);
@@ -21,8 +21,8 @@ let fetch = function(input, init) {
 }
 
 export default {
-  install: observer => window.fetch = fetch.bind(observer),
+  install: (observer) => window.fetch = fetch.bind(observer),
   uninstall: () => window.fetch = originalFetch,
-  wrapper: fetch,
+  proxy: fetch,
   fetch: originalFetch
 }
