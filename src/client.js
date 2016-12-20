@@ -1,6 +1,6 @@
 import Client from './client/Client'
 
-let loadScript = (url, callback = () => { }) => {
+const loadScript = (url, callback = () => { }) => {
   // Adding the script tag to the head as suggested before
   let head = document.getElementsByTagName('head')[0];
   let script = document.createElement('script');
@@ -16,7 +16,7 @@ let loadScript = (url, callback = () => { }) => {
   head.appendChild(script);
 }
 
-let boot = () => {
+const boot = () => {
   let settings = {
     // Put defaults here
     legacyMode: false,
@@ -26,7 +26,7 @@ let boot = () => {
   // Copy user settings
   Object.assign(settings, window.proauth || {});
 
-  let client = new Client(settings);
+  const client = new Client(settings);
 
   if (!settings.legacyMode && 'serviceWorker' in navigator) {
     // Default mode

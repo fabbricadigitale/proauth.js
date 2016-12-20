@@ -5,18 +5,18 @@ import SessionHandler from './SessionHandler'
 export default class Controller {
 
   /**
-   * @param {EventTarget} target
+   * @param {EventTarget} globalScope
    * @param {Function} fetch
    */
-  constructor(target, fetch) {
+  constructor(globalScope, fetch) {
 
-    this.target = target
+    this.globalScope = globalScope
 
     this.handlers = {}
 
 
     // Setup interceptor
-    target.addEventListener('fetch', event => {
+    globalScope.addEventListener('fetch', event => {
       // TODO route event by url-space
       let ns = event.origin || ""
       if (this.handlers[ns]) {
@@ -28,7 +28,7 @@ export default class Controller {
     })
 
 
-    target.addEventListener('message', (e) => {
+    globalScope.addEventListener('message', (e) => {
       let {broadcast, namespace, command, params} = e.data,
         reply = (...args) => e.ports[0].postMessage(...args);
 
@@ -88,7 +88,7 @@ export default class Controller {
   }
 
   sendMessage(namespace, command, ...params) {
-    this.target.clients.matchAll().then(clients => {
+    this.globalScope.clients.matchAll().then(clients => {
       for (let client of clients) {
         client.postMessage({
           broadcast: true, namespace, command, params
@@ -100,7 +100,4 @@ export default class Controller {
   notifySession(namespace) {
     this.sendMessage(namespace, 'session', this.getHandlerByNamespace(namespace).session.content)
   }
-
-
-
 }
