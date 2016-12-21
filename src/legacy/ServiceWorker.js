@@ -1,50 +1,60 @@
-class ServiceWorker {
+class EventTarget { }
+let delegate = document.createDocumentFragment();
+for (let [, fx] of ['addEventListener', 'dispatchEvent', 'removeEventListener'].entries()) {
+  EventTarget.prototype[fx] = (...xs) => delegate[fx](...xs)
+}
+
+const postMessage = (target, aMessage, transferList) => {
+  let e = new class extends CustomEvent {
+    constructor() {
+      super('message', { bubbles: false, cancelable: true })
+    }
+    get data() {
+      return aMessage
+    }
+    get ports() {
+      let ret = [];
+      for (let transfer of (transferList || [])) {
+        if (transfer instanceof MessagePort) {
+          ret.push(transfer)
+        }
+      }
+      return ret.length > 0 ? ret : null
+    }
+  }
+  if (target.onmessage) {
+    target.onmessage(e);
+  }
+  target.dispatchEvent(e);
+}
+
+class ServiceWorker extends EventTarget {
   constructor() {
-    let serviceWorker = this
-    // Controller
+    super()
+
+    // Client context
+    // Used to send message from the client to the serviceWoker
+    const serviceWorker = this
     this.controller = new class {
-      postMessage(aMessage, transferList) {
-        let e = new class extends CustomEvent {
-          constructor() {
-            super('message', { bubbles: false, cancelable: true })
-          }
-          get data() {
-            return aMessage
-          }
-          get ports() {
-            let ret = [];
-            for (let transfer of (transferList || [])) {
-              if (transfer instanceof MessagePort) {
-                ret.push(transfer)
-              }
-            }
-            return ret.length > 0 ? ret : null
-          }
-        }
-        if (serviceWorker.onmessage) {
-          serviceWorker.onmessage(e);
-        }
-        serviceWorker.dispatchEvent(e);
+      postMessage(...args) {
+        return postMessage(serviceWorker, ...args)
       }
     }
 
-    this.clients = {
+    // serviceWorker context
+    // the "self" equivalent (a fake of ServiceWorkerGlobalScope),
+    // passed to the proauth.service.Controller as serviceWorker's global scope
+    const self = this.self = new EventTarget()
+    self.clients = {
       matchAll() {
         return new Promise(r => {
           r([{
-            postMessage: serviceWorker.controller.postMessage
+            postMessage: (...args) => postMessage(self, ...args)
           }])
         })
       }
     }
   }
-
-}
-
-// EventTarget
-let delegate = document.createDocumentFragment();
-for (let [, fx] of ['addEventListener', 'dispatchEvent', 'removeEventListener'].entries()) {
-  ServiceWorker.prototype[fx] = (...xs) => delegate[fx](...xs)
 }
 
 export default ServiceWorker;

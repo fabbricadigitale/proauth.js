@@ -7,7 +7,7 @@ const serviceWorker = new ServiceWorker(); // Fake serviceWorker
 fetch.install(serviceWorker);  // FetchAPI proxy
 
 // Setup service environment
-const controller = new Controller(serviceWorker, fetch.fetch);
+const controller = new Controller(serviceWorker.self, fetch.fetch);
 proauth.client.serviceWorker = serviceWorker;
 
 const legacy = { fetch, serviceWorker }
