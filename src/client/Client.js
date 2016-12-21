@@ -1,3 +1,8 @@
+import SessionContainer from './SessionContainer'
+import OAuth2Client from '../common/OAuth2Client'
+import OAuth2Response from '../common/OAuth2Response'
+import OAuth2Error from '../common/OAuth2Error'
+
 let sendMessage = (serviceWorker, message) => {
   // This wraps the message posting/response in a promise, which will resolve if the response doesn't
   // contain an error, and reject with the error if it does. If you'd prefer, it's possible to call
@@ -32,8 +37,16 @@ let onMessage = function (event) {
 }
 
 export default class Client {
-  constructor(config) {
-    this._config = config;
+  /**
+   * @param {Object} config
+   */
+  constructor(config, sessionContainer) {
+    const {namespace, oauth, clientId} = config
+    this._config = config
+    this._onMessage = onMessage.bind(this)
+
+    this.sessionContainer = new SessionContainer(namespace, window.localStorage)
+    this.oauth2Client = new OAuth2Client(oauth, clientId)
   }
 
   get ready() {
@@ -42,14 +55,14 @@ export default class Client {
 
   get serviceWorker() {
     if (!this._serviceWorker) {
-      throw Error('proauth.js is not ready: service has been not registered yet.')
+      throw Error('proauth.js: serviceWorker has been not registered yet.')
     }
     return this._serviceWorker;
   }
 
   set serviceWorker(sw) {
     if (this._serviceWorker) {
-      this._serviceWorker.removeEventListener('message', this.onmessage);
+      this._serviceWorker.removeEventListener('message', this._onMessage)
     }
 
     this._ready = false
@@ -58,9 +71,9 @@ export default class Client {
     sendMessage(sw, {
       namespace: this._config.namespace,
       command: "init",
-      params: [this._config]
+      params: [this._config, this.sessionContainer.content]
     }).then(data => {
-      this._serviceWorker.addEventListener('message', onMessage.bind(this))
+      this._serviceWorker.addEventListener('message', this._onMessage)
       this._ready = !!data
       //TODO: dispatch global READY event
       console.log('proauth.js is ready!')
@@ -77,6 +90,18 @@ export default class Client {
 
   clearSession() {
     return this.setSession({})
+  }
+
+  login(username, password) {
+    return this.oauth2Client.userCredentials(username, password).then(response => {
+      this.setSession(response.toObject())
+      return response
+    }, error => {
+       if (!error.canRefresh) {
+         this.clearSession()
+       }
+       return Promise.reject(error)
+    })
   }
 
 }
