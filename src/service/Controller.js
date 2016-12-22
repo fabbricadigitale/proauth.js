@@ -82,7 +82,13 @@ export default class Controller {
 
         }
       } catch (error) {
-        reply({ error })
+        reply({
+          namespace,
+          error: {
+            message: String(error.message),
+            stack: String(error.stack)
+          }
+        })
       }
     })
   }
