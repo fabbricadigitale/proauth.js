@@ -1,11 +1,11 @@
 export default class Oauth2Handler {
 
   /**
-   * @param {Object} config
+   * @param {Object} settings
    * @param {SessionHandler} session
    */
-  constructor (config, session) {
-    this.config = config
+  constructor (settings, session) {
+    this.settings = settings
     this.session = session
   }
 
@@ -15,7 +15,7 @@ export default class Oauth2Handler {
    */
   handle (event, fetch) {
     console.log(`Oauth2Handler::handle for ${event.request.url}`)
-    console.log('Config', this.config, 'Event', event)
+    console.log('Settings', this.settings, 'Event', event)
     event.respondWith(fetch(event.request));
   }
 

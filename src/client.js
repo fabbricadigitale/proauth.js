@@ -16,17 +16,34 @@ const loadScript = (url, callback = () => { }) => {
   head.appendChild(script);
 }
 
+const absolutePath = href => {
+    var link = document.createElement("a")
+    link.href = href
+    return (link.protocol+"//"+link.host+link.pathname+link.search+link.hash)
+}
+
+
 const boot = () => {
   let settings = {
     // Put defaults here
     legacyMode: false,
-    legacyScript: "lib/legacy.js", // FIXME: default path should be computed
+    legacySrc: "lib/legacy.js", // FIXME: default path should be computed
+    serviceSrc: "lib/service.js",
+    oauthUrl: "/oauth",
+    oauthClientId: "proauth",
+    sessionStorage: window.localStorage,
     namespace: document.origin && document.origin != "null" ? document.origin : "",
-    oauth: "/oauth",
-    clientId: "proauth"
+    managedUrls: []
   };
+
   // Copy user settings
   Object.assign(settings, window.proauth || {});
+
+  // Patch settings
+  settings.oauthEndpoint = absolutePath(settings.oauthEndpoint)
+  for (let k in settings.managedUrls) {
+    settings.managedUrls[k] = absolutePath(settings.managedUrls[k])
+  }
 
   const client = new Client(settings);
 
@@ -35,7 +52,7 @@ const boot = () => {
   } else {
     // Legacy mode
     settings.legacyMode = true;
-    loadScript(settings.legacyScript)
+    loadScript(settings.legacySrc)
   }
 
   return client;

@@ -40,22 +40,22 @@ export default class Controller {
         switch (command) {
 
           case 'init':
-            ((config, sessionData = {}) => {
-              let ns = config.namespace
+            ((settings, sessionData = {}) => {
+              let ns = settings.namespace
               let h = this.handlers[ns]
 
               if (namespace != ns) {
-                throw Error('Invalid config: namespace mismatch')
+                throw Error('Invalid settings: namespace mismatch')
               }
 
-              // Setup or override handler config/session
+              // Setup or override handler settings and session data
               if (h) {
                 h = this.getHandlerByNamespace(ns)
-                h.config = config
+                h.settings = settings
                 h.session.content = sessionData
               } else {
                 let s = new SessionHandler(ns, this.notifySession.bind(this), sessionData)
-                h = this.handlers[ns] = new OAuth2Handler(config, s)
+                h = this.handlers[ns] = new OAuth2Handler(settings, s)
               }
 
             })(...params)
