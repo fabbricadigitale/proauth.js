@@ -12,6 +12,10 @@ export default class Controller {
 
     this.globalScope = globalScope
 
+    if (!fetch) {
+      fetch = globalScope.fetch
+    }
+
     this.handlers = {}
 
 
@@ -20,12 +24,12 @@ export default class Controller {
 
       for (let ns in this.handlers) {
         let handler = this.handlers[ns]
-        for (let [,url] of handler.settings.managedUrls.entries()) {
+        for (let [, url] of handler.settings.managedUrls.entries()) {
           if (event.request.url.startsWith(url)) {
             // Each managed url should be handle by just one handler,
             // further registered handler on the same url are discarded.
             // TBD Should be a warning/error thrown in case of multiple handlers?
-            return handler.handle(event, fetch)
+            return handler.handle(event)
           }
         }
       }
@@ -62,7 +66,7 @@ export default class Controller {
                 h.session.content = sessionData
               } else {
                 let s = new SessionHandler(ns, this.notifySession.bind(this), sessionData)
-                h = this.handlers[ns] = new OAuth2Handler(settings, s)
+                h = this.handlers[ns] = new OAuth2Handler(settings, s, fetch)
               }
 
             })(...params)
