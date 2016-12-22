@@ -34,7 +34,7 @@ let onMessage = function (event) {
   }
 
   console.log('proauth.js client received a broadcast message', event.data)
-  switch(command) {
+  switch (command) {
 
     case 'session':
       this.sessionContainer.content = params[0];
@@ -54,13 +54,12 @@ export default class Client {
   /**
    * @param {Object} settings
    */
-  constructor(settings, sessionContainer) {
+  constructor(settings) {
     const {namespace, oauthUrl, oauthClientId, sessionStorage} = settings
     this.settings = settings
     this._onMessage = onMessage.bind(this)
 
-    this.sessionContainer = new SessionContainer(namespace, sessionStorage)
-    this.oauth2Client = new OAuth2Client(oauthUrl, oauthClientId)
+    this.sessionContainer = new SessionContainer(namespace, window[sessionStorage])
   }
 
   get ready() {
@@ -111,15 +110,13 @@ export default class Client {
   }
 
   login(username, password) {
-    return this.oauth2Client.userCredentials(username, password).then(response => {
-      this.setSession(response.toObject())
-      return response
-    }, error => {
-       if (!error.canRefresh) {
-         this.clearSession()
-       }
-       return Promise.reject(error)
-    })
+    if (!this.ready) {
+      throw Error('proauth.js is not ready yet.')
+    }
+    const {oauthUrl, oauthClientId} = this.settings
+    return (
+      new OAuth2Client(oauthUrl, oauthClientId, window.fetch)
+    ).userCredentials(username, password)
   }
 
 }

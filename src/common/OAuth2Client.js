@@ -6,15 +6,31 @@ export default class OAuth2Client {
    * Constructor
    * @param {string} apiUrl The url of OAuth2 endpoint
    * @param {string} clientId
+   * @param {Function} fetch
    * @return {OAuth2Client}
    */
-  constructor(apiUrl, clientId) {
+  constructor(apiUrl, clientId, fetch) {
 
     /** @type {string} */
     this.apiUrl = apiUrl;
 
     /** @type {string} */
     this.clientId = clientId;
+
+    this.fetch = init => {
+      return fetch(this.apiUrl, init)
+    }
+
+  }
+
+  handleAuthenticationResponse(response) {
+    if (response.ok) {
+      // Authentication OK
+      return response.json().then(j => new OAuth2Response(j))
+    }
+
+    // Authentication refused
+    return response.json().then(j => Promise.reject(new OAuth2Error(j)))
   }
 
   /**
@@ -25,22 +41,14 @@ export default class OAuth2Client {
    * @private
    */
   grantAccessToken(params) {
-    return fetch(this.apiUrl, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(params)
-      }).then((response) => {
-        if (response.ok) {
-          // Authentication OK
-          return response.json().then(j => new OAuth2Response(j))
-        }
-
-        // Authentication refused
-        return response.json().then(j => Promise.reject(new OAuth2Error(params, j)))
-      })
+    return this.fetch({
+      method: 'POST',
+      headers: new Headers({
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }),
+      body: JSON.stringify(params)
+    })
   }
 
   /**
