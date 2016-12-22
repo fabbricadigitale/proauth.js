@@ -5,9 +5,9 @@ export default class SessionContainer {
    * @param {Function} notify
    * @param {Object} data
    */
-  constructor(namespace, notify, data = {}) {
+  constructor(namespace, notify, data) {
     this.notify = () => notify(namespace)
-    this._content = Object(data)
+    this._content = data ? Object(data) : null
   }
 
   get content() {
@@ -15,12 +15,12 @@ export default class SessionContainer {
   }
 
   set content(data) {
-    this._content = Object(data)
+    this._content = data ? Object(data) : null
     this.notify()
   }
 
   clear () {
-    this.content = {};
+    this.content = null;
   }
 
 }
