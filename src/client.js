@@ -33,14 +33,16 @@ const boot = () => {
     oauthClientId: "proauth",
     sessionStorage: window.localStorage,
     namespace: document.origin && document.origin != "null" ? document.origin : "",
-    managedUrls: []
+    managedUrls: [
+      "/" // Manage the current url root by default
+    ]
   };
 
   // Copy user settings
   Object.assign(settings, window.proauth || {});
 
   // Patch settings
-  settings.oauthEndpoint = absolutePath(settings.oauthEndpoint)
+  settings.oauthUrl = absolutePath(settings.oauthUrl)
   for (let k in settings.managedUrls) {
     settings.managedUrls[k] = absolutePath(settings.managedUrls[k])
   }

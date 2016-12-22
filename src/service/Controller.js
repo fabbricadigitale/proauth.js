@@ -17,14 +17,21 @@ export default class Controller {
 
     // Setup interceptor
     globalScope.addEventListener('fetch', event => {
-      // TODO route event by url-space
-      let ns = event.origin || ""
-      if (this.handlers[ns]) {
-        this.handlers[ns].handle(event, fetch)
-      } else {
-        // Short-circuit
-        event.respondWith(fetch(event.request));
+
+      for (let ns in this.handlers) {
+        let handler = this.handlers[ns]
+        for (let [,url] of handler.settings.managedUrls.entries()) {
+          if (event.request.url.startsWith(url)) {
+            // Each managed url should be handle by just one handler,
+            // further registered handler on the same url are discarded.
+            // TBD Should be a warning/error thrown in case of multiple handlers?
+            return handler.handle(event, fetch)
+          }
+        }
       }
+
+      // Passthrough unmanaged requests
+      event.respondWith(fetch(event.request));
     })
 
 
