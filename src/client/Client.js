@@ -32,7 +32,21 @@ let onMessage = function (event) {
   if (!broadcast || namespace != this.settings.namespace) {
     return
   }
+
   console.log('proauth.js client received a broadcast message', event.data)
+  switch(command) {
+
+    case 'session':
+      this.sessionContainer.content = params[0];
+      break;
+
+    default:
+      console.log('proauth.js client, invalid command received: ', command)
+  }
+
+
+
+
   // TODO: set session race condition must be avoided, dirty-checking data may be a solution
 }
 
@@ -84,12 +98,16 @@ export default class Client {
     return sendMessage(this.serviceWorker, {
       namespace: this.settings.namespace,
       command: "setSession",
-      params: [this.settings.namespace, data]
+      params: [data]
     })
   }
 
   clearSession() {
-    return this.setSession({})
+    return this.setSession(null)
+  }
+
+  hasSession() {
+    return !!this.sessionContainer.content;
   }
 
   login(username, password) {
