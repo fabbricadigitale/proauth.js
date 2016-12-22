@@ -17,9 +17,9 @@ const loadScript = (url, callback = () => { }) => {
 }
 
 const absolutePath = href => {
-    var link = document.createElement("a")
-    link.href = href
-    return (link.protocol+"//"+link.host+link.pathname+link.search+link.hash)
+  var link = document.createElement("a")
+  link.href = href
+  return (link.protocol + "//" + link.host + link.pathname + link.search + link.hash)
 }
 
 
@@ -31,7 +31,7 @@ const boot = () => {
     serviceSrc: "lib/service.js",
     oauthUrl: "/oauth",
     oauthClientId: "proauth",
-    sessionStorage: window.localStorage,
+    sessionStorage: "localStorage",
     namespace: document.origin && document.origin != "null" ? document.origin : "",
     managedUrls: [
       "/" // Manage the current url root by default
