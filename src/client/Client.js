@@ -29,7 +29,7 @@ let sendMessage = (serviceWorker, message) => {
 
 let onMessage = function (event) {
   let {broadcast, namespace, command, params} = event.data;
-  if (!broadcast || namespace != this._config.namespace) {
+  if (!broadcast || namespace != this.settings.namespace) {
     return
   }
   console.log('proauth.js client received a broadcast message', event.data)
@@ -38,15 +38,15 @@ let onMessage = function (event) {
 
 export default class Client {
   /**
-   * @param {Object} config
+   * @param {Object} settings
    */
-  constructor(config, sessionContainer) {
-    const {namespace, oauth, clientId} = config
-    this._config = config
+  constructor(settings, sessionContainer) {
+    const {namespace, oauthUrl, oauthClientId, sessionStorage} = settings
+    this.settings = settings
     this._onMessage = onMessage.bind(this)
 
-    this.sessionContainer = new SessionContainer(namespace, window.localStorage)
-    this.oauth2Client = new OAuth2Client(oauth, clientId)
+    this.sessionContainer = new SessionContainer(namespace, sessionStorage)
+    this.oauth2Client = new OAuth2Client(oauthUrl, oauthClientId)
   }
 
   get ready() {
@@ -69,9 +69,9 @@ export default class Client {
     this._serviceWorker = sw
 
     sendMessage(sw, {
-      namespace: this._config.namespace,
+      namespace: this.settings.namespace,
       command: "init",
-      params: [this._config, this.sessionContainer.content]
+      params: [this.settings, this.sessionContainer.content]
     }).then(data => {
       this._serviceWorker.addEventListener('message', this._onMessage)
       this._ready = !!data
@@ -82,9 +82,9 @@ export default class Client {
 
   setSession(data) {
     return sendMessage(this.serviceWorker, {
-      namespace: this._config.namespace,
+      namespace: this.settings.namespace,
       command: "setSession",
-      params: [this._config.namespace, data]
+      params: [this.settings.namespace, data]
     })
   }
 
