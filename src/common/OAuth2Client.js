@@ -43,10 +43,10 @@ export default class OAuth2Client {
   grantAccessToken(params) {
     return this.fetch({
       method: 'POST',
-      headers: new Headers({
+      headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
-      }),
+      },
       body: JSON.stringify(params)
     })
   }

@@ -1,13 +1,14 @@
 <html>
 <head>
+  <script src="fetch.polyfill.js"></script>
   <script>
     proauth = {
       legacyMode: true,
-      legacySrc: "lib/legacy.js",
+      legacySrc: "lib/legacy.babel.js",
       oauthClientId: "test_client"
     }
   </script>
-  <script src="lib/client.js"></script>
+  <script src="lib/client.babel.js"></script>
 </head>
 <body>
 </body>
