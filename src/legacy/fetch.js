@@ -4,19 +4,10 @@ let fetch = function(input, init) {
   let self = this
   return new Promise((resolve, reject) => {
     let request = new Request(input, init);
-    self.dispatchEvent(new (class extends CustomEvent {
-      constructor() {
-        super('fetch')
-      }
-
-      get request() {
-        return request
-      }
-
-      respondWith(p) {
-        resolve(p)
-      }
-    }))
+    let fetchEvent = new CustomEvent('fetch');
+    fetchEvent.request = request
+    fetchEvent.respondWith = resolve
+    self.dispatchEvent(fetchEvent)
   })
 }
 
