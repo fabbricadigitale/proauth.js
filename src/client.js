@@ -1,4 +1,5 @@
 import Client from './client/Client'
+import absolutePath from './common/absolutePath'
 
 const loadScript = (url, callback = () => { }) => {
   // Adding the script tag to the head as suggested before
@@ -15,13 +16,6 @@ const loadScript = (url, callback = () => { }) => {
   // Fire the loading
   head.appendChild(script);
 }
-
-const absolutePath = href => {
-  var link = document.createElement("a")
-  link.href = href
-  return (link.protocol + "//" + link.host + link.pathname + link.search + link.hash)
-}
-
 
 const boot = () => {
   let settings = {
