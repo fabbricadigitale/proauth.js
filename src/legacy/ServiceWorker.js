@@ -1,23 +1,20 @@
 import EventTarget from '../common/EventTarget'
 
 const postMessage = (target, aMessage, transferList) => {
-  let e = new class extends CustomEvent {
-    constructor() {
-      super('message', { bubbles: false, cancelable: true })
-    }
-    get data() {
-      return aMessage
-    }
-    get ports() {
-      let ret = [];
-      for (let transfer of (transferList || [])) {
-        if (transfer instanceof MessagePort) {
-          ret.push(transfer)
-        }
-      }
-      return ret.length > 0 ? ret : null
+
+  let ports = [];
+  for (let transfer of (transferList || [])) {
+    if (transfer instanceof MessagePort) {
+      ports.push(transfer)
     }
   }
+
+  let e = new MessageEvent('message', {
+    bubbles: false,
+    cancelable: true,
+    data: aMessage,
+    ports: ports.length > 0 ? ports : undefined
+  })
   if (target.onmessage) {
     target.onmessage(e);
   }
