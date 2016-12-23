@@ -5,7 +5,7 @@
   "main": "lib/client.js",
   "private": true,
   "scripts": {
-    "dev": "npm run dev:client && npm run dev:legacy && npm run dev:service",
+    "dev": "npm run dev:client && npm run dev:legacy && npm run dev:service && npm run babel",
     "dev:client": "BUILD_ENV=develop BUILD_TARGET=client rollup -c",
     "dev:legacy": "BUILD_ENV=develop BUILD_TARGET=legacy rollup -c",
     "dev:service": "BUILD_ENV=devlop BUILD_TARGET=service rollup -c",
@@ -13,6 +13,7 @@
     "lib:client": "BUILD_TARGET=client rollup -c",
     "lib:legacy": "BUILD_TARGET=legacy rollup -c",
     "lib:service": "BUILD_TARGET=service rollup -c",
+    "babel": "babel lib/legacy.js --out-file lib/legacy.babel.js && babel lib/client.js --out-file lib/client.babel.js",
     "prelib": "npm run clean",
     "lib": "npm run lib:client && npm run lib:legacy && npm run lib:service",
     "test": "exit 1",
