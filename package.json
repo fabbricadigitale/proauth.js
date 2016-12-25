@@ -5,17 +5,21 @@
   "main": "lib/client.js",
   "private": true,
   "scripts": {
-    "dev": "npm run dev:client && npm run dev:legacy && npm run dev:service && npm run babel",
-    "dev:client": "BUILD_ENV=develop BUILD_TARGET=client rollup -c",
-    "dev:legacy": "BUILD_ENV=develop BUILD_TARGET=legacy rollup -c",
-    "dev:service": "BUILD_ENV=devlop BUILD_TARGET=service rollup -c",
+    "dev": "run-p dev:*",
     "predev": "npm run clean",
+    "postdev": "npm run transpile",
+    "dev:client": "BUILD_ENV=develop npm run lib:client",
+    "dev:legacy": "BUILD_ENV=develop npm run lib:legacy",
+    "dev:service": "BUILD_ENV=devlop npm run lib:service",
     "lib:client": "BUILD_TARGET=client rollup -c",
     "lib:legacy": "BUILD_TARGET=legacy rollup -c",
     "lib:service": "BUILD_TARGET=service rollup -c",
-    "babel": "babel lib/legacy.js --out-file lib/legacy.babel.js && babel lib/client.js --out-file lib/client.babel.js",
+    "transpile:client": "babel lib/client.es2015.js --out-file lib/client.js",
+    "transpile:legacy": "babel lib/legacy.es2015.js --out-file lib/legacy.js",
+    "transpile": "run-p transpile:*",
     "prelib": "npm run clean",
-    "lib": "npm run lib:client && npm run lib:legacy && npm run lib:service",
+    "lib": "npm-p lib:*",
+    "postlib": "npm run transpile",
     "test": "exit 1",
     "clean": "shx rm -rf *.log lib/",
     "lint": "eslint src/**/*.js",
@@ -49,11 +53,24 @@
     "eslint-config-walmart": "^1.1.0",
     "eslint-plugin-filenames": "^1.1.0",
     "git-scripts": "^0.2.1",
+    "npm-run-all": "^3.1.2",
     "rollup": "^0.37.0",
     "shx": "^0.2.1",
     "validate-commit": "^2.3.2"
   },
   "eslintConfig": {
     "extends": "walmart/configurations/es6-browser"
+  },
+  "babel": {
+    "presets": [
+      [
+        "es2015",
+        {
+          "loose": true,
+          "modules": false,
+          "spec": true
+        }
+      ]
+    ]
   }
 }

@@ -13,8 +13,8 @@ const target = (target => {
 const rollupOpts = {
   entry: `src/${target}.js`,
   moduleName: 'proauth',
-  format: 'umd',
-  dest: `lib/${target}.js`
+  format: 'iife',
+  dest: `lib/${target}.es2015.js`
 }
 
 if (inDevelopment()) {
