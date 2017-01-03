@@ -29,7 +29,7 @@ export default class Oauth2Handler {
 
     const updateSession = grantPromise => {
       return grantPromise.then(oA2Response => {
-        console.log('proauth.js: authentication sucessful, updating session', oA2Response)
+        console.log('proauth.js: authentication successful, updating session', oA2Response)
         tokens = this.session.content = oA2Response.toObject()
         return true
       }, oA2Error => {
@@ -62,7 +62,7 @@ export default class Oauth2Handler {
             return updateSession(
               oauth.handleAuthenticationResponse(authResponse)
             ).then(newSession => {
-              // We got a new tokens?
+              // We got a new token?
               // Then try to re-fetch the original request...
               if (newSession) {
                 request.headers.set("Authorization", `${tokens.tokenType} ${tokens.accessToken}`)
