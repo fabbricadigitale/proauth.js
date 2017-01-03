@@ -36,7 +36,6 @@ export default class OAuth2Client {
   /**
    *
    * @param {Object} params
-   * @param {String} code
    * @returns {Promise}
    * @private
    */
