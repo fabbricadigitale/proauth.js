@@ -18,7 +18,7 @@
     "transpile:legacy": "babel lib/legacy.es2015.js --out-file lib/legacy.js",
     "transpile": "run-p transpile:*",
     "prelib": "npm run clean",
-    "lib": "npm-p lib:*",
+    "lib": "run-p lib:*",
     "postlib": "npm run transpile",
     "test": "exit 1",
     "clean": "shx rm -rf *.log lib/",
