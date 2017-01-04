@@ -1,7 +1,5 @@
 import SessionContainer from './SessionContainer'
 import OAuth2Client from '../common/OAuth2Client'
-import OAuth2Response from '../common/OAuth2Response'
-import OAuth2Error from '../common/OAuth2Error'
 
 let sendMessage = (serviceWorker, message) => {
   // This wraps the message posting/response in a promise, which will resolve if the response doesn't
