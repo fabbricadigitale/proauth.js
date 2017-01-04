@@ -18,9 +18,10 @@ let fetch = function(input, init) {
   })
 }
 
+let boundFetch;
+
 export default {
   install: observer => window.fetch = fetch.bind(observer),
   uninstall: () => window.fetch = originalFetch,
-  proxy: fetch,
   fetch: originalFetch
 }
