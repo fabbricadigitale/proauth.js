@@ -149,13 +149,15 @@ class XMLHttpRequest extends originalXMLHttpRequest {
 
   get responseXML() {
     let responseType = this.responseType
-    if (type !== "" && type !== "document") {
+    if (responseType !== "" && responseType !== "document") {
       throw new DOMException(
         `Failed to read the 'responseXML' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'document' (was '${responseType}').)`
       )
     }
 
-    if (this[_readyState] !== this.DONE || text === null) {
+    let body = this[_responseBody]
+
+    if (this[_readyState] !== this.DONE || body === null) {
       return null
     }
 
@@ -170,7 +172,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
     }
 
     try {
-      return parseXML(this[_responseBody])
+      return parseXML(body)
     } catch (error) {
     }
     return null
@@ -228,24 +230,15 @@ class XMLHttpRequest extends originalXMLHttpRequest {
     this[_errorFlag] = false
     this[_sendFlag] = true
 
-    let body
-    if (!/^(get|head)$/i.test(this[_method])) {
-      if (!this[_requestHeaders]["Content-Type"] && !(data || '').toString().match('FormData')) {
-        this[_requestHeaders]["Content-Type"] = "text/plain;charset=UTF-8"
-      }
-      body = data
-    }
-
     this.dispatchEvent(new ProgressEvent("loadstart", { bubbles: false, cancelable: false }))
     //this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
 
     let fetchInit = {
       method: this[_method],
       headers: this[_requestHeaders],
-      body: body
+      body: data
       // mode: // NOT supported by xhr
       // credentials: // TODO
-
     }
 
     if (this[_withCredentials]) {
@@ -259,13 +252,14 @@ class XMLHttpRequest extends originalXMLHttpRequest {
       // HEADERS_RECEIVED Stage
       let headers = response.headers
       this[_responseHeaders] = {}
-      if (this[_forceMimeType]) {
-        headers.set("Content-Type", this[_forceMimeType])
+      for (let [key, value] of headers.entries()) {
+        if (this[_forceMimeType] && key.toLowerCase() === "content-type") {
+          this[_responseHeaders][key] = this[_forceMimeType]
+        } else {
+          this[_responseHeaders][key] = value
+        }
       }
 
-      for (let [key, value] of headers.entries()) {
-        this[_responseHeaders][key] = value
-      }
       readyStateChange(this, this.HEADERS_RECEIVED)
 
       // LOADING Stage
