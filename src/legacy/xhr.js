@@ -1,28 +1,23 @@
 import EventTarget from '../common/EventTarget'
 
-let originalXMLHttpRequest = window.XMLHttpRequest
+const originalXMLHttpRequest = window.XMLHttpRequest
 
-/*
-  Cross-browser XML parsing. Used to turn
-  XML responses into Document objects
-  Borrowed from JSpec
-*/
-function parseXML(text) {
-  let xmlDoc;
+const _readyState = Symbol('readyState')
+const _responseBody = Symbol('responseBody')
+const _response = Symbol('response')
+const _requestHeaders = Symbol('requestHeaders')
+const _method = Symbol('method')
+const _url = Symbol('url')
+const _username = Symbol('username')
+const _password = Symbol('password')
+const _sendFlag = Symbol('sendFlag')
+const _errorFlag = Symbol('errorFlag')
+const _forceMimeType = Symbol('forceMimeType')
+const _responseHeaders = Symbol('responseHeaders')
+const _aborted = Symbol('aborted')
+const _withCredentials = Symbol('withCredentials')
 
-  if (typeof DOMParser !== "undefined") {
-    let parser = new DOMParser();
-    xmlDoc = parser.parseFromString(text, "text/xml")
-  } else {
-    xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
-    xmlDoc.async = "false"
-    xmlDoc.loadXML(text)
-  }
-
-  return xmlDoc;
-}
-
-let responseParser = {
+const responseParser = {
   "": "text",
   "arraybuffer": "arrayBuffer",
   "blob": "blob",
@@ -34,7 +29,7 @@ let responseParser = {
   Without mocking, the native XMLHttpRequest object will throw
   an error when attempting to set these headers. We match this behavior.
 */
-let unsafeHeaders = {
+const unsafeHeaders = {
   "Accept-Charset": true,
   "Accept-Encoding": true,
   "Connection": true,
@@ -57,45 +52,57 @@ let unsafeHeaders = {
 
 function verifyState(xhr) {
   if (xhr.readyState !== XMLHttpRequest.OPENED) {
-    throw new Error("INVALID_STATE_ERR");
+    throw new Error("INVALID_STATE_ERR")
   }
 
-  if (xhr.sendFlag) {
-    throw new Error("INVALID_STATE_ERR");
-  }
-}
-
-function verifyRequestSent(xhr) {
-  if (xhr.readyState === XMLHttpRequest.DONE) {
-    throw new Error("Request done");
+  if (xhr[_sendFlag]) {
+    throw new Error("INVALID_STATE_ERR")
   }
 }
 
-function verifyHeadersReceived(xhr) {
-  if (xhr.readyState !== XMLHttpRequest.HEADERS_RECEIVED) {
-    throw new Error("No headers received");
+/*
+  Cross-browser XML parsing. Used to turn
+  XML responses into Document objects
+  Borrowed from JSpec
+*/
+function parseXML(text) {
+  let xmlDoc
+
+  if (typeof DOMParser !== "undefined") {
+    let parser = new DOMParser()
+    xmlDoc = parser.parseFromString(text, "text/xml")
+  } else {
+    xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
+    xmlDoc.async = "false"
+    xmlDoc.loadXML(text)
   }
+
+  return xmlDoc
 }
 
-function verifyResponseBodyType(body) {
-  if (typeof body !== "string") {
-    var error = new Error("Attempted to respond to fake XMLHttpRequest with " +
-      body + ", which is not a string.");
-    error.name = "InvalidBodyException";
-    throw error;
+/**
+  * Places a XMLHttpRequest object into the passed state.
+
+  * @param {XMLHttpRequest} xhr
+  * @param {string} state
+  */
+function readyStateChange(xhr, state) {
+  xhr[_readyState] = state
+
+  // FIXME: Event's target is wrong
+  // FIXME: Event should be the same instance
+
+  if (typeof xhr.onreadystatechange === "function") {
+    xhr.onreadystatechange(new Event("readystatechange"))
+  }
+
+  xhr.dispatchEvent(new Event("readystatechange"))
+
+  if (xhr[_readyState] === xhr.DONE) {
+    xhr.dispatchEvent(new Event("load", { bubbles: false, cancelable: false }))
+    xhr.dispatchEvent(new Event("loadend", { bubbles: false, cancelable: false }))
   }
 }
-
-const _readyState = Symbol('readyState')
-const _responseBody = Symbol('responseBody')
-const _response = Symbol('response')
-const _requestHeaders = Symbol('requestHeaders')
-const _method = Symbol('method')
-const _url = Symbol('url')
-const _username = Symbol('username')
-const _password = Symbol('password')
-const _sendFlag = Symbol('sendFlag')
-const _errorFlag = Symbol('errorFlag')
 
 class XMLHttpRequest extends EventTarget {
 
@@ -104,8 +111,8 @@ class XMLHttpRequest extends EventTarget {
     this[_readyState] = this.UNSENT
     this[_requestHeaders] = {}
 
-    //this.upload = new EventedObject(); // FIXME
-    this.withCredentials = false
+    //this.upload = new EventedObject() // FIXME
+    this[_withCredentials] = false
   }
 
   static get UNSENT() { return 0 }
@@ -195,9 +202,17 @@ class XMLHttpRequest extends EventTarget {
 
   }
 
-  /*
-    Duplicates the behavior of native XMLHttpRequest's open function
-  */
+  get withCredentials() {
+    return this[_withCredentials]
+  }
+
+  set withCredentials(enable) {
+    this[_withCredentials] = !!enable
+  }
+
+  /**
+   * Duplicates the behavior of native XMLHttpRequest's open function
+   */
   open(method, url, async = true, username, password) {
 
     if (!async) {
@@ -210,14 +225,14 @@ class XMLHttpRequest extends EventTarget {
     this[_password] = password
     this[_requestHeaders] = {}
     this[_sendFlag] = false
-    this._readyStateChange(this.OPENED)
+    readyStateChange(this, this.OPENED)
   }
 
-  /*
-    Duplicates the behavior of native XMLHttpRequest's setRequestHeader function
-  */
+  /**
+   * Duplicates the behavior of native XMLHttpRequest's setRequestHeader function
+   */
   setRequestHeader(header, value) {
-    verifyState(this);
+    verifyState(this)
 
     if (unsafeHeaders[header] || /^(Sec-|Proxy-)/.test(header)) {
       throw new Error("Refused to set unsafe header \"" + header + "\"")
@@ -230,11 +245,11 @@ class XMLHttpRequest extends EventTarget {
     }
   }
 
-  /*
-    Duplicates the behavior of native XMLHttpRequest's send function
-  */
+  /**
+   *  Duplicates the behavior of native XMLHttpRequest's send function
+   */
   send(data) {
-    verifyState(this);
+    verifyState(this)
     this[_errorFlag] = false
     this[_sendFlag] = true
 
@@ -262,57 +277,83 @@ class XMLHttpRequest extends EventTarget {
 
     }
 
-    if (this.withCredentials) {
+    if (this[_withCredentials]) {
       fetchInit.credentials = "include"
     }
 
     fetch(this[_url], fetchInit).then(response => {
-      // TODO: handle abort?
-      this[_response] = response
-      this._setResponseHeaders(response.headers)
-      this._readyStateChange(this.HEADERS_RECEIVED)
-      this._readyStateChange(this.LOADING)
 
+      if (this[_aborted]) {
+        return
+      }
+
+      this[_response] = response
+
+      // HEADERS_RECEIVED Stage
+      let headers = response.headers
+      this[_responseHeaders] = {}
+      if (this[_forceMimeType]) {
+        headers.set("Content-Type", this[_forceMimeType])
+      }
+
+      for (let [key, value] of headers.entries()) {
+        this[_responseHeaders][key] = value
+      }
+      readyStateChange(this, this.HEADERS_RECEIVED)
+
+      // LOADING Stage
+      if (this[_aborted]) {
+        return
+      }
+      readyStateChange(this, this.LOADING)
       return response[
         responseParser[this.responseType] || "text"
       ]()
     }, reason => {
+
+      if (this[_aborted]) {
+        return
+      }
       // TODO: handle error?
-      this._readyStateChange(this.DONE)
+      readyStateChange(this, this.DONE)
       throw new Error(reason)
     }).then(body => {
-      // TODO: handle abort?
-      verifyRequestSent(this)
+
+      if (this[_aborted]) {
+        return // Do nothing
+      }
+
+      // DONE Stage
       this[_responseBody] = body
-      this._readyStateChange(this.DONE)
+      readyStateChange(this, this.DONE)
     })
 
   }
 
-  /*
-    Duplicates the behavior of native XMLHttpRequest's abort function
-  */
+  /**
+   * Duplicates the behavior of native XMLHttpRequest's abort function
+   */
   abort() {
-    this.aborted = true
+    this[_aborted] = true
     this[_errorFlag] = true
     this[_requestHeaders] = {}
 
     if (this[_readyState] > this.UNSENT && this[_sendFlag]) {
-      this._readyStateChange(this.DONE)
-      this[_sendFlag] = false;
+      readyStateChange(this, this.DONE)
+      this[_sendFlag] = false
     }
 
-    this[_readyState] = this.UNSENT;
+    this[_readyState] = this.UNSENT
 
     this.dispatchEvent(new Event("abort", { bubbles: false, cancelable: false }))
     if (typeof this.onerror === "function") {
-      this.onerror();
+      this.onerror()
     }
   }
 
-  /*
-    Duplicates the behavior of native XMLHttpRequest's getResponseHeader function
-  */
+  /**
+   * Duplicates the behavior of native XMLHttpRequest's getResponseHeader function
+   */
   getResponseHeader(header) {
     if (this[_readyState] < this.HEADERS_RECEIVED) {
       return null
@@ -324,18 +365,18 @@ class XMLHttpRequest extends EventTarget {
 
     header = header.toLowerCase()
 
-    for (var h in this.responseHeaders) {
+    for (var h in this[_responseHeaders]) {
       if (h.toLowerCase() === header) {
-        return this.responseHeaders[h]
+        return this[_responseHeaders][h]
       }
     }
 
     return null
   }
 
-  /*
-    Duplicates the behavior of native XMLHttpRequest's getAllResponseHeaders function
-  */
+  /**
+   * Duplicates the behavior of native XMLHttpRequest's getAllResponseHeaders function
+   */
   getAllResponseHeaders() {
     if (this[_readyState] < this.HEADERS_RECEIVED) {
       return ""
@@ -343,61 +384,21 @@ class XMLHttpRequest extends EventTarget {
 
     var headers = ""
 
-    for (var header in this.responseHeaders) {
-      if (this.responseHeaders.hasOwnProperty(header) && !/^Set-Cookie2?$/i.test(header)) {
-        headers += header + ": " + this.responseHeaders[header] + "\r\n"
+    for (var header in this[_responseHeaders]) {
+      if (this[_responseHeaders].hasOwnProperty(header) && !/^Set-Cookie2?$/i.test(header)) {
+        headers += header + ": " + this[_responseHeaders][header] + "\r\n"
       }
     }
 
     return headers
   }
 
-  /*
-   Duplicates the behavior of native XMLHttpRequest's overrideMimeType function
+  /**
+   * Duplicates the behavior of native XMLHttpRequest's overrideMimeType function
    */
   overrideMimeType(mimeType) {
     if (typeof mimeType === "string") {
-      this._forceMimeType = mimeType.toLowerCase()
-    }
-  }
-
-  /*
-    Places a FakeXMLHttpRequest object into the passed
-    state.
-  */
-  _readyStateChange(state) {
-    this[_readyState] = state;
-
-    // FIXME: Event's target is wrong
-    // FIXME: Event should be the same instance
-
-    if (typeof this.onreadystatechange === "function") {
-      this.onreadystatechange(new Event("readystatechange"))
-    }
-
-    this.dispatchEvent(new Event("readystatechange"))
-
-    if (this[_readyState] === this.DONE) {
-      this.dispatchEvent(new Event("load", { bubbles: false, cancelable: false }))
-      this.dispatchEvent(new Event("loadend", { bubbles: false, cancelable: false }))
-    }
-  }
-
-  /**
-   * Sets the FakeXMLHttpRequest object's response headers and places the object into readyState 2
-   *
-   * @param {Headers} headers
-   */
-  _setResponseHeaders(headers) {
-
-    this.responseHeaders = {};
-
-    if (this._forceMimeType) {
-      headers.set("Content-Type", this._forceMimeType)
-    }
-
-    for (let [key, value] of headers.entries()) {
-      this.responseHeaders[key] = value
+      this[_forceMimeType] = mimeType.toLowerCase()
     }
   }
 
