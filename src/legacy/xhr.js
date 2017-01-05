@@ -65,7 +65,6 @@ function verifyState(xhr) {
   }
 }
 
-
 function verifyRequestSent(xhr) {
   if (xhr.readyState === XMLHttpRequest.DONE) {
     throw new Error("Request done");
@@ -78,7 +77,6 @@ function verifyHeadersReceived(xhr) {
   }
 }
 
-
 function verifyResponseBodyType(body) {
   if (typeof body !== "string") {
     var error = new Error("Attempted to respond to fake XMLHttpRequest with " +
@@ -88,9 +86,58 @@ function verifyResponseBodyType(body) {
   }
 }
 
+/**
+ * @see https://url.spec.whatwg.org/#concept-url-serializer
+ * @param url
+ * @param excludeFragmentFlag
+ * @returns {string}
+ */
+function serializeUrl(url, excludeFragmentFlag) {
+  let parsedUrl = document.createElement('a');
+  parsedUrl.href = url;
+
+  let output = parsedUrl.protocol;
+
+  if (parsedUrl.hostname !== null && parsedUrl.hostname !== "") {
+    output += "//";
+
+    if (parsedUrl.username !== "" || parsedUrl.password !== "") {
+      output += parsedUrl.username;
+
+      if (parsedUrl.password !== "") {
+        output += parsedUrl.password;
+      }
+
+      output += "@";
+    }
+
+    output += parsedUrl.hostname;
+
+    if (parsedUrl.port !== null && parsedUrl.port !== "") {
+      output += ":" + parsedUrl.port;
+    }
+
+  } else if ((parsedUrl.hostname === null || parsedUrl.hostname === "") && parsedUrl.protocol === "file:") {
+    output += "//";
+  }
+
+  output += parsedUrl.pathname;
+
+  if (parsedUrl.search !== null && parsedUrl.search !== "") {
+    output += parsedUrl.search;
+  }
+
+  if (excludeFragmentFlag === false) {
+    output += parsedUrl.hash;
+  }
+
+  return output;
+}
+
 const _readyState = Symbol('readyState')
 const _responseBody = Symbol('responseBody')
 const _response = Symbol('response')
+const _responseURL = Symbol('responseURL')
 const _requestHeaders = Symbol('requestHeaders')
 const _method = Symbol('method')
 const _url = Symbol('url')
@@ -149,6 +196,14 @@ class XMLHttpRequest extends EventTarget {
 
   }
 
+  get responseURL() {
+    if (this[_readyState] === this.DONE) {
+      return this[_responseURL];
+    }
+
+    return "";
+  }
+
   get responseText() {
     let responseType = this.responseType
     if (responseType === "" || responseType === "text") {
@@ -188,7 +243,6 @@ class XMLHttpRequest extends EventTarget {
     return null
 
   }
-
 
   /*
     Duplicates the behavior of native XMLHttpRequest's open function
@@ -242,8 +296,6 @@ class XMLHttpRequest extends EventTarget {
       body = data
     }
 
-
-
     if (typeof this.onSend === "function") {
       this.onSend(this)
     }
@@ -281,6 +333,7 @@ class XMLHttpRequest extends EventTarget {
       // TODO: handle abort?
       verifyRequestSent(this)
       this[_responseBody] = body
+      this[_responseURL] = serializeUrl(this[_url], true);
       this._readyStateChange(this.DONE)
     })
 
@@ -291,7 +344,6 @@ class XMLHttpRequest extends EventTarget {
   */
   abort() {
     this.aborted = true
-    this.responseText = null
     this[_errorFlag] = true
     this[_requestHeaders] = {}
 
@@ -359,7 +411,6 @@ class XMLHttpRequest extends EventTarget {
     }
   }
 
-
   /*
     Places a FakeXMLHttpRequest object into the passed
     state.
@@ -382,7 +433,6 @@ class XMLHttpRequest extends EventTarget {
     }
   }
 
-
   /**
    * Sets the FakeXMLHttpRequest object's response headers and places the object into readyState 2
    *
@@ -400,7 +450,6 @@ class XMLHttpRequest extends EventTarget {
       this.responseHeaders[key] = value
     }
   }
-
 
 }
 
