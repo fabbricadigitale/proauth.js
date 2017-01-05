@@ -88,23 +88,10 @@ function parseXML(text) {
   */
 function readyStateChange(xhr, state) {
   xhr[_readyState] = state
-
-  // FIXME: Event's target is wrong
-  // FIXME: Event should be the same instance
-
-  if (typeof xhr.onreadystatechange === "function") {
-    xhr.onreadystatechange(new Event("readystatechange"))
-  }
-
   xhr.dispatchEvent(new Event("readystatechange"))
-
-  if (xhr[_readyState] === xhr.DONE) {
-    xhr.dispatchEvent(new Event("load", { bubbles: false, cancelable: false }))
-    xhr.dispatchEvent(new Event("loadend", { bubbles: false, cancelable: false }))
-  }
 }
 
-class XMLHttpRequest extends EventTarget {
+class XMLHttpRequest extends originalXMLHttpRequest {
 
   constructor() {
     super()
@@ -114,18 +101,6 @@ class XMLHttpRequest extends EventTarget {
     //this.upload = new EventedObject() // FIXME
     this[_withCredentials] = false
   }
-
-  static get UNSENT() { return 0 }
-  static get OPENED() { return 1 }
-  static get HEADERS_RECEIVED() { return 2 }
-  static get LOADING() { return 3 }
-  static get DONE() { return 4 }
-
-  get UNSENT() { return 0 }
-  get OPENED() { return 1 }
-  get HEADERS_RECEIVED() { return 2 }
-  get LOADING() { return 3 }
-  get DONE() { return 4 }
 
   get readyState() {
     return this[_readyState]
@@ -258,15 +233,11 @@ class XMLHttpRequest extends EventTarget {
       if (!this[_requestHeaders]["Content-Type"] && !(data || '').toString().match('FormData')) {
         this[_requestHeaders]["Content-Type"] = "text/plain;charset=UTF-8"
       }
-
       body = data
     }
 
-    if (typeof this.onSend === "function") {
-      this.onSend(this)
-    }
-
-    this.dispatchEvent(new Event("loadstart", { bubbles: false, cancelable: false }))
+    this.dispatchEvent(new ProgressEvent("loadstart", { bubbles: false, cancelable: false }))
+    //this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
 
     let fetchInit = {
       method: this[_method],
@@ -283,10 +254,6 @@ class XMLHttpRequest extends EventTarget {
 
     fetch(this[_url], fetchInit).then(response => {
 
-      if (this[_aborted]) {
-        return
-      }
-
       this[_response] = response
 
       // HEADERS_RECEIVED Stage
@@ -302,32 +269,29 @@ class XMLHttpRequest extends EventTarget {
       readyStateChange(this, this.HEADERS_RECEIVED)
 
       // LOADING Stage
-      if (this[_aborted]) {
-        return
-      }
       readyStateChange(this, this.LOADING)
+      this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
+      // FIXME: we need body size?
+      //this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
       return response[
         responseParser[this.responseType] || "text"
       ]()
     }, reason => {
-
-      if (this[_aborted]) {
-        return
+      if (!this[_aborted]) {
+        readyStateChange(this, this.DONE)
+        this.dispatchEvent(new ProgressEvent("error", { bubbles: false, cancelable: false }))
       }
-      // TODO: handle error?
-      readyStateChange(this, this.DONE)
-      throw new Error(reason)
+      this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
     }).then(body => {
-
-      if (this[_aborted]) {
-        return // Do nothing
-      }
-
       // DONE Stage
-      this[_responseBody] = body
-      readyStateChange(this, this.DONE)
+      if (!this[_aborted]) {
+        this[_responseBody] = body
+        this[_sendFlag] = false
+        readyStateChange(this, this.DONE)
+        this.dispatchEvent(new ProgressEvent("load", { bubbles: false, cancelable: false }))
+      }
+      this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
     })
-
   }
 
   /**
@@ -345,10 +309,7 @@ class XMLHttpRequest extends EventTarget {
 
     this[_readyState] = this.UNSENT
 
-    this.dispatchEvent(new Event("abort", { bubbles: false, cancelable: false }))
-    if (typeof this.onerror === "function") {
-      this.onerror()
-    }
+    this.dispatchEvent(new ProgressEvent("abort", { bubbles: false, cancelable: false }))
   }
 
   /**
