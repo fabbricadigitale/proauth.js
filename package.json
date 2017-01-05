@@ -60,7 +60,10 @@
     "validate-commit": "^2.3.2"
   },
   "eslintConfig": {
-    "extends": "walmart/configurations/es6-browser"
+    "extends": "walmart/configurations/es6-browser",
+    "rules": {
+      "semi": "off"
+    }
   },
   "babel": {
     "presets": [
