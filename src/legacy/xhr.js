@@ -86,58 +86,9 @@ function verifyResponseBodyType(body) {
   }
 }
 
-/**
- * @see https://url.spec.whatwg.org/#concept-url-serializer
- * @param url
- * @param excludeFragmentFlag
- * @returns {string}
- */
-function serializeUrl(url, excludeFragmentFlag) {
-  let parsedUrl = document.createElement('a');
-  parsedUrl.href = url;
-
-  let output = parsedUrl.protocol;
-
-  if (parsedUrl.hostname !== null && parsedUrl.hostname !== "") {
-    output += "//";
-
-    if (parsedUrl.username !== "" || parsedUrl.password !== "") {
-      output += parsedUrl.username;
-
-      if (parsedUrl.password !== "") {
-        output += parsedUrl.password;
-      }
-
-      output += "@";
-    }
-
-    output += parsedUrl.hostname;
-
-    if (parsedUrl.port !== null && parsedUrl.port !== "") {
-      output += ":" + parsedUrl.port;
-    }
-
-  } else if ((parsedUrl.hostname === null || parsedUrl.hostname === "") && parsedUrl.protocol === "file:") {
-    output += "//";
-  }
-
-  output += parsedUrl.pathname;
-
-  if (parsedUrl.search !== null && parsedUrl.search !== "") {
-    output += parsedUrl.search;
-  }
-
-  if (excludeFragmentFlag === false) {
-    output += parsedUrl.hash;
-  }
-
-  return output;
-}
-
 const _readyState = Symbol('readyState')
 const _responseBody = Symbol('responseBody')
 const _response = Symbol('response')
-const _responseURL = Symbol('responseURL')
 const _requestHeaders = Symbol('requestHeaders')
 const _method = Symbol('method')
 const _url = Symbol('url')
@@ -197,11 +148,11 @@ class XMLHttpRequest extends EventTarget {
   }
 
   get responseURL() {
-    if (this[_readyState] === this.DONE) {
-      return this[_responseURL];
+    if (this[_response] && this.readyState === this.DONE) {
+      return this[_response].url
     }
 
-    return "";
+    return ""
   }
 
   get responseText() {
@@ -333,7 +284,6 @@ class XMLHttpRequest extends EventTarget {
       // TODO: handle abort?
       verifyRequestSent(this)
       this[_responseBody] = body
-      this[_responseURL] = serializeUrl(this[_url], true);
       this._readyStateChange(this.DONE)
     })
 
