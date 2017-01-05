@@ -1,15 +1,3 @@
-/**
- * Minimal Event interface implementation
- *
- * Original implementation by Sven Fuchs: https://gist.github.com/995028
- * Modifications and tests by Christian Johansen.
- *
- * @author Sven Fuchs (svenfuchs@artweb-design.de)
- * @author Christian Johansen (christian@cjohansen.no)
- * @license BSD
- *
- * Copyright (c) 2011 Sven Fuchs, Christian Johansen
- */
 import EventTarget from '../common/EventTarget'
 
 let originalXMLHttpRequest = window.XMLHttpRequest
@@ -41,7 +29,6 @@ let responseParser = {
   "json": "json",
   "text": "text"
 }
-
 
 /*
   Without mocking, the native XMLHttpRequest object will throw
@@ -86,7 +73,7 @@ function verifyRequestSent(xhr) {
 }
 
 function verifyHeadersReceived(xhr) {
-  if (xhr.async && xhr.readyState !== XMLHttpRequest.HEADERS_RECEIVED) {
+  if (xhr.readyState !== XMLHttpRequest.HEADERS_RECEIVED) {
     throw new Error("No headers received");
   }
 }
@@ -101,15 +88,25 @@ function verifyResponseBodyType(body) {
   }
 }
 
+const _readyState = Symbol('readyState')
+const _responseBody = Symbol('responseBody')
+const _response = Symbol('response')
+const _requestHeaders = Symbol('requestHeaders')
+const _method = Symbol('method')
+const _url = Symbol('url')
+const _username = Symbol('username')
+const _password = Symbol('password')
+const _sendFlag = Symbol('sendFlag')
+const _errorFlag = Symbol('errorFlag')
+
 class XMLHttpRequest extends EventTarget {
 
   constructor() {
     super()
-    this.readyState = this.UNSENT
-    this.requestHeaders = {}
-    this.requestBody = null
+    this[_readyState] = this.UNSENT
+    this[_requestHeaders] = {}
+
     //this.upload = new EventedObject(); // FIXME
-    this.async = true
     this.withCredentials = false
   }
 
@@ -125,34 +122,37 @@ class XMLHttpRequest extends EventTarget {
   get LOADING() { return 3 }
   get DONE() { return 4 }
 
+  get readyState() {
+    return this[_readyState]
+  }
 
   get status() {
-    return this._response ? this._response.status : 0
+    return this[_response] ? this[_response].status : 0
   }
 
   get statusText() {
-    return this._response ? this._response.statusText : null
+    return this[_response] ? this[_response].statusText : null
   }
 
   get response() {
     // https://xhr.spec.whatwg.org/#xmlhttprequest-response
-    let type = this.responseType, state = this.readyState
+    let type = this.responseType, state = this[_readyState]
     if (type === "" || type === "text") {
-      return state !== this.LOADING && state !== this.DONE ? "" : this._responseBody
+      return state !== this.LOADING && state !== this.DONE ? "" : this[_responseBody]
     }
 
     if (state !== this.DONE) {
       return null
     }
 
-    return this._responseBody
+    return this[_responseBody]
 
   }
 
   get responseText() {
     let responseType = this.responseType
     if (responseType === "" || responseType === "text") {
-      return this._responseBody
+      return this[_responseBody]
     }
     throw new DOMException(
       `Failed to read the 'responseText' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}').`
@@ -167,7 +167,7 @@ class XMLHttpRequest extends EventTarget {
       )
     }
 
-    if (this.readyState !== this.DONE || text === null) {
+    if (this[_readyState] !== this.DONE || text === null) {
       return null
     }
 
@@ -182,7 +182,7 @@ class XMLHttpRequest extends EventTarget {
     }
 
     try {
-      return parseXML(this._responseBody)
+      return parseXML(this[_responseBody])
     } catch (error) {
     }
     return null
@@ -193,14 +193,18 @@ class XMLHttpRequest extends EventTarget {
   /*
     Duplicates the behavior of native XMLHttpRequest's open function
   */
-  open(method, url, async, username, password) {
-    this.method = method
-    this.url = url
-    this.async = typeof async === "boolean" ? async : true
-    this.username = username
-    this.password = password
-    this.requestHeaders = {}
-    this.sendFlag = false
+  open(method, url, async = true, username, password) {
+
+    if (!async) {
+      console && console.log && console.log("Forcing 'async' to false is not supported")
+    }
+
+    this[_method] = method
+    this[_url] = url
+    this[_username] = username
+    this[_password] = password
+    this[_requestHeaders] = {}
+    this[_sendFlag] = false
     this._readyStateChange(this.OPENED)
   }
 
@@ -214,10 +218,10 @@ class XMLHttpRequest extends EventTarget {
       throw new Error("Refused to set unsafe header \"" + header + "\"")
     }
 
-    if (this.requestHeaders[header]) {
-      this.requestHeaders[header] += "," + value
+    if (this[_requestHeaders][header]) {
+      this[_requestHeaders][header] += "," + value
     } else {
-      this.requestHeaders[header] = value
+      this[_requestHeaders][header] = value
     }
   }
 
@@ -226,17 +230,19 @@ class XMLHttpRequest extends EventTarget {
   */
   send(data) {
     verifyState(this);
+    this[_errorFlag] = false
+    this[_sendFlag] = true
 
-    if (!/^(get|head)$/i.test(this.method)) {
-      if (!this.requestHeaders["Content-Type"] && !(data || '').toString().match('FormData')) {
-        this.requestHeaders["Content-Type"] = "text/plain;charset=UTF-8"
+    let body
+    if (!/^(get|head)$/i.test(this[_method])) {
+      if (!this[_requestHeaders]["Content-Type"] && !(data || '').toString().match('FormData')) {
+        this[_requestHeaders]["Content-Type"] = "text/plain;charset=UTF-8"
       }
 
-      this.requestBody = data
+      body = data
     }
 
-    this.errorFlag = false
-    this.sendFlag = this.async
+
 
     if (typeof this.onSend === "function") {
       this.onSend(this)
@@ -245,9 +251,9 @@ class XMLHttpRequest extends EventTarget {
     this.dispatchEvent(new Event("loadstart", { bubbles: false, cancelable: false }))
 
     let fetchInit = {
-      method: this.method,
-      headers: this.requestHeaders,
-      body: this.requestBody
+      method: this[_method],
+      headers: this[_requestHeaders],
+      body: body
       // mode: // NOT supported by xhr
       // credentials: // TODO
 
@@ -257,9 +263,9 @@ class XMLHttpRequest extends EventTarget {
       fetchInit.credentials = "include"
     }
 
-    fetch(this.url, fetchInit).then(response => {
+    fetch(this[_url], fetchInit).then(response => {
       // TODO: handle abort?
-      this._response = response
+      this[_response] = response
       this._setResponseHeaders(response.headers)
       this._readyStateChange(this.HEADERS_RECEIVED)
       this._readyStateChange(this.LOADING)
@@ -274,7 +280,7 @@ class XMLHttpRequest extends EventTarget {
     }).then(body => {
       // TODO: handle abort?
       verifyRequestSent(this)
-      this._responseBody = body
+      this[_responseBody] = body
       this._readyStateChange(this.DONE)
     })
 
@@ -286,15 +292,15 @@ class XMLHttpRequest extends EventTarget {
   abort() {
     this.aborted = true
     this.responseText = null
-    this.errorFlag = true
-    this.requestHeaders = {}
+    this[_errorFlag] = true
+    this[_requestHeaders] = {}
 
-    if (this.readyState > this.UNSENT && this.sendFlag) {
+    if (this[_readyState] > this.UNSENT && this[_sendFlag]) {
       this._readyStateChange(this.DONE)
-      this.sendFlag = false;
+      this[_sendFlag] = false;
     }
 
-    this.readyState = this.UNSENT;
+    this[_readyState] = this.UNSENT;
 
     this.dispatchEvent(new Event("abort", { bubbles: false, cancelable: false }))
     if (typeof this.onerror === "function") {
@@ -306,7 +312,7 @@ class XMLHttpRequest extends EventTarget {
     Duplicates the behavior of native XMLHttpRequest's getResponseHeader function
   */
   getResponseHeader(header) {
-    if (this.readyState < this.HEADERS_RECEIVED) {
+    if (this[_readyState] < this.HEADERS_RECEIVED) {
       return null
     }
 
@@ -329,7 +335,7 @@ class XMLHttpRequest extends EventTarget {
     Duplicates the behavior of native XMLHttpRequest's getAllResponseHeaders function
   */
   getAllResponseHeaders() {
-    if (this.readyState < this.HEADERS_RECEIVED) {
+    if (this[_readyState] < this.HEADERS_RECEIVED) {
       return ""
     }
 
@@ -359,11 +365,7 @@ class XMLHttpRequest extends EventTarget {
     state.
   */
   _readyStateChange(state) {
-    this.readyState = state;
-
-    if (!this.async) {
-      return
-    }
+    this[_readyState] = state;
 
     // FIXME: Event's target is wrong
     // FIXME: Event should be the same instance
@@ -374,7 +376,7 @@ class XMLHttpRequest extends EventTarget {
 
     this.dispatchEvent(new Event("readystatechange"))
 
-    if (this.readyState === this.DONE) {
+    if (this[_readyState] === this.DONE) {
       this.dispatchEvent(new Event("load", { bubbles: false, cancelable: false }))
       this.dispatchEvent(new Event("loadend", { bubbles: false, cancelable: false }))
     }
