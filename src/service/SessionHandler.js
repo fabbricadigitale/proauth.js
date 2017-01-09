@@ -19,7 +19,7 @@ export default class SessionContainer {
     this.notify()
   }
 
-  clear () {
+  clear() {
     this.content = null;
   }
 

@@ -1,4 +1,4 @@
-import OAuth2Client from '../common/OAuth2Client'
+import OAuth2Client from "../common/OAuth2Client"
 export default class Oauth2Handler {
 
   /**
@@ -23,17 +23,18 @@ export default class Oauth2Handler {
     const {oauthUrl} = this.settings
     const request = event.request
     const url = request.url
-    const isAuthRequest = url === oauthUrl || (url + "/") === oauthUrl
+    const isAuthRequest = url === oauthUrl || (`${url}/`) === oauthUrl
     const oauth = this.oauth2Client
+    const unauthorizedHttpCode = 401
     let tokens = this.session.content || {}
 
-    const updateSession = grantPromise => {
-      return grantPromise.then(oA2Response => {
-        console.log('proauth.js: authentication successful, updating session', oA2Response)
+    const updateSession = (grantPromise) => {
+      return grantPromise.then((oA2Response) => {
+        console.log("proauth.js: authentication successful, updating session", oA2Response)
         tokens = this.session.content = oA2Response.toObject()
         return true
-      }, oA2Error => {
-        console.log('proauth.js: cannot authenticate, clearing session', oA2Error)
+      }, (oA2Error) => {
+        console.log("proauth.js: cannot authenticate, clearing session", oA2Error)
         this.session.clear()
         return false
       })
@@ -46,7 +47,7 @@ export default class Oauth2Handler {
 
     // Fetch and handle the response
     const fetch = this.fetch
-    event.respondWith(fetch(request).then(response => {
+    event.respondWith(fetch(request).then((response) => {
 
       if (response.ok) {
         // Is it an authentication response?
@@ -55,23 +56,21 @@ export default class Oauth2Handler {
             oauth.handleAuthenticationResponse(response.clone())
           ).then(() => response)
         }
-      } else {
-        if (response.status === 401 && tokens.refreshToken) {
-          // Got 401, but we have a refresh token, so try to get a new access token
-          return oauth.refreshToken(tokens.refreshToken).then(authResponse => {
-            return updateSession(
-              oauth.handleAuthenticationResponse(authResponse)
-            ).then(newSession => {
-              // We got a new token?
-              // Then try to re-fetch the original request...
-              if (newSession) {
-                request.headers.set("Authorization", `${tokens.tokenType} ${tokens.accessToken}`)
-                return fetch(request)
-              } //...else passthrough the 401 response
-              return newSession ? fetch(request) : response
-            })
+      } else if (response.status === unauthorizedHttpCode && tokens.refreshToken) {
+        // Got 401, but we have a refresh token, so try to get a new access token
+        return oauth.refreshToken(tokens.refreshToken).then((authResponse) => {
+          return updateSession(
+            oauth.handleAuthenticationResponse(authResponse)
+          ).then((newSession) => {
+            // We got a new token?
+            // Then try to re-fetch the original request...
+            if (newSession) {
+              request.headers.set("Authorization", `${tokens.tokenType} ${tokens.accessToken}`)
+              return fetch(request)
+            } //...else passthrough the 401 response
+            return newSession ? fetch(request) : response
           })
-        }
+        })
       }
 
       return response // Passthrough any others

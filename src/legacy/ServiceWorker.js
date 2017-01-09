@@ -1,15 +1,15 @@
-import EventTarget from '../common/EventTarget'
+import EventTarget from "../common/EventTarget"
 
 const postMessage = (target, aMessage, transferList) => {
 
-  let ports = [];
-  for (let transfer of (transferList || [])) {
+  const ports = [];
+  for (const transfer of (transferList || [])) {
     if (transfer instanceof MessagePort) {
       ports.push(transfer)
     }
   }
 
-  let e = new MessageEvent('message', {
+  const e = new MessageEvent("message", {
     bubbles: false,
     cancelable: true,
     data: aMessage,
@@ -40,7 +40,7 @@ class ServiceWorker extends EventTarget {
     const self = this.self = new EventTarget()
     self.clients = {
       matchAll() {
-        return new Promise(r => {
+        return new Promise((r) => {
           r([{
             postMessage: (...args) => postMessage(self, ...args)
           }])
