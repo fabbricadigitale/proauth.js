@@ -12,15 +12,15 @@ export default class SessionContainer {
   get content() {
     try {
       return JSON.parse(this.storage.getItem(this.namespace))
-    } catch(error) {
-      console.log('proauth.js SessionContainer: invalid storage data, ignored')
+    } catch (error) {
+      console.log("proauth.js SessionContainer: invalid storage data, ignored")
     }
     return null
   }
 
   set content(data) {
     if (data) {
-      console.log('proauth.js: session data updated:', data)
+      console.log("proauth.js: session data updated:", data)
       this.storage.setItem(this.namespace, JSON.stringify(data || null))
     } else {
       this.clear()
@@ -28,7 +28,7 @@ export default class SessionContainer {
   }
 
   clear() {
-    console.log('proauth.js: session data cleared')
+    console.log("proauth.js: session data cleared")
     this.storage.removeItem(this.namespace)
   }
 

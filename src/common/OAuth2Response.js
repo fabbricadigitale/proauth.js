@@ -9,7 +9,7 @@ export default class OAuth2Response {
   }
 
   toObject() {
-    let o = {}
+    const o = {}
     Object.assign(o, this)
     return o
   }

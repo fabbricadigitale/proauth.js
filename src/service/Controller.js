@@ -1,5 +1,5 @@
-import OAuth2Handler from './OAuth2Handler'
-import SessionHandler from './SessionHandler'
+import OAuth2Handler from "./OAuth2Handler"
+import SessionHandler from "./SessionHandler"
 
 export default class Controller {
 
@@ -17,17 +17,16 @@ export default class Controller {
 
     this.handlers = {}
 
-
     // Setup interceptor
-    globalScope.addEventListener('fetch', event => {
+    globalScope.addEventListener("fetch", (event) => {
 
-      for (let ns in this.handlers) {
-        let handler = this.handlers[ns]
-        for (let [, url] of handler.settings.managedUrls.entries()) {
+      for (const ns in this.handlers) {
+        const handler = this.handlers[ns]
+        for (const [, url] of handler.settings.managedUrls.entries()) {
           if (event.request.url.startsWith(url)) {
             // Each managed url should be handle by just one handler,
             // further registered handler on the same url are discarded.
-            // TBD Should be a warning/error thrown in case of multiple handlers?
+            // TODO TBD Should be a warning/error thrown in case of multiple handlers?
             return handler.handle(event)
           }
         }
@@ -38,8 +37,8 @@ export default class Controller {
     })
 
 
-    globalScope.addEventListener('message', (e) => {
-      let {broadcast, namespace, command, params} = e.data,
+    globalScope.addEventListener("message", (e) => {
+      const {broadcast, namespace, command, params} = e.data,
         reply = (...args) => e.ports[0].postMessage(...args);
 
       if (broadcast) {
@@ -49,39 +48,39 @@ export default class Controller {
       try {
         switch (command) {
 
-          case 'init':
-            ((settings, sessionData = {}) => {
-              let ns = settings.namespace
-              let h = this.handlers[ns]
+        case "init":
+          ((settings, sessionData = {}) => {
+            const ns = settings.namespace
+            let h = this.handlers[ns]
 
-              if (namespace != ns) {
-                throw Error('Invalid settings: namespace mismatch')
-              }
+            if (namespace !== ns) {
+              throw Error("Invalid settings: namespace mismatch")
+            }
 
-              // Setup or override handler settings and session data
-              if (h) {
-                h = this.getHandlerByNamespace(ns)
-                h.settings = settings
-                h.session.content = sessionData
-              } else {
-                let s = new SessionHandler(ns, this.notifySession.bind(this), sessionData)
-                h = this.handlers[ns] = new OAuth2Handler(settings, s, fetch)
-              }
+            // Setup or override handler settings and session data
+            if (h) {
+              h = this.getHandlerByNamespace(ns)
+              h.settings = settings
+              h.session.content = sessionData
+            } else {
+              const s = new SessionHandler(ns, this.notifySession.bind(this), sessionData)
+              h = this.handlers[ns] = new OAuth2Handler(settings, s, fetch)
+            }
 
-            })(...params)
-            reply(true);
-            break;
+          })(...params)
+          reply(true);
+          break;
 
-          case 'setSession':
-            (data => {
-              this.getHandlerByNamespace(namespace).session.content = data;
-            })(...params);
-            reply(true);
-            break;
+        case "setSession":
+          ((data) => {
+            this.getHandlerByNamespace(namespace).session.content = data;
+          })(...params);
+          reply(true);
+          break;
 
-          default:
-            console.log('proauth.js Controller: message discarded', e.data)
-            break;
+        default:
+          console.log("proauth.js Controller: message discarded", e.data)
+          break;
 
         }
       } catch (error) {
@@ -104,8 +103,8 @@ export default class Controller {
   }
 
   sendMessage(namespace, command, ...params) {
-    this.globalScope.clients.matchAll().then(clients => {
-      for (let client of clients) {
+    this.globalScope.clients.matchAll().then((clients) => {
+      for (const client of clients) {
         client.postMessage({
           broadcast: true, namespace, command, params
         })
@@ -114,6 +113,6 @@ export default class Controller {
   }
 
   notifySession(namespace) {
-    this.sendMessage(namespace, 'session', this.getHandlerByNamespace(namespace).session.content)
+    this.sendMessage(namespace, "session", this.getHandlerByNamespace(namespace).session.content)
   }
 }

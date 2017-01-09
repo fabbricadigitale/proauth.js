@@ -1,5 +1,5 @@
-import OAuth2Response from './OAuth2Response'
-import OAuth2Error from './OAuth2Error'
+import OAuth2Response from "./OAuth2Response"
+import OAuth2Error from "./OAuth2Error"
 
 export default class OAuth2Client {
   /**
@@ -17,7 +17,7 @@ export default class OAuth2Client {
     /** @type {string} */
     this.clientId = clientId;
 
-    this.fetch = init => {
+    this.fetch = (init) => {
       return fetch(this.apiUrl, init)
     }
 
@@ -26,11 +26,11 @@ export default class OAuth2Client {
   handleAuthenticationResponse(response) {
     if (response.ok) {
       // Authentication OK
-      return response.json().then(j => new OAuth2Response(j))
+      return response.json().then((j) => new OAuth2Response(j))
     }
 
     // Authentication refused
-    return response.json().then(j => Promise.reject(new OAuth2Error(j)))
+    return response.json().then((j) => Promise.reject(new OAuth2Error(j)))
   }
 
   /**
@@ -41,7 +41,7 @@ export default class OAuth2Client {
    */
   grantAccessToken(params) {
     return this.fetch({
-      method: 'POST',
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
@@ -57,10 +57,10 @@ export default class OAuth2Client {
    */
   userCredentials(username, password) {
     return this.grantAccessToken({
-      'client_id': this.clientId,
-      'grant_type': 'password',
-      'username': username,
-      'password': password
+      "client_id": this.clientId,
+      "grant_type": "password",
+      "username": username,
+      "password": password
     });
   }
 
@@ -70,9 +70,9 @@ export default class OAuth2Client {
    */
   refreshToken(refreshToken) {
     return this.grantAccessToken({
-      'client_id': this.clientId,
-      'grant_type': 'refresh_token',
-      'refresh_token': refreshToken
+      "client_id": this.clientId,
+      "grant_type": "refresh_token",
+      "refresh_token": refreshToken
     });
   }
 
