@@ -10,7 +10,17 @@ fetch.install(serviceWorker.self);  // FetchAPI proxy
 xhr.install(); // XMLHttpRequest to FetchAPI proxy
 
 // Setup service environment
-const controller = new Controller(serviceWorker.self, fetch.fetch);
+const originalFetch = fetch.fetch
+
+const effectiveFetch = originalFetch.polyfill ? (...args) => {
+    xhr.uninstall()
+    const ret = originalFetch(...args)
+    xhr.install()
+    return ret
+  } : originalFetch;
+
+
+const controller = new Controller(serviceWorker.self, effectiveFetch);
 proauth.client.serviceWorker = serviceWorker;
 
 const legacy = { fetch, xhr, serviceWorker }
