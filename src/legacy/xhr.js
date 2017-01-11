@@ -48,13 +48,21 @@ const unsafeHeaders = {
   "via": true
 }
 
+function throwMethodError(method, message) {
+  throw new Error(`Failed to execute '${method}' on 'XMLHttpRequest': ${message}.`)
+}
+
+function throwReadPropError(property, message) {
+  throw new Error(`Failed to read the '${property}' property from 'XMLHttpRequest': ${message}.`)
+}
+
 function verifyState(xhr, method) {
   if (xhr.readyState !== XMLHttpRequest.OPENED) {
-    throw new DOMException(`Failed to execute '${method}' on 'XMLHttpRequest': The object's state must be OPENED.`)
+    throwMethodError(method, "The object's state must be OPENED")
   }
 
   if (xhr[_sendFlag]) {
-    throw new DOMException(`Failed to execute '${method}' on 'XMLHttpRequest'`)
+    throwMethodError(method, "Already sent")
   }
 }
 
@@ -129,17 +137,16 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   get responseText() {
     const responseType = this.responseType
-    const errorMsg = `Failed to read the 'responseText' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}').`
     if (responseType === "" || responseType === "text") {
       return this[_responseBody]
     }
-    throw new DOMException(errorMsg)
+    throwReadPropError("responseType", `The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}')`)
   }
 
   get responseXML() {
     const responseType = this.responseType
     if (responseType !== "" && responseType !== "document") {
-      throw new DOMException(errorMsg) //FIXME undeclared var
+      throwReadPropError("responseXML", `The value is only accessible if the object's 'responseType' is '' or 'document' (was '${responseType}')`)
     }
 
     const body = this[_responseBody]
