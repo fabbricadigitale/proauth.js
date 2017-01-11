@@ -9,57 +9,59 @@ const sendMessage = (serviceWorker, message) => {
   // controller.postMessage() and set up the onmessage handler
   // independently of a promise, but this is a convenient wrapper.
   return new Promise((resolve, reject) => {
-    const messageChannel = new MessageChannel();
+    const messageChannel = new MessageChannel()
     messageChannel.port1.onmessage = (event) => {
       if (event.data.error) {
-        reject(event.data.error);
+        reject(event.data.error)
       } else {
-        resolve(event.data);
+        resolve(event.data)
       }
-    };
+    }
 
     // This sends the message data as well as transferring messageChannel.port2
     // to the service worker.
     // The service worker can then use the transferred port to reply via postMessage(),
     // which will in turn trigger the onmessage handler on messageChannel.port1.
-    // See https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage
-    serviceWorker.controller.postMessage(message,
-      [messageChannel.port2]);
+    // See https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage.
+    serviceWorker.controller.postMessage(message, [messageChannel.port2])
   });
-}
-
-const onMessage = function (event) {
-  const {broadcast, namespace, command, params} = event.data;
-  if (!broadcast || namespace !== this.settings.namespace) {
-    return
-  }
-
-  console.log("proauth.js client received a broadcast message", event.data)
-  switch (command) {
-
-  case "session":
-    this.sessionContainer.content = params[0];
-    break;
-
-  default:
-    console.log("proauth.js client, invalid command received: ", command)
-
-  }
-
-
-  // TODO: set session race condition must be avoided, dirty-checking data may be a solution
 }
 
 export default class Client {
   /**
-   * @param {Object} settings
+   * @typedef {Object} ClientSettings
+   * @property {String} namespace
+   * @property {String} oauthUrl
+   * @property {String} oauthClientId
+   * @property {String} sessionStorage
+   */
+
+  /**
+   * @param {ClientSettings} settings An object containing the client settings
    */
   constructor(settings) {
-    const {namespace, oauthUrl, oauthClientId, sessionStorage} = settings
+    const { namespace, sessionStorage } = settings
     this.settings = settings
-    this._onMessage = onMessage.bind(this)
-
     this.sessionContainer = new SessionContainer(namespace, window[sessionStorage])
+    this._onMessage = (event) => {
+      const { broadcast, namespace: ns, command, params } = event.data;
+      if (!broadcast || ns !== this.settings.namespace) {
+        return
+      }
+
+      console.log("proauth.js client received a broadcast message", event.data)
+
+      switch (command) {
+      case "session":
+        this.sessionContainer.content = params[0];
+        break;
+
+      default:
+        console.log(`proauth.js client, invalid command received: ${command}.`)
+      }
+
+      // (todo): set session race condition must be avoided, dirty-checking data may be a solution
+    }
   }
 
   get ready() {
@@ -88,7 +90,7 @@ export default class Client {
     }).then((data) => {
       this._serviceWorker.addEventListener("message", this._onMessage)
       this._ready = !!data
-      //TODO: dispatch global READY event
+      // (todo): dispatch global ready event
       console.log("proauth.js is ready!")
     })
   }
@@ -113,7 +115,7 @@ export default class Client {
     if (!this.ready) {
       throw Error("proauth.js is not ready yet.")
     }
-    const {oauthUrl, oauthClientId} = this.settings
+    const { oauthUrl, oauthClientId } = this.settings
     return (
       new OAuth2Client(oauthUrl, oauthClientId, window.fetch)
     ).userCredentials(username, password)

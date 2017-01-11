@@ -44,6 +44,9 @@
     "browser"
   ],
   "license": "MIT",
+  "dependencies": {
+    "whatwg-fetch": "^2.0.1"
+  },
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",
@@ -63,7 +66,8 @@
   "eslintConfig": {
     "extends": "walmart/configurations/es6-browser",
     "rules": {
-      "semi": "off"
+      "semi": "off",
+      "no-console": "off"
     }
   },
   "babel": {
@@ -87,8 +91,5 @@
         }
       ]
     ]
-  },
-  "dependencies": {
-    "whatwg-fetch": "^2.0.1"
   }
 }
