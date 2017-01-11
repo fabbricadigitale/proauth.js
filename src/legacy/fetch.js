@@ -1,9 +1,9 @@
-import absolutePath from "../common/absolutePath"
+import absolutePath from "../common/absolute-path"
+
 const originalFetch = window.fetch
 
 const fetch = function (input, init) {
-  const self = this
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const request = new Request(input, init);
 
     if (originalFetch.polyfill) {
@@ -14,12 +14,18 @@ const fetch = function (input, init) {
     const fetchEvent = new CustomEvent("fetch");
     fetchEvent.request = request
     fetchEvent.respondWith = resolve
-    self.dispatchEvent(fetchEvent)
+    this.dispatchEvent(fetchEvent) // eslint-disable-line no-invalid-this
+
+    // (todo): when to reject?
   })
 }
 
 export default {
-  install: (observer) => window.fetch = fetch.bind(observer),
-  uninstall: () => window.fetch = originalFetch,
+  install: (observer) => {
+    window.fetch = fetch.bind(observer)
+  },
+  uninstall: () => {
+    window.fetch = originalFetch
+  },
   fetch: originalFetch
 }

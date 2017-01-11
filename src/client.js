@@ -1,5 +1,5 @@
 import Client from './client/Client'
-import absolutePath from './common/absolutePath'
+import absolutePath from './common/absolute-path'
 
 const loadScript = (url, callback = () => { }) => {
   // Adding the script tag to the head as suggested before

@@ -24,10 +24,11 @@ const sendMessage = (serviceWorker, message) => {
     // which will in turn trigger the onmessage handler on messageChannel.port1.
     // See https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage.
     serviceWorker.controller.postMessage(message, [messageChannel.port2])
-  });
+  })
 }
 
 export default class Client {
+
   /**
    * @typedef {Object} ClientSettings
    * @property {String} namespace
@@ -37,6 +38,8 @@ export default class Client {
    */
 
   /**
+   * Create a client.
+   *
    * @param {ClientSettings} settings An object containing the client settings
    */
   constructor(settings) {
@@ -111,14 +114,12 @@ export default class Client {
     return !!this.sessionContainer.content;
   }
 
-  login(username, password) {
+  login(user, pass) {
     if (!this.ready) {
       throw Error("proauth.js is not ready yet.")
     }
     const { oauthUrl, oauthClientId } = this.settings
-    return (
-      new OAuth2Client(oauthUrl, oauthClientId, window.fetch)
-    ).userCredentials(username, password)
+    return (new OAuth2Client(oauthUrl, oauthClientId, window.fetch)).userCredentials(user, pass)
   }
 
 }
