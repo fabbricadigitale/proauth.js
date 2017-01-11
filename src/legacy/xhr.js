@@ -89,7 +89,7 @@ function readyStateChange(xhr, state) {
   xhr.dispatchEvent(new Event("readystatechange"))
 }
 
-class XMLHttpRequest extends originalXMLHttpRequest {
+class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   get readyState() {
     return this[_readyState] || this.UNSENT
@@ -348,7 +348,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
 }
 
 export default {
-  install: () => window.XMLHttpRequest = XMLHttpRequest,
+  install: () => window.XMLHttpRequest = XMLHttpRequestToFetch,
   uninstall: () => window.XMLHttpRequest = originalXMLHttpRequest,
   XMLHttpRequest: originalXMLHttpRequest
 }
