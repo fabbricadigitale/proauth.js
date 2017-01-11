@@ -22,7 +22,7 @@ export default class Controller {
 
       for (const ns in this.handlers) {
         const handler = this.handlers[ns]
-        for (const [, url] of handler.settings.managedUrls.entries()) {
+        for (const url of handler.settings.managedUrls) {
           if (event.request.url.startsWith(url)) {
             // Each managed url should be handle by just one handler,
             // further registered handler on the same url are discarded.
