@@ -247,7 +247,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       // HEADERS_RECEIVED Stage
       const headers = response.headers
       this[_responseHeaders] = {}
-      for (const [key, value] of headers.entries()) {
+      for (const [key, value] of headers) {
         if (this[_forceMimeType] && key.toLowerCase() === "content-type") {
           this[_responseHeaders][key] = this[_forceMimeType]
         } else {
