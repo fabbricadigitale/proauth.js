@@ -48,15 +48,15 @@ const unsafeHeaders = {
   "via": true
 }
 
-function throwMethodError(method, message) {
+const throwMethodError = function (method, message) {
   throw new Error(`Failed to execute '${method}' on 'XMLHttpRequest': ${message}.`)
 }
 
-function throwReadPropError(property, message) {
+const throwReadPropError = function (property, message) {
   throw new Error(`Failed to read the '${property}' property from 'XMLHttpRequest': ${message}.`)
 }
 
-function verifyState(xhr, method) {
+const verifyState = function (xhr, method) {
   if (xhr.readyState !== XMLHttpRequest.OPENED) {
     throwMethodError(method, "The object's state must be OPENED")
   }
@@ -71,7 +71,7 @@ function verifyState(xhr, method) {
   XML responses into Document objects
   Borrowed from JSpec
 */
-function parseXML(text) {
+const parseXML = function (text) {
   let xmlDoc
 
   if (typeof DOMParser !== "undefined") {
@@ -87,12 +87,13 @@ function parseXML(text) {
 }
 
 /**
-  * Places a XMLHttpRequest object into the passed state.
-
-  * @param {XMLHttpRequest} xhr
-  * @param {string} state
-  */
-function readyStateChange(xhr, state) {
+ * Places a XMLHttpRequest object into the passed state.
+ *
+ * @param {XMLHttpRequest} xhr The XHR object
+ * @param {string} state The ready state
+ * @return {void}
+ */
+const readyStateChange = function (xhr, state) {
   xhr[_readyState] = state
   xhr.dispatchEvent(new Event("readystatechange"))
 }
@@ -157,8 +158,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
     const finalMimeType = this.getResponseHeader("Content-Type")
 
-    if (finalMimeType !== null &&
-      !(/(text\/html)|(text\/xml)|(application\/xml)|(\+xml)/i.test(finalMimeType))) {
+    if (finalMimeType !== null && !/(text\/html)|(text\/xml)|(application\/xml)|(\+xml)/i.test(finalMimeType)) {
       return null
     }
 
@@ -168,8 +168,8 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
     try {
       return parseXML(body)
-    } catch (error) {
-    }
+    } catch (error) {}
+
     return null
 
   }
@@ -355,7 +355,11 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 }
 
 export default {
-  install: () => window.XMLHttpRequest = XMLHttpRequestToFetch,
-  uninstall: () => window.XMLHttpRequest = originalXMLHttpRequest,
+  install: () => {
+    window.XMLHttpRequest = XMLHttpRequestToFetch
+  },
+  uninstall: () => {
+    window.XMLHttpRequest = originalXMLHttpRequest
+  },
   XMLHttpRequest: originalXMLHttpRequest
 }

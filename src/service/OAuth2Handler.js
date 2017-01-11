@@ -1,10 +1,13 @@
 import OAuth2Client from "../common/OAuth2Client"
+
 export default class Oauth2Handler {
 
   /**
-   * @param {Object} settings
-   * @param {SessionHandler} session
-   * @param {Function} fetch
+   * Create an OAuth2.0 handler.
+   *
+   * @param {Object} settings The settings
+   * @param {SessionHandler} session The session
+   * @param {Function} fetch The fetch function
    */
   constructor(settings, session, fetch) {
     this.settings = settings
@@ -14,8 +17,8 @@ export default class Oauth2Handler {
   }
 
   /**
-   * @param {FetchEvent} event
-   * @param {Function} fetch
+   * @param {FetchEvent} event The intercepted event
+   * @returns {void}
    */
   handle(event) {
     console.log(`proauth.js Oauth2Handler::handle for ${event.request.url}`)
@@ -23,7 +26,7 @@ export default class Oauth2Handler {
     const {oauthUrl} = this.settings
     const request = event.request
     const url = request.url
-    const isAuthRequest = url === oauthUrl || (`${url}/`) === oauthUrl
+    const isAuthRequest = url === oauthUrl || `${url}/` === oauthUrl
     const oauth = this.oauth2Client
     const unauthorizedHttpCode = 401
     let tokens = this.session.content || {}
