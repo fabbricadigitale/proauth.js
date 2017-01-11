@@ -12,12 +12,14 @@ xhr.install(); // XMLHttpRequest to FetchAPI proxy
 // Setup service environment
 const originalFetch = fetch.fetch
 
-const effectiveFetch = originalFetch.polyfill ? (...args) => {
+const effectiveFetch = originalFetch.polyfill ?
+  (...args) => {
     xhr.uninstall()
     const ret = originalFetch(...args)
     xhr.install()
     return ret
-  } : originalFetch;
+  } :
+  originalFetch;
 
 
 const controller = new Controller(serviceWorker.self, effectiveFetch);

@@ -27,8 +27,9 @@ export default class Controller {
           if (event.request.url.startsWith(url)) {
             // Each managed url should be handle by just one handler,
             // further registered handler on the same url are discarded.
-            // TODO TBD Should be a warning/error thrown in case of multiple handlers?
-            return handler.handle(event)
+            // (todo): Should be a warning/error thrown in case of multiple handlers?
+            handler.handle(event)
+            return
           }
         }
       }

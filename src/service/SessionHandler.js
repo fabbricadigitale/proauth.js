@@ -1,9 +1,11 @@
 export default class SessionContainer {
 
   /**
-   * @param {String} namespace
-   * @param {Function} notify
-   * @param {Object} data
+   * Create a session container.
+   *
+   * @param {String} namespace The namespace
+   * @param {Function} notify The notifier
+   * @param {Object} data The content
    */
   constructor(namespace, notify, data) {
     this.notify = () => notify(namespace)

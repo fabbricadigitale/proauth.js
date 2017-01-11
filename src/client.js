@@ -30,10 +30,10 @@ const boot = () => {
     managedUrls: [
       "/" // Manage the current url root by default
     ]
-  };
+  }
 
   // Copy user settings
-  Object.assign(settings, window.proauth || {});
+  Object.assign(settings, window.proauth || {})
 
   // Patch settings
   settings.oauthUrl = absolutePath(settings.oauthUrl)
@@ -41,7 +41,7 @@ const boot = () => {
     settings.managedUrls[k] = absolutePath(settings.managedUrls[k])
   }
 
-  const client = new Client(settings);
+  const client = new Client(settings)
 
   if (!settings.legacyMode && 'serviceWorker' in navigator) {
     // Default mode
