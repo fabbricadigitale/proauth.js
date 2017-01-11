@@ -5,7 +5,7 @@ import Controller from './service/Controller'
 
 // Init elements for legacy mode
 const serviceWorker = new ServiceWorker(); // Fake serviceWorker
-fetch.install(serviceWorker);  // FetchAPI proxy
+fetch.install(serviceWorker.self);  // FetchAPI proxy
 
 xhr.install(); // XMLHttpRequest to FetchAPI proxy
 
