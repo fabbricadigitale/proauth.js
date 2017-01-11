@@ -1,5 +1,10 @@
 export default class OAuth2Response {
 
+  /**
+   * Create an OAuth2.0 response.
+   *
+   * @param {Response} data The response
+   */
   constructor(data) {
     this.accessToken = data.access_token
     this.refreshToken = data.refresh_token
@@ -9,9 +14,7 @@ export default class OAuth2Response {
   }
 
   toObject() {
-    const o = {}
-    Object.assign(o, this)
-    return o
+    return Object.assign({}, this)
   }
 
 }

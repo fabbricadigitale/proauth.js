@@ -4,8 +4,10 @@ import SessionHandler from "./SessionHandler"
 export default class Controller {
 
   /**
-   * @param {EventTarget} globalScope
-   * @param {Function} fetch
+   * Create a controller.
+   *
+   * @param {EventTarget} globalScope The Service Worker's global scope
+   * @param {Function} fetch The fetch function it will use
    */
   constructor(globalScope, fetch) {
 
@@ -19,7 +21,6 @@ export default class Controller {
 
     // Setup interceptor
     globalScope.addEventListener("fetch", (event) => {
-
       for (const ns in this.handlers) {
         const handler = this.handlers[ns]
         for (const url of handler.settings.managedUrls) {
@@ -38,8 +39,8 @@ export default class Controller {
 
 
     globalScope.addEventListener("message", (e) => {
-      const {broadcast, namespace, command, params} = e.data,
-        reply = (...args) => e.ports[0].postMessage(...args);
+      const { broadcast, namespace, command, params } = e.data
+      const reply = (...args) => e.ports[0].postMessage(...args)
 
       if (broadcast) {
         return // Discard broadcast messages
@@ -47,7 +48,6 @@ export default class Controller {
 
       try {
         switch (command) {
-
         case "init":
           ((settings, sessionData = {}) => {
             const ns = settings.namespace
@@ -81,7 +81,6 @@ export default class Controller {
         default:
           console.log("proauth.js Controller: message discarded", e.data)
           break;
-
         }
       } catch (error) {
         reply({

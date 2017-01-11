@@ -1,5 +1,10 @@
 export default class OAuth2Error {
 
+  /**
+   * Create an OAuth2.0 error.
+   *
+   * @param {Response} response The response
+   */
   constructor(response) {
     this.response = response
   }

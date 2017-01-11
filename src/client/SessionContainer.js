@@ -1,8 +1,10 @@
 export default class SessionContainer {
 
   /**
-   * @param {String} namespace
-   * @param {Storage} storage
+   * Create a session container.
+   *
+   * @param {String} namespace The namespace
+   * @param {Storage} storage The session storage
    */
   constructor(namespace, storage) {
     this.namespace = namespace;
