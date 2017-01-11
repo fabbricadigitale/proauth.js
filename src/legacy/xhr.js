@@ -30,33 +30,33 @@ const responseParser = {
   an error when attempting to set these headers. We match this behavior.
 */
 const unsafeHeaders = {
-  "Accept-Charset": true,
-  "Accept-Encoding": true,
-  "Connection": true,
-  "Content-Length": true,
-  "Cookie": true,
-  "Cookie2": true,
-  "Content-Transfer-Encoding": true,
-  "Date": true,
-  "Expect": true,
-  "Host": true,
-  "Keep-Alive": true,
-  "Referer": true,
-  "TE": true,
-  "Trailer": true,
-  "Transfer-Encoding": true,
-  "Upgrade": true,
-  "User-Agent": true,
-  "Via": true
+  "accept-charset": true,
+  "accept-encoding": true,
+  "connection": true,
+  "content-length": true,
+  "cookie": true,
+  "cookie2": true,
+  "content-transfer-encoding": true,
+  "date": true,
+  "expect": true,
+  "host": true,
+  "keep-alive": true,
+  "referer": true,
+  "te": true,
+  "trailer": true,
+  "transfer-encoding": true,
+  "upgrade": true,
+  "user-agent": true,
+  "via": true
 }
 
-function verifyState(xhr) {
+function verifyState(xhr, method) {
   if (xhr.readyState !== XMLHttpRequest.OPENED) {
-    throw new Error("INVALID_STATE_ERR")
+    throw new DOMException(`Failed to execute '${method}' on 'XMLHttpRequest': The object's state must be OPENED.`)
   }
 
   if (xhr[_sendFlag]) {
-    throw new Error("INVALID_STATE_ERR")
+    throw new DOMException(`Failed to execute '${method}' on 'XMLHttpRequest'`)
   }
 }
 
@@ -93,17 +93,8 @@ function readyStateChange(xhr, state) {
 
 class XMLHttpRequest extends originalXMLHttpRequest {
 
-  constructor() {
-    super()
-    this[_readyState] = this.UNSENT
-    this[_requestHeaders] = {}
-
-    //this.upload = new EventedObject() // FIXME
-    this[_withCredentials] = false
-  }
-
   get readyState() {
-    return this[_readyState]
+    return this[_readyState] || this.UNSENT
   }
 
   get status() {
@@ -139,20 +130,17 @@ class XMLHttpRequest extends originalXMLHttpRequest {
 
   get responseText() {
     let responseType = this.responseType
+    const errorMsg = `Failed to read the 'responseText' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}').`
     if (responseType === "" || responseType === "text") {
       return this[_responseBody]
     }
-    throw new DOMException(
-      `Failed to read the 'responseText' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}').`
-    )
+    throw new DOMException(errorMsg)
   }
 
   get responseXML() {
     let responseType = this.responseType
     if (responseType !== "" && responseType !== "document") {
-      throw new DOMException(
-        `Failed to read the 'responseXML' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'document' (was '${responseType}').)`
-      )
+      throw new DOMException(errorMsg)
     }
 
     let body = this[_responseBody]
@@ -163,7 +151,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
 
     let finalMimeType = this.getResponseHeader("Content-Type")
 
-    if (finalMimeType !== null && !(/(text\/html)|(text\/xml)|(application\/xml)|(\+xml)/.test(finalMimeType))) {
+    if (finalMimeType !== null && !(/(text\/html)|(text\/xml)|(application\/xml)|(\+xml)/i.test(finalMimeType))) {
       return null
     }
 
@@ -180,7 +168,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
   }
 
   get withCredentials() {
-    return this[_withCredentials]
+    return this[_withCredentials] || false
   }
 
   set withCredentials(enable) {
@@ -209,9 +197,9 @@ class XMLHttpRequest extends originalXMLHttpRequest {
    * Duplicates the behavior of native XMLHttpRequest's setRequestHeader function
    */
   setRequestHeader(header, value) {
-    verifyState(this)
+    verifyState(this, "setRequestHeader")
 
-    if (unsafeHeaders[header] || /^(Sec-|Proxy-)/.test(header)) {
+    if (unsafeHeaders[String(header).toLowerCase()] || /^(Sec-|Proxy-)/i.test(header)) {
       throw new Error("Refused to set unsafe header \"" + header + "\"")
     }
 
@@ -226,7 +214,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
    *  Duplicates the behavior of native XMLHttpRequest's send function
    */
   send(data) {
-    verifyState(this)
+    verifyState(this, "send")
     this[_errorFlag] = false
     this[_sendFlag] = true
 
