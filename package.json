@@ -48,6 +48,7 @@
     "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",
     "babel-plugin-transform-es2015-classes": "^6.18.0",
+    "babel-plugin-transform-builtin-extend": "^1.1.0",
     "babel-preset-es2015": "^6.18.0",
     "conventional-changelog-cli": "^1.2.0",
     "eslint": "^3.12.2",
@@ -73,6 +74,16 @@
           "loose": true,
           "modules": false,
           "spec": true
+        }
+      ]
+    ],
+    "plugins": [
+      [
+        "babel-plugin-transform-builtin-extend",
+        {
+          "globals": [
+            "XMLHttpRequest"
+          ]
         }
       ]
     ]
