@@ -37,7 +37,7 @@ const boot = () => {
 
   // Patch settings
   settings.oauthUrl = absolutePath(settings.oauthUrl)
-  for (let k in settings.managedUrls) {
+  for (const k in settings.managedUrls) {
     settings.managedUrls[k] = absolutePath(settings.managedUrls[k])
   }
 
