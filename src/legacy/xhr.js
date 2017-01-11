@@ -1,21 +1,19 @@
-import EventTarget from '../common/EventTarget'
-
 const originalXMLHttpRequest = window.XMLHttpRequest
 
-const _readyState = Symbol('readyState')
-const _responseBody = Symbol('responseBody')
-const _response = Symbol('response')
-const _requestHeaders = Symbol('requestHeaders')
-const _method = Symbol('method')
-const _url = Symbol('url')
-const _username = Symbol('username')
-const _password = Symbol('password')
-const _sendFlag = Symbol('sendFlag')
-const _errorFlag = Symbol('errorFlag')
-const _forceMimeType = Symbol('forceMimeType')
-const _responseHeaders = Symbol('responseHeaders')
-const _aborted = Symbol('aborted')
-const _withCredentials = Symbol('withCredentials')
+const _readyState = Symbol("readyState")
+const _responseBody = Symbol("responseBody")
+const _response = Symbol("response")
+const _requestHeaders = Symbol("requestHeaders")
+const _method = Symbol("method")
+const _url = Symbol("url")
+const _username = Symbol("username")
+const _password = Symbol("password")
+const _sendFlag = Symbol("sendFlag")
+const _errorFlag = Symbol("errorFlag")
+const _forceMimeType = Symbol("forceMimeType")
+const _responseHeaders = Symbol("responseHeaders")
+const _aborted = Symbol("aborted")
+const _withCredentials = Symbol("withCredentials")
 
 const responseParser = {
   "": "text",
@@ -69,7 +67,7 @@ function parseXML(text) {
   let xmlDoc
 
   if (typeof DOMParser !== "undefined") {
-    let parser = new DOMParser()
+    const parser = new DOMParser()
     xmlDoc = parser.parseFromString(text, "text/xml")
   } else {
     xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
@@ -107,7 +105,8 @@ class XMLHttpRequest extends originalXMLHttpRequest {
 
   get response() {
     // https://xhr.spec.whatwg.org/#xmlhttprequest-response
-    let type = this.responseType, state = this[_readyState]
+    const type = this.responseType
+    const state = this[_readyState]
     if (type === "" || type === "text") {
       return state !== this.LOADING && state !== this.DONE ? "" : this[_responseBody]
     }
@@ -129,7 +128,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
   }
 
   get responseText() {
-    let responseType = this.responseType
+    const responseType = this.responseType
     const errorMsg = `Failed to read the 'responseText' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}').`
     if (responseType === "" || responseType === "text") {
       return this[_responseBody]
@@ -138,20 +137,21 @@ class XMLHttpRequest extends originalXMLHttpRequest {
   }
 
   get responseXML() {
-    let responseType = this.responseType
+    const responseType = this.responseType
     if (responseType !== "" && responseType !== "document") {
-      throw new DOMException(errorMsg)
+      throw new DOMException(errorMsg) //FIXME undeclared var
     }
 
-    let body = this[_responseBody]
+    const body = this[_responseBody]
 
     if (this[_readyState] !== this.DONE || body === null) {
       return null
     }
 
-    let finalMimeType = this.getResponseHeader("Content-Type")
+    const finalMimeType = this.getResponseHeader("Content-Type")
 
-    if (finalMimeType !== null && !(/(text\/html)|(text\/xml)|(application\/xml)|(\+xml)/i.test(finalMimeType))) {
+    if (finalMimeType !== null &&
+      !(/(text\/html)|(text\/xml)|(application\/xml)|(\+xml)/i.test(finalMimeType))) {
       return null
     }
 
@@ -181,7 +181,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
   open(method, url, async = true, username, password) {
 
     if (!async) {
-      console && console.log && console.log("Forcing 'async' to false is not supported")
+      console && console.log && console.log("Synchronous XHR are not supported")
     }
 
     this[_method] = method
@@ -200,11 +200,11 @@ class XMLHttpRequest extends originalXMLHttpRequest {
     verifyState(this, "setRequestHeader")
 
     if (unsafeHeaders[String(header).toLowerCase()] || /^(Sec-|Proxy-)/i.test(header)) {
-      throw new Error("Refused to set unsafe header \"" + header + "\"")
+      throw new Error(`Refused to set unsafe header '${header}'`)
     }
 
     if (this[_requestHeaders][header]) {
-      this[_requestHeaders][header] += "," + value
+      this[_requestHeaders][header] += `,${value}`
     } else {
       this[_requestHeaders][header] = value
     }
@@ -221,7 +221,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
     this.dispatchEvent(new ProgressEvent("loadstart", { bubbles: false, cancelable: false }))
     //this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
 
-    let fetchInit = {
+    const fetchInit = {
       method: this[_method],
       headers: this[_requestHeaders],
       body: data
@@ -233,14 +233,14 @@ class XMLHttpRequest extends originalXMLHttpRequest {
       fetchInit.credentials = "include"
     }
 
-    fetch(this[_url], fetchInit).then(response => {
+    fetch(this[_url], fetchInit).then((response) => {
 
       this[_response] = response
 
       // HEADERS_RECEIVED Stage
-      let headers = response.headers
+      const headers = response.headers
       this[_responseHeaders] = {}
-      for (let [key, value] of headers.entries()) {
+      for (const [key, value] of headers.entries()) {
         if (this[_forceMimeType] && key.toLowerCase() === "content-type") {
           this[_responseHeaders][key] = this[_forceMimeType]
         } else {
@@ -258,13 +258,13 @@ class XMLHttpRequest extends originalXMLHttpRequest {
       return response[
         responseParser[this.responseType] || "text"
       ]()
-    }, reason => {
+    }, (reason) => {
       if (!this[_aborted]) {
         readyStateChange(this, this.DONE)
         this.dispatchEvent(new ProgressEvent("error", { bubbles: false, cancelable: false }))
       }
       this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
-    }).then(body => {
+    }).then((body) => {
       // DONE Stage
       if (!this[_aborted]) {
         this[_responseBody] = body
@@ -308,7 +308,7 @@ class XMLHttpRequest extends originalXMLHttpRequest {
 
     header = header.toLowerCase()
 
-    for (var h in this[_responseHeaders]) {
+    for (const h in this[_responseHeaders]) {
       if (h.toLowerCase() === header) {
         return this[_responseHeaders][h]
       }
@@ -325,11 +325,11 @@ class XMLHttpRequest extends originalXMLHttpRequest {
       return ""
     }
 
-    var headers = ""
+    let headers = ""
 
-    for (var header in this[_responseHeaders]) {
+    for (const header in this[_responseHeaders]) {
       if (this[_responseHeaders].hasOwnProperty(header) && !/^Set-Cookie2?$/i.test(header)) {
-        headers += header + ": " + this[_responseHeaders][header] + "\r\n"
+        headers += `${header}: ${this[_responseHeaders][header]}\r\n`
       }
     }
 
