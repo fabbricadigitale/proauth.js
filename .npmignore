@@ -4,6 +4,3 @@
 *.log
 *.yml
 *.yaml
-
-node_modules/
-bower_components/
