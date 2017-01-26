@@ -30,8 +30,8 @@
     "preversion": "npm run from:master",
     "postversion": "npm run release",
     "prerelease": "npm run from:master && npm run lib",
-    "release": "shx mkdir -p release/lib && shx cp package.json release && shx cp -R lib/* release/lib",
-    "postrelease": "GIT_DEPLOY_DIR=release GIT_DEPLOY_BRANCH=$npm_package_version git-directory-deploy -m \"New: Release $npm_package_version\"; shx rm -rf release"
+    "release": "shx mkdir -p release/lib && shx cp package.json release && shx cp -R lib/* release/lib && git-scripts uninstall",
+    "postrelease": "GIT_DEPLOY_DIR=release GIT_DEPLOY_BRANCH=$npm_package_version git-directory-deploy -m \"New: Release $npm_package_version\"; git-scripts install; shx rm -rf release"
   },
   "config": {
     "git-tag-version": false
