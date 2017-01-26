@@ -2,7 +2,7 @@
   "name": "proauth.js",
   "version": "0.1.0",
   "description": "Lightweight OAuth 2.0 client with automatic session handling",
-  "main": "lib/client.js",
+  "main": "lib/client.es2015.js",
   "private": true,
   "scripts": {
     "dev": "run-p dev:*",
@@ -23,7 +23,8 @@
     "test": "exit 1",
     "clean": "shx rm -rf *.log lib/",
     "lint": "eslint src/**/*.js",
-    "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s"
+    "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
+    "postinstall": "npm run lib"
   },
   "bug": {
     "url": "https://gitlab.fabbricadigitale.it/oil/proauth.js/issues"
