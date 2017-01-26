@@ -24,7 +24,7 @@
     "clean": "shx rm -rf *.log lib/",
     "lint": "eslint src/**/*.js",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
-    "postinstall": "npm install && npm run lib"
+    "prepublish": "npm run lib"
   },
   "bug": {
     "url": "https://gitlab.fabbricadigitale.it/oil/proauth.js/issues"
