@@ -28,7 +28,7 @@
     "from:master": "node -e 'process.exit(require(\"git-rev-sync\").branch(process.cwd()) !== \"master\")'",
     "preversion": "npm run from:master",
     "prerelease": "npm run from:master && npm run lib",
-    "release": "shx mkdir -p release/lib && shx cp package.json release && shx cp *.md release && shx cp -R lib/* release/lib && git-scripts uninstall",
+    "release": "shx mkdir -p release/lib && shx mkdir -p release/src && shx cp package.json release && shx cp *.md release && shx cp -R lib/* release/lib && shx cp -R src/* release/src && git-scripts uninstall",
     "postrelease": "GIT_DEPLOY_DIR=release GIT_DEPLOY_BRANCH=$npm_package_version git-directory-deploy -m \"New: Release $npm_package_version\"; git-scripts install; shx rm -rf release"
   },
   "config": {
