@@ -3,6 +3,8 @@ import xhr from './legacy/xhr'
 import ServiceWorker from './legacy/ServiceWorker'
 import Controller from './service/Controller'
 
+const client = proauth.client
+
 // Init elements for legacy mode
 const serviceWorker = new ServiceWorker(); // Fake serviceWorker
 fetch.install(serviceWorker.self);  // FetchAPI proxy
@@ -23,8 +25,9 @@ const effectiveFetch = originalFetch.polyfill ?
 
 
 const controller = new Controller(serviceWorker.self, effectiveFetch);
-proauth.client.serviceWorker = serviceWorker;
+client.serviceWorker = serviceWorker;
+client.settings.legacyMode = true
 
 const legacy = { fetch, xhr, serviceWorker }
 const service = { controller }
-export default { legacy, service, client: proauth.client }
+export default { legacy, service, client }
