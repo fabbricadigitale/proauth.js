@@ -48,6 +48,7 @@ export default class Oauth2Handler {
       request.headers.set("Authorization", `${tokens.tokenType} ${tokens.accessToken}`)
     }
 
+    const requestCopy = request.clone()
     // Fetch and handle the response
     const fetch = this.fetch
     event.respondWith(fetch(request).then((response) => {
@@ -68,10 +69,10 @@ export default class Oauth2Handler {
             // We got a new token?
             // Then try to re-fetch the original request...
             if (newSession) {
-              request.headers.set("Authorization", `${tokens.tokenType} ${tokens.accessToken}`)
-              return fetch(request)
+              requestCopy.headers.set("Authorization", `${tokens.tokenType} ${tokens.accessToken}`)
+              return fetch(requestCopy)
             } //...else passthrough the 401 response
-            return newSession ? fetch(request) : response
+            return response
           })
         })
       }
