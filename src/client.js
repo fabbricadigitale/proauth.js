@@ -43,13 +43,11 @@ const boot = () => {
 
   const client = new Client(settings)
 
-  if (!settings.legacyMode && 'serviceWorker' in navigator) {
-    // Default mode
-  } else {
-    // Legacy mode
-    settings.legacyMode = true;
+  if (settings.legacyMode) {
     loadScript(settings.legacySrc)
   }
+
+  delete settings.legacyMode
 
   return client;
 }
