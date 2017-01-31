@@ -119,7 +119,9 @@ export default class Client {
       throw Error("proauth.js is not ready yet.")
     }
     const { oauthUrl, oauthClientId } = this.settings
-    return (new OAuth2Client(oauthUrl, oauthClientId, window.fetch)).userCredentials(user, pass)
+    return (new OAuth2Client(oauthUrl, oauthClientId, window.fetch))
+      .userCredentials(user, pass)
+      .then((response) => response.ok ? response : Promise.reject(response))
   }
 
 }
