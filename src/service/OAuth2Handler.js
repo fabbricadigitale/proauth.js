@@ -28,7 +28,7 @@ export default class Oauth2Handler {
     const url = request.url
     const isAuthRequest = url === oauthUrl || `${url}/` === oauthUrl
     const oauth = this.oauth2Client
-    const unauthorizedHttpCode = 401
+    const invalidGrantHttpCode = 401
     let tokens = this.session.content || {}
 
     const updateSession = (grantPromise) => {
@@ -53,14 +53,13 @@ export default class Oauth2Handler {
     const fetch = this.fetch
     event.respondWith(fetch(request).then((response) => {
 
-      if (response.ok) {
-        // Is it an authentication response?
-        if (isAuthRequest) {
-          return updateSession(
-            oauth.handleAuthenticationResponse(response.clone())
-          ).then(() => response)
-        }
-      } else if (response.status === unauthorizedHttpCode && tokens.refreshToken) {
+      if (isAuthRequest) {
+        return updateSession(
+          oauth.handleAuthenticationResponse(response.clone())
+        ).then(() => response)
+      }
+
+      if (response.status === invalidGrantHttpCode && tokens.refreshToken) {
         // Got 401, but we have a refresh token, so try to get a new access token
         return oauth.refreshToken(tokens.refreshToken).then((authResponse) => {
           return updateSession(
