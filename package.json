@@ -20,19 +20,14 @@
     "lib": "run-p lib:*",
     "postlib": "npm run transpile",
     "test": "exit 1",
-    "clean": "shx rm -rf *.log lib/ release/",
+    "clean": "shx rm -rf *.log lib/",
     "lint": "eslint src/**/*.js",
-    "otherdeps": "nwget https://raw.githubusercontent.com/X1011/git-directory-deploy/master/deploy.sh -O node_modules/.bin/git-directory-deploy && shx chmod +x node_modules/.bin/git-directory-deploy",
-    "prepublish": "npm run otherdeps",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
     "from:master": "node -e 'process.exit(require(\"git-rev-sync\").branch(process.cwd()) !== \"master\")'",
-    "preversion": "npm run from:master",
-    "prerelease": "npm run from:master && npm run lib",
-    "release": "shx mkdir -p release/lib && shx mkdir -p release/src && shx cp package.json release && shx cp *.md release && shx cp -R lib/* release/lib && shx cp -R src/* release/src && git-scripts uninstall",
-    "postrelease": "GIT_DEPLOY_DIR=release GIT_DEPLOY_BRANCH=$npm_package_version git-directory-deploy -m \"New: Release $npm_package_version\"; git-scripts install; shx rm -rf release"
-  },
-  "config": {
-    "git-tag-version": false
+    "preversion": "npm run from:master && npm run build",
+    "version": "npm run changelog && $(git config --global core.editor) CHANGELOG.md && git add CHANGELOG.md",
+    "postversion": "git push && git push --tags && git checkout develop && git merge master && git push && git checkout master",
+    "build": "npm run lib"
   },
   "bug": {
     "url": "https://gitlab.fabbricadigitale.it/oil/proauth.js/issues"
