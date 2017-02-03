@@ -23,9 +23,10 @@
     "clean": "shx rm -rf *.log lib/",
     "lint": "eslint src/**/*.js",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
+    "changelog:edit": "$(git var GIT_EDITOR) CHANGELOG.md",
     "from:master": "node -e 'process.exit(require(\"git-rev-sync\").branch(process.cwd()) !== \"master\")'",
     "preversion": "npm run from:master && npm run build",
-    "version": "npm run changelog && $(git config --global core.editor) CHANGELOG.md && git add CHANGELOG.md",
+    "version": "npm run changelog && npm run changelog:edit && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && git checkout develop && git merge master && git push && git checkout master",
     "build": "npm run lib"
   },
