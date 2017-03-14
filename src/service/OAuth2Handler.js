@@ -65,26 +65,52 @@ export default class Oauth2Handler {
     const { oauthUrl } = this.settings
     const request = event.request
     const url = request.url
-    const isAuthRequest = url === oauthUrl || `${url}/` === oauthUrl
+    const fetch = this.fetch
 
-    if (isAuthRequest) {
+    // Is it an auth request?
+    if (url === oauthUrl || `${url}/` === oauthUrl) {
       this.handleAuthentication(event)
+      return
+    }
+
+    if (this._pendingRefresh) {
+      // Wait for the fresh token
+      this._pendingRefresh.then(() => {
+        attachAuthorization(this.session, request)
+        event.respondWith(fetch(request))
+      })
       return
     }
 
     // Attach the current token
     attachAuthorization(this.session, request)
 
-    const oauth = this.oauth2Client
-    const requestCopy = request.clone()
-    const fetch = this.fetch
-
     // Finally, fetch and handle the response
+    const requestCopy = request.clone()
     event.respondWith(fetch(request).then((response) => {
+
+      if (this._pendingRefresh) {
+        // Wait for the fresh token
+        return this._pendingRefresh.then(() => {
+          attachAuthorization(this.session, requestCopy)
+          return fetch(requestCopy)
+        })
+      }
+
       const tokens = this.session.content || {}
       if (response.status === this.invalidGrantHttpCode && tokens.refreshToken) {
         // Got 401, but we have a refresh token, so try to get a new access token
-        return oauth.refreshToken(tokens.refreshToken).then((authResponse) => {
+
+        const resetPending = (param) => {
+          this._pendingRefresh = null
+          return param
+        }
+
+        const oauth = this.oauth2Client
+        this._pendingRefresh = oauth.refreshToken(tokens.refreshToken).then(
+          resetPending,
+          resetPending
+        ).then((authResponse) => {
           return updateSession(
             this.session,
             oauth.handleAuthenticationResponse(authResponse)
@@ -98,6 +124,7 @@ export default class Oauth2Handler {
             return response
           })
         })
+        return this._pendingRefresh
       }
       return response // Passthrough any others
     }))
