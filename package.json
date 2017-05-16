@@ -1,6 +1,6 @@
 {
   "name": "proauth.js",
-  "version": "v0.1.0",
+  "version": "v0.2.5",
   "description": "Lightweight OAuth 2.0 client with automatic session handling",
   "main": "lib/client.es2015.js",
   "scripts": {
@@ -31,11 +31,11 @@
     "build": "npm run lib"
   },
   "bug": {
-    "url": "https://gitlab.fabbricadigitale.it/oil/proauth.js/issues"
+    "url": "https://github.com/fabbricadigitale/proauth.js/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.fabbricadigitale.it/oil/proauth.js"
+    "url": "https://github.com/fabbricadigitale/proauth.js"
   },
   "git": {
     "scripts": {
