@@ -1,11 +1,15 @@
 describe("Session container", function () {
 
+  afterEach(function () {
+    proauth.client.sessionContainer.clear()
+  })
+  
   it("is ready", function (done) {
     setTimeout(function () {
       expect(proauth.client.ready).toBe(true)
       done()
-    }, 1000);
-  }, 1100);
+    }, 1000)
+  }, 1100)
 
   it("handles sessions correctly on storage", function () {
     var client = proauth.client
@@ -19,10 +23,6 @@ describe("Session container", function () {
     var sessionData2 = { "someKey2": "someValue2" }
     client.sessionContainer.content = sessionData2
     expect(client.sessionContainer.content).toEqual(sessionData2)
-  });
-
-  afterEach(function () {
-    proauth.client.sessionContainer.clear()
-  });
+  })
 
 })
