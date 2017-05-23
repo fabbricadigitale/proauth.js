@@ -15,8 +15,9 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'lib/*.js',
-      'test/*.js'
+      'lib/client.es2015.js',
+      'lib/legacy.es2015.js',
+      'test/**/*.js'
     ],
 
 
@@ -56,7 +57,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox', 'IE', 'Safari', 'Opera'],
+    browsers: ['Chrome', 'Firefox'],
 
 
     // Continuous Integration mode
