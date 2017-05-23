@@ -1,12 +1,16 @@
 describe("Proauth client", function () {
 
+  afterEach(function () {
+    proauth.client.sessionContainer.clear()
+  })
+
   it("is ready", function (done) {
     setTimeout(function () {
       expect(proauth.client.ready).toBe(true)
       expect(proauth.client.hasSession()).toBe(false)
       done()
-    }, 1000);
-  }, 1100);
+    }, 1000)
+  }, 1100)
 
   it("has correct default values", function () {
     var client = proauth.client
@@ -45,10 +49,10 @@ describe("Proauth client", function () {
         proauth.client.sessionContainer.clear()
         expect(client.hasSession()).toBe(false)
         done()
-      }, 1000);
+      }, 1000)
 
-    }, 1000);
-  }, 2200);
+    }, 1000)
+  }, 2200)
 
   it("set sessions correctly", function (done) {
     var client = proauth.client
@@ -72,9 +76,22 @@ describe("Proauth client", function () {
         proauth.client.sessionContainer.clear()
         expect(client.hasSession()).toBe(false)
         done()
-      }, 1000);
+      }, 1000)
 
-    }, 1000);
-  }, 2200);
+    }, 1000)
+  }, 2200)
+
+  xit("log in correctly", function (done) {
+    var client = proauth.client
+
+    expect(client.hasSession()).toBe(false)
+
+    client.login("username", "password")
+
+    setTimeout(function () {
+      expect(client.hasSession()).toBe(true)
+      done()
+    }, 1000)
+  }, 1100)
 
 })
