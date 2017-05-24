@@ -9,19 +9,19 @@ describe("Proauth client", function () {
       expect(proauth.client.ready).toBe(true)
       expect(proauth.client.hasSession()).toBe(false)
       done()
-    }, 1000)
-  }, 1100)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 2)
 
   it("has correct default values", function () {
     var client = proauth.client
     var settings = client.settings
     var sessionContainer = client.sessionContainer
     expect(settings.serviceSrc).toBe("lib/service.js")
-    expect(settings.oauthUrl).toBe("http://127.0.0.1:8060/oauth")
+    expect(settings.oauthUrl).toBe(config.oauthServerUrl + "/oauth")
     expect(settings.oauthClientId).toBe("test")
     expect(settings.sessionStorage).toBe("localStorage")
     // expect(settings.namespace).toBe("")
-    expect(settings.managedUrls).toEqual([window.location.protocol + "//" + window.location.host + "/", "http://127.0.0.1:8060/"])
+    expect(settings.managedUrls).toEqual([window.location.protocol + "//" + window.location.host + "/", config.oauthServerUrl + "/"])
     expect(sessionContainer.namespace).toBe(settings.namespace)
     expect(client.sessionContainer.content).toBeNull()
     expect(client.serviceWorker).not.toBeNull()
@@ -49,10 +49,10 @@ describe("Proauth client", function () {
         proauth.client.sessionContainer.clear()
         expect(client.hasSession()).toBe(false)
         done()
-      }, 1000)
+      }, config.pauseAfterRequests)
 
-    }, 1000)
-  }, 2200)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 4)
 
   it("set sessions correctly", function (done) {
     var client = proauth.client
@@ -76,10 +76,10 @@ describe("Proauth client", function () {
         proauth.client.sessionContainer.clear()
         expect(client.hasSession()).toBe(false)
         done()
-      }, 1000)
+      }, config.pauseAfterRequests)
 
-    }, 1000)
-  }, 4000)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 4)
 
   it("log in correctly", function (done) {
     var client = proauth.client
@@ -91,8 +91,8 @@ describe("Proauth client", function () {
     setTimeout(function () {
       expect(client.hasSession()).toBe(true)
       done()
-    }, 1000)
-  }, 2000)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 2)
 
   it("sends headers in ajax after login", function (done) {
     var client = proauth.client
@@ -102,7 +102,7 @@ describe("Proauth client", function () {
     setTimeout(function () {
       var xhttp = new XMLHttpRequest()
       var response
-      xhttp.open("GET", "http://127.0.0.1:8060/return-authorization-header", true)
+      xhttp.open("GET", config.oauthServerUrl + "/return-authorization-header", true)
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           response = this.responseText
@@ -115,9 +115,9 @@ describe("Proauth client", function () {
         expect(client.hasSession()).toBe(true)
         expect(response).toBe("bearer tkn.1234567890")
         done()
-      }, 1000)
-    }, 1000)
-  }, 4000)
+      }, config.pauseAfterRequests)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 4)
 
   it("sends headers in fetch after login", function (done) {
     var client = proauth.client
@@ -126,7 +126,7 @@ describe("Proauth client", function () {
 
     setTimeout(function () {
       var xhttp = new XMLHttpRequest()
-      fetch("http://127.0.0.1:8060/return-authorization-header").then(function (data) {
+      fetch(config.oauthServerUrl + "/return-authorization-header").then(function (data) {
         data.text().then(function (text) {
           response = text
         })
@@ -137,9 +137,9 @@ describe("Proauth client", function () {
         expect(client.hasSession()).toBe(true)
         expect(response).toBe("bearer tkn.1234567890")
         done()
-      }, 1000)
-    }, 1000)
-  }, 4000)
+      }, config.pauseAfterRequests)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 4)
 
   it("re-negotiates token if it is expired")
 

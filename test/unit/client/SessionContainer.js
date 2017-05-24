@@ -3,13 +3,13 @@ describe("Session container", function () {
   afterEach(function () {
     proauth.client.sessionContainer.clear()
   })
-  
+
   it("is ready", function (done) {
     setTimeout(function () {
       expect(proauth.client.ready).toBe(true)
       done()
-    }, 1000)
-  }, 1100)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 2)
 
   it("handles sessions correctly on storage", function () {
     var client = proauth.client
