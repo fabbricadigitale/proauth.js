@@ -15,6 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'test/fixture/proauth-settings.js',
       'lib/client.es2015.js',
       'lib/legacy.es2015.js',
       'test/**/*.js'

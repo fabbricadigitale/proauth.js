@@ -19,7 +19,7 @@
     "prelib": "npm run clean",
     "lib": "run-p lib:*",
     "postlib": "npm run transpile",
-    "test": "karma start",
+    "test": "go run test/server/server.go | karma start",
     "clean": "shx rm -rf *.log lib/",
     "lint": "eslint src/**/*.js",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
