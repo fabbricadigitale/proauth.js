@@ -17,11 +17,11 @@ describe("Proauth client", function () {
     var settings = client.settings
     var sessionContainer = client.sessionContainer
     expect(settings.serviceSrc).toBe("lib/service.js")
-    expect(settings.oauthUrl).toBe(window.location.protocol + "//" + window.location.host + "/oauth")
-    expect(settings.oauthClientId).toBe("proauth")
+    expect(settings.oauthUrl).toBe("http://127.0.0.1:8060/oauth")
+    expect(settings.oauthClientId).toBe("test")
     expect(settings.sessionStorage).toBe("localStorage")
     // expect(settings.namespace).toBe("")
-    expect(settings.managedUrls).toEqual([window.location.protocol + "//" + window.location.host + "/"])
+    expect(settings.managedUrls).toEqual([window.location.protocol + "//" + window.location.host + "/", "http://127.0.0.1:8060/"])
     expect(sessionContainer.namespace).toBe(settings.namespace)
     expect(client.sessionContainer.content).toBeNull()
     expect(client.serviceWorker).not.toBeNull()
@@ -79,19 +79,68 @@ describe("Proauth client", function () {
       }, 1000)
 
     }, 1000)
-  }, 2200)
+  }, 4000)
 
-  xit("log in correctly", function (done) {
+  it("log in correctly", function (done) {
     var client = proauth.client
 
     expect(client.hasSession()).toBe(false)
 
-    client.login("username", "password")
+    client.login("user", "qwerty")
 
     setTimeout(function () {
       expect(client.hasSession()).toBe(true)
       done()
     }, 1000)
-  }, 1100)
+  }, 2000)
+
+  it("sends headers in ajax after login", function (done) {
+    var client = proauth.client
+
+    client.login("user", "qwerty")
+
+    setTimeout(function () {
+      var xhttp = new XMLHttpRequest()
+      var response
+      xhttp.open("GET", "http://127.0.0.1:8060/return-authorization-header", true)
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          response = this.responseText
+        }
+      };
+      xhttp.send()
+
+      setTimeout(function () {
+        // Check session was not cleared
+        expect(client.hasSession()).toBe(true)
+        expect(response).toBe("bearer tkn.1234567890")
+        done()
+      }, 1000)
+    }, 1000)
+  }, 4000)
+
+  it("sends headers in fetch after login", function (done) {
+    var client = proauth.client
+
+    client.login("user", "qwerty")
+
+    setTimeout(function () {
+      var xhttp = new XMLHttpRequest()
+      fetch("http://127.0.0.1:8060/return-authorization-header").then(function (data) {
+        data.text().then(function (text) {
+          response = text
+        })
+      })
+
+      setTimeout(function () {
+        // Check session was not cleared
+        expect(client.hasSession()).toBe(true)
+        expect(response).toBe("bearer tkn.1234567890")
+        done()
+      }, 1000)
+    }, 1000)
+  }, 4000)
+
+  it("re-negotiates token if it is expired")
 
 })
