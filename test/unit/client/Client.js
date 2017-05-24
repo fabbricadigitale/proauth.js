@@ -81,7 +81,7 @@ describe("Proauth client", function () {
     }, config.pauseAfterRequests)
   }, config.pauseAfterRequests * 4)
 
-  it("log in correctly", function (done) {
+  it("executes login correctly", function (done) {
     var client = proauth.client
 
     expect(client.hasSession()).toBe(false)
@@ -90,6 +90,19 @@ describe("Proauth client", function () {
 
     setTimeout(function () {
       expect(client.hasSession()).toBe(true)
+      done()
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 2)
+
+  it("fails login if credentials are wrong", function (done) {
+    var client = proauth.client
+
+    expect(client.hasSession()).toBe(false)
+
+    client.login("user_wrong", "qwerty_wrong")
+
+    setTimeout(function () {
+      expect(client.hasSession()).toBe(false)
       done()
     }, config.pauseAfterRequests)
   }, config.pauseAfterRequests * 2)
@@ -107,13 +120,13 @@ describe("Proauth client", function () {
         if (this.readyState == 4 && this.status == 200) {
           response = this.responseText
         }
-      };
+      }
       xhttp.send()
 
       setTimeout(function () {
         // Check session was not cleared
         expect(client.hasSession()).toBe(true)
-        expect(response).toBe("bearer tkn.1234567890")
+        expect(response).toBe("bearer tkn0.1234567890")
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
@@ -125,7 +138,6 @@ describe("Proauth client", function () {
     client.login("user", "qwerty")
 
     setTimeout(function () {
-      var xhttp = new XMLHttpRequest()
       fetch(config.oauthServerUrl + "/return-authorization-header").then(function (data) {
         data.text().then(function (text) {
           response = text
@@ -135,12 +147,58 @@ describe("Proauth client", function () {
       setTimeout(function () {
         // Check session was not cleared
         expect(client.hasSession()).toBe(true)
-        expect(response).toBe("bearer tkn.1234567890")
+        expect(response).toBe("bearer tkn0.1234567890")
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
   }, config.pauseAfterRequests * 4)
 
-  it("re-negotiates token if it is expired")
+  it("re-negotiates token with ajax if it is expired", function (done) {
+    var client = proauth.client
+
+    client.login("user", "qwerty")
+
+    setTimeout(function () {
+      var xhttp = new XMLHttpRequest()
+      var response
+      xhttp.open("GET", config.oauthServerUrl + "/simulate-token-expired", true)
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          expect(this.status).toBe(200)
+          response = this.responseText
+        }
+      }
+      xhttp.send()
+
+      setTimeout(function () {
+        // Check session was not cleared
+        expect(client.hasSession()).toBe(true)
+        expect(response).toBe("bearer tkn1.1234567890")
+        done()
+      }, config.pauseAfterRequests)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 4)
+
+  it("re-negotiates token with fetch if it is expired", function (done) {
+    var client = proauth.client
+
+    client.login("user", "qwerty")
+
+    setTimeout(function () {
+      fetch(config.oauthServerUrl + "/simulate-token-expired").then(function (data) {
+        expect(data.ok).toBe(true)
+        data.text().then(function (text) {
+          response = text
+        })
+      })
+
+      setTimeout(function () {
+        // Check session was not cleared
+        expect(client.hasSession()).toBe(true)
+        expect(response).toBe("bearer tkn1.1234567890")
+        done()
+      }, config.pauseAfterRequests)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 4)
 
 })
