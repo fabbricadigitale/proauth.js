@@ -138,10 +138,16 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   get responseText() {
     const responseType = this.responseType
-    if (responseType === "" || responseType === "text") {
-      return this[_responseBody]
+    if (responseType !== "" && responseType !== "text") {
+      throwReadPropError("responseType", `The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}')`)
     }
-    throwReadPropError("responseType", `The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}')`)
+
+    const state = this[_readyState]
+    if (state !== this.LOADING && state !== this.DONE) {
+      return ""
+    }
+
+    return this[_responseBody] === null ? "" : this[_responseBody]
   }
 
   get responseXML() {
