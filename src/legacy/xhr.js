@@ -109,7 +109,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
   }
 
   get statusText() {
-    return this[_response] ? this[_response].statusText : null
+    return this[_response] ? this[_response].statusText : ""
   }
 
   get response() {
