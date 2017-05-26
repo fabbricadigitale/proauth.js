@@ -77,6 +77,15 @@ const parseXML = function (text) {
   if (typeof DOMParser !== "undefined") {
     const parser = new DOMParser()
     xmlDoc = parser.parseFromString(text, "text/xml")
+
+    // Return an XML parse error to get namespace of "parsererror" tag
+    const parsererrorNS = parser.parseFromString("INVALID", "text/xml")
+      .getElementsByTagName("parsererror")[0].namespaceURI
+
+    // Check if xmlDoc resulted in an XML parse error
+    if (xmlDoc.getElementsByTagNameNS(parsererrorNS, "parsererror").length > 0) {
+      return null
+    }
   } else {
     xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
     xmlDoc.async = "false"
