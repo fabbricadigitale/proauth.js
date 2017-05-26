@@ -147,7 +147,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       return ""
     }
 
-    return this[_responseBody] === null ? "" : this[_responseBody]
+    return this[_responseBody] || ""
   }
 
   get responseXML() {
