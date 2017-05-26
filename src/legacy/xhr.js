@@ -158,7 +158,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
     const body = this[_responseBody]
 
-    if (this[_readyState] !== this.DONE || body === null) {
+    if (this[_readyState] !== this.DONE || body === null || body === undefined) {
       return null
     }
 
