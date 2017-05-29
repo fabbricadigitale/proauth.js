@@ -183,7 +183,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
     try {
       return parseXML(body)
-    } catch (error) {}
+    } catch (error) { }
 
     return null
 
@@ -347,11 +347,16 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       return ""
     }
 
+    let responseHeaders = this[_responseHeaders]
+    if (responseHeaders && responseHeaders.length) {
+      // Clone headers and sort them (@see https://xhr.spec.whatwg.org/#dom-xmlhttprequest-getallresponseheaders)
+      responseHeaders = responseHeaders.slice().sort()
+    }
     let headers = ""
 
-    for (const header in this[_responseHeaders]) {
-      if (this[_responseHeaders].hasOwnProperty(header) && !/^Set-Cookie2?$/i.test(header)) {
-        headers += `${header}: ${this[_responseHeaders][header]}\r\n`
+    for (const header in responseHeaders) {
+      if (responseHeaders.hasOwnProperty(header) && !/^Set-Cookie2?$/i.test(header)) {
+        headers += `${header}: ${responseHeaders[header]}\r\n`
       }
     }
 
