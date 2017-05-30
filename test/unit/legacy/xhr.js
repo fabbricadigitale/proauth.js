@@ -190,10 +190,6 @@ describe("Xhr patch", function () {
     }
     spyOn(xhttp, 'onloadstart').and.callThrough()
 
-    xhttp.onprogress = function () {
-      fail()
-    }
-
     xhttp.onload = function () {
       fail()
     }
@@ -264,24 +260,12 @@ describe("Xhr patch", function () {
     expect(xhttp.readyState).toBe(1)
   })
 
-  it("shows a warning when open() is called with async = false", function () {
-    console.log = jasmine.createSpy("console.log")
-
-    var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", config.oauthServerUrl, true)
-    expect(console.log).not.toHaveBeenCalled()
-
-    var xhttp2 = new XMLHttpRequest()
-    xhttp2.open("GET", config.oauthServerUrl, false)
-    expect(console.log).toHaveBeenCalledWith("Synchronous XHR are not supported")
-  })
-
-  it("throws an error if setRequestHeader() is called when not opened", function () {
+  it("throws an error if setRequestHeader() is called when not opened", function (done) {
     var xhttp = new XMLHttpRequest()
 
     expect(function () {
       xhttp.setRequestHeader("key", "value")
-    }).toThrowError(Error, "Failed to execute '" + "setRequestHeader" + "' on 'XMLHttpRequest': " + "The object's state must be OPENED" + ".")
+    }).toThrow()
 
     xhttp.open("GET", config.oauthServerUrl)
     expect(function () {
@@ -289,56 +273,14 @@ describe("Xhr patch", function () {
     }).not.toThrow()
 
     xhttp.send()
-    expect(function () {
-      xhttp.setRequestHeader("key", "value")
-    }).toThrowError(Error, "Failed to execute '" + "setRequestHeader" + "' on 'XMLHttpRequest': " + "Already sent" + ".")
 
-  })
-
-  it("throws an error if setRequestHeader() is called with unsafe headers", function () {
-    var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", config.oauthServerUrl)
-
-    var unsafeHeaders = [
-      "accept-charset",
-      "accept-encoding",
-      "connection",
-      "content-length",
-      "cookie",
-      "cookie2",
-      "content-transfer-encoding",
-      "date",
-      "expect",
-      "host",
-      "keep-alive",
-      "referer",
-      "te",
-      "trailer",
-      "transfer-encoding",
-      "upgrade",
-      "user-agent",
-      "via",
-
-      "AccEpT-CharSeT",
-
-      "Sec-",
-      "sec-",
-      "ProXy-"
-    ]
-
-    expect(function () {
-      xhttp.setRequestHeader("key", "value")
-    }).not.toThrow()
-
-    for (var i = 0; i < unsafeHeaders.length; i++) {
-      var header = unsafeHeaders[i]
-
+    setTimeout(function () {
       expect(function () {
-        xhttp.setRequestHeader(header, "value")
-      }).toThrowError(Error, "Refused to set unsafe header '" + header + "'")
-    }
-
-  })
+        xhttp.setRequestHeader("key", "value")
+      }).toThrow()
+      done()
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 2)
 
   it("returns null in responseXML if document is empty", function (done) {
     var xhttp = new XMLHttpRequest()
