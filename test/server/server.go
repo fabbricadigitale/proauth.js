@@ -48,6 +48,32 @@ func ReturnAuthorizationHeader(w http.ResponseWriter, r *http.Request, _ httprou
 	fmt.Fprint(w, r.Header.Get("Authorization"))
 }
 
+func ReturnSomeHeaders(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+  // Header purposely not in alphabetical order and upper/lowercased
+	w.Header().Set("Key-A", "Value-A")
+	w.Header().Set("Key-B", "Value-B")
+	w.Header().Set("Key-c", "Value-c")
+	w.Header().Set("key-e", "value-e")
+	w.Header().Set("KEY-D", "VALUE-D")
+
+	fmt.Fprint(w, "")
+}
+
+func ReturnInvalidXML(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "text/xml")
+
+	fmt.Fprint(w, "invalid_xml")
+}
+
+func ReturnEmptyResponse(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	fmt.Fprint(w, "")
+}
+
 func SimulateTokenExpired(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -56,6 +82,12 @@ func SimulateTokenExpired(w http.ResponseWriter, r *http.Request, _ httprouter.P
 	} else {
 		fmt.Fprint(w, r.Header.Get("Authorization"))
 	}
+}
+
+func Return401(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	http.Error(w, `{"title": "invalid_token","status":401}`, 401)
 }
 
 func AllowCors(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -67,14 +99,27 @@ func AllowCors(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 func main() {
 	router := httprouter.New()
+
 	router.OPTIONS("/oauth", AllowCors)
 	router.POST("/oauth", OAuth)
 
 	router.OPTIONS("/return-authorization-header", AllowCors)
 	router.GET("/return-authorization-header", ReturnAuthorizationHeader)
 
+	router.OPTIONS("/return-some-headers", AllowCors)
+	router.GET("/return-some-headers", ReturnSomeHeaders)
+
+	router.OPTIONS("/return-invalid-xml", AllowCors)
+	router.GET("/return-invalid-xml", ReturnInvalidXML)
+
+	router.OPTIONS("/return-empty-response", AllowCors)
+	router.GET("/return-empty-response", ReturnEmptyResponse)
+
 	router.OPTIONS("/simulate-token-expired", AllowCors)
 	router.GET("/simulate-token-expired", SimulateTokenExpired)
+
+	router.OPTIONS("/return-401", AllowCors)
+	router.GET("/return-401", Return401)
 
 	log.Fatal(http.ListenAndServe(":8060", router))
 }

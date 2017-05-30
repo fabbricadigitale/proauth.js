@@ -115,7 +115,7 @@ describe("Proauth client", function () {
     setTimeout(function () {
       var xhttp = new XMLHttpRequest()
       var response
-      xhttp.open("GET", config.oauthServerUrl + "/return-authorization-header", true)
+      xhttp.open("GET", config.oauthServerUrl + "/return-authorization-header")
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           response = this.responseText
@@ -138,6 +138,7 @@ describe("Proauth client", function () {
     client.login("user", "qwerty")
 
     setTimeout(function () {
+      var response
       fetch(config.oauthServerUrl + "/return-authorization-header").then(function (data) {
         data.text().then(function (text) {
           response = text
@@ -161,7 +162,7 @@ describe("Proauth client", function () {
     setTimeout(function () {
       var xhttp = new XMLHttpRequest()
       var response
-      xhttp.open("GET", config.oauthServerUrl + "/simulate-token-expired", true)
+      xhttp.open("GET", config.oauthServerUrl + "/simulate-token-expired")
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
           expect(this.status).toBe(200)
@@ -185,6 +186,7 @@ describe("Proauth client", function () {
     client.login("user", "qwerty")
 
     setTimeout(function () {
+      var response
       fetch(config.oauthServerUrl + "/simulate-token-expired").then(function (data) {
         expect(data.ok).toBe(true)
         data.text().then(function (text) {
@@ -196,6 +198,51 @@ describe("Proauth client", function () {
         // Check session was not cleared
         expect(client.hasSession()).toBe(true)
         expect(response).toBe("bearer tkn1.1234567890")
+        done()
+      }, config.pauseAfterRequests)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 4)
+
+  it("doesn't go in an infinite loop if 401 is always returned with ajax", function (done) {
+    var client = proauth.client
+
+    client.login("user", "qwerty")
+
+    setTimeout(function () {
+      var xhttp = new XMLHttpRequest()
+      var status
+      xhttp.open("GET", config.oauthServerUrl + "/return-401")
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          status = this.status
+        }
+      }
+      xhttp.send()
+
+      setTimeout(function () {
+        // Check session was not cleared
+        expect(client.hasSession()).toBe(true)
+        expect(status).toBe(401)
+        done()
+      }, config.pauseAfterRequests)
+    }, config.pauseAfterRequests)
+  }, config.pauseAfterRequests * 4)
+
+  it("doesn't go in an infinite loop if 401 is always returned with fetch", function (done) {
+    var client = proauth.client
+
+    client.login("user", "qwerty")
+
+    setTimeout(function () {
+      var status
+      fetch(config.oauthServerUrl + "/return-401").then(function (data) {
+        status = data.status
+      })
+
+      setTimeout(function () {
+        // Check session was not cleared
+        expect(client.hasSession()).toBe(true)
+        expect(status).toBe(401)
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
