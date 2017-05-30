@@ -202,6 +202,10 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
    */
   open(method, url, async = true, username, password) {
 
+    if (method === undefined || url === undefined) {
+      throw new TypeError("Not enough arguments to XMLHttpRequest.open")
+    }
+
     if (!async) {
       console && console.log && console.log("Synchronous XHR are not supported")
     }
