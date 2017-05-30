@@ -285,15 +285,14 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
         readyStateChange(this, this.DONE)
         this.dispatchEvent(new ProgressEvent("error", { bubbles: false, cancelable: false }))
       }
-      this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
     }).then((body) => {
-      // DONE Stage
-      if (!this[_aborted]) {
+      if (!this[_aborted] && this[_readyState] === this.LOADING) {
         this[_responseBody] = body
         this[_sendFlag] = false
         readyStateChange(this, this.DONE)
         this.dispatchEvent(new ProgressEvent("load", { bubbles: false, cancelable: false }))
       }
+
       this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
     })
   }

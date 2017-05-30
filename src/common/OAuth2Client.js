@@ -37,7 +37,7 @@ export default class OAuth2Client {
   /**
    * Grant an access token.
    *
-   * @param {Object} params AN object containing the parameters to post to the OAuth2 endpoint
+   * @param {Object} params An object containing the parameters to post to the OAuth2 endpoint
    * @return {Promise} A promise
    * @private
    */
