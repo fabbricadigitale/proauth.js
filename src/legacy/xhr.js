@@ -226,7 +226,8 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
     verifyState(this, "setRequestHeader")
 
     if (unsafeHeaders[String(header).toLowerCase()] || /^(Sec-|Proxy-)/i.test(header)) {
-      throw new Error(`Refused to set unsafe header '${header}'`)
+      console.error(`Refused to set unsafe header '${header}'`)
+      return
     }
 
     if (this[_requestHeaders][header]) {
