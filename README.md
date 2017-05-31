@@ -53,23 +53,12 @@ Even this approach has some caveats (of course it's not ideal), BTW it should wo
 
 ## Developers
 
-Requirements:
-* **Git**
+### Requirements:
 * **Node.js** LTS version (6.9+ at the moment of writing)
 
-We assume you already have git installed and configured locally.
-
-So, the first step is to clone this repository, via HTTPS or SSH.
-
-```
-git clone https://github.com/fabbricadigitale/proauth.js
-cd proauth.js
-git config user.email "..."
-git config user.name "..."
-```
-
-The command to install dependencies is:
-
+### First setup
+* Clone this repo
+* Install dependencies with following command:
 ```
 yarn install
 ```
