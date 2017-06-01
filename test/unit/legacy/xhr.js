@@ -212,6 +212,72 @@ describe("Xhr patch", function () {
 
   }, config.pauseAfterRequests * 2)
 
+  it("fires events correctly when aborted", function (done) {
+
+    var xhttp = new XMLHttpRequest()
+
+    xhttp.onerror = function () {
+      fail()
+    }
+
+    xhttp.onload = function () {
+      fail()
+    }
+
+    xhttp.ontimeout = function () {
+      fail()
+    }
+
+    spyOn(xhttp, 'onloadstart').and.callThrough()
+    spyOn(xhttp, 'onabort')
+    spyOn(xhttp, 'onloadend')
+
+    xhttp.open("GET", "/webserver/oauth")
+    xhttp.send()
+    xhttp.abort()
+
+    setTimeout(function () {
+      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
+      expect(xhttp.onabort).toHaveBeenCalledTimes(1)
+      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
+      done()
+    }, config.pauseAfterRequests)
+
+  }, config.pauseAfterRequests * 2)
+
+  it("goes in timeout correctly", function (done) {
+
+    var xhttp = new XMLHttpRequest()
+
+    xhttp.onerror = function () {
+      fail()
+    }
+
+    xhttp.onload = function () {
+      fail()
+    }
+
+    xhttp.onabort = function () {
+      fail()
+    }
+
+    spyOn(xhttp, 'onloadstart').and.callThrough()
+    spyOn(xhttp, 'ontimeout')
+    spyOn(xhttp, 'onloadend')
+
+    xhttp.timeout = 1
+    xhttp.open("GET", "/webserver/oauth")
+    xhttp.send()
+
+    setTimeout(function () {
+      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
+      expect(xhttp.ontimeout).toHaveBeenCalledTimes(1)
+      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
+      done()
+    }, config.pauseAfterRequests)
+
+  }, config.pauseAfterRequests * 2)
+
   it("set withCredentials always as a boolean", function () {
     var xhttp = new XMLHttpRequest()
 
