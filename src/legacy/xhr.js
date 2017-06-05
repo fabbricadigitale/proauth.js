@@ -341,7 +341,9 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
     this[_errorFlag] = true
     this[_requestHeaders] = {}
 
-    if (this[_readyState] > this.UNSENT && this[_sendFlag]) {
+    if ((this[_readyState] === this.OPENED && this[_sendFlag]) ||
+      this[_readyState] === this.HEADERS_RECEIVED ||
+      this[_readyState] === this.LOADING) {
       readyStateChange(this, this.DONE)
       this[_sendFlag] = false
     }
