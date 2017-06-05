@@ -260,46 +260,77 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       fetchInit.credentials = "include"
     }
 
-    fetch(this[_url], fetchInit).then((response) => {
-
-      this[_response] = response
-
-      // HEADERS_RECEIVED Stage
-      const headers = response.headers
-      this[_responseHeaders] = {}
-      headers.forEach((value, key) => {
-        if (this[_forceMimeType] && key.toLowerCase() === "content-type") {
-          this[_responseHeaders][key] = this[_forceMimeType]
-        } else {
-          this[_responseHeaders][key] = value
+    const p = Promise.race([
+      fetch(this[_url], fetchInit).then(
+        (response) => response,
+        (reason) => new Promise((resolve, reject) => reject(reason))
+      ),
+      new Promise((resolve, reject) => {
+        if (this.timeout > 0) {
+          setTimeout(() => reject(new Error("request timeout")), this.timeout)
         }
       })
+    ])
 
-      readyStateChange(this, this.HEADERS_RECEIVED)
+    p.then(
+      (response) => {
+        // fetch resolved
 
-      // LOADING Stage
-      readyStateChange(this, this.LOADING)
-      this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
-      // FIXME: we need body size?
-      //this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
-      return response[
-        responseParser[this.responseType] || "text"
-      ]()
-    }, (reason) => {
-      if (!this[_aborted]) {
+        this[_response] = response
+
+        // HEADERS_RECEIVED Stage
+        const headers = response.headers
+        this[_responseHeaders] = {}
+        headers.forEach((value, key) => {
+          if (this[_forceMimeType] && key.toLowerCase() === "content-type") {
+            this[_responseHeaders][key] = this[_forceMimeType]
+          } else {
+            this[_responseHeaders][key] = value
+          }
+        })
+
+        readyStateChange(this, this.HEADERS_RECEIVED)
+
+        // LOADING Stage
+        readyStateChange(this, this.LOADING)
+        this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
+        // TODO: do we need body size?
+
+        return response[
+          responseParser[this.responseType] || "text"
+        ]()
+      },
+      (reason) => {
+        // fetch rejected || request timeout
         readyStateChange(this, this.DONE)
-        this.dispatchEvent(new ProgressEvent("error", { bubbles: false, cancelable: false }))
+
+        if (reason instanceof Error && reason.message === "request timeout") {
+          // request timeout
+          this.dispatchEvent(new ProgressEvent("timeout", { bubbles: false, cancelable: false }))
+        } else if (!this[_aborted]) {
+          // fetch rejected
+          this.dispatchEvent(new ProgressEvent("error", { bubbles: false, cancelable: false }))
+        }
+
+        return new Promise((resolve, reject) => reject(reason))
       }
-    }).then((body) => {
-      if (!this[_aborted] && this[_readyState] === this.LOADING) {
+    ).then((body) => {
+      // fetch resolved && body is ready
+      if (!this[_aborted] && this[_readyState]) {
         this[_responseBody] = body
         this[_sendFlag] = false
         readyStateChange(this, this.DONE)
         this.dispatchEvent(new ProgressEvent("load", { bubbles: false, cancelable: false }))
       }
-
-      this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
-    })
+    }).then(
+      // finally, fire loadend event when the fetch completed (success or failure)
+      () => {
+        this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
+      },
+      () => {
+        this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
+      }
+      )
   }
 
   /**
