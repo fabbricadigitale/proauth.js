@@ -181,6 +181,10 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       return null
     }
 
+    /* Maybe this try is not needed, since DOMParser does not throw exceptions on invalid XML,
+     * but it send the error in the resulting XML.
+     * Needed to test the behavior of ActiveX method
+     */
     try {
       return parseXML(body)
     } catch (error) { }
