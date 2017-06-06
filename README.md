@@ -63,6 +63,18 @@ Even this approach has some caveats (of course it's not ideal), BTW it should wo
 yarn install
 ```
 
+## Tests
+
+### Requirements:
+* **Go** 1.8+
+
+### First setup
+* `go get github.com/julienschmidt/httprouter`
+
+### Run
+* `npm run lib`
+* `npm test`
+
 ---
 
 ### Building
