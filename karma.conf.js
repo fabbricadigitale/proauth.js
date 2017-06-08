@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Mon May 22 2017 15:39:06 GMT+0200 (CEST)
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -15,10 +15,11 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      { pattern: 'lib/service-worker.es2015.js', included: false }, // service-worker.es2015.js can be downloaded under /base/src/, but will not be loaded at startup
       'test/fixture/proauth-settings.js',
       'test/fixture/tests-settings.js',
-      'lib/client.es2015.js',
-      'lib/legacy.es2015.js',
+      'lib/client.js',
+      'lib/default.js',
       'test/**/*.js'
     ],
 
@@ -62,13 +63,15 @@ module.exports = function(config) {
     browsers: ['Chrome', 'Firefox'],
 
     proxies: {
-      '/webserver': 'http://127.0.0.1:8060'
+      '/webserver': 'http://127.0.0.1:8060',
+      '/service-worker.js': '/base/lib/service-worker.es2015.js'
     },
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false,
+
 
     // Concurrency level
     // how many browser should be started simultaneous
