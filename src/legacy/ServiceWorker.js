@@ -26,7 +26,7 @@ const postMessage = (target, aMessage, transferList) => {
 export default class ServiceWorker extends EventTarget {
 
   /**
-   * Creatre a custom worker.
+   * Create a custom worker.
    */
   constructor() {
     super()
