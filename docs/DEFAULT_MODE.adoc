@@ -1,0 +1,72 @@
+@startuml
+skinparam componentStyle uml2
+
+node "Page context" {
+
+  interface "Storage" as Storage
+  interface "EventTarget" as EventTarget
+  interface "postMessage()" as postMessage
+
+  package "proauth" {
+    [client] .down.> Storage
+    [client] .down.> EventTarget
+    [client] .down.> postMessage
+  }
+
+  [localStorage] -up- Storage
+
+  package "navigator" {
+    [serviceWorker] -up- EventTarget
+    [serviceWorker.controller] -- [serviceWorker]
+    [serviceWorker.controller] -up- postMessage
+  }
+
+  note top of Storage
+    Web Storage API
+    is used to persist
+    session's tokens
+  end note
+
+  note top of EventTarget
+    Listen for "message" events
+    dispatched by the serviceWorker
+  end note
+
+  note bottom of postMessage
+    Send message to the
+    serviceWorker's controller
+  end note
+
+}
+
+node "ServiceWorker context" {
+
+  interface "EventTarget" as EventTargetSW
+  interface "Clients / postMessage()" as ClientsPostMessage
+
+  package "proauth.service" {
+    [controller]
+  }
+
+  [self] -up- EventTargetSW
+  [self] -right- [self.clients]
+  [self.clients] -up- ClientsPostMessage
+
+  [controller] .down.> EventTargetSW
+  [controller] .down.> ClientsPostMessage
+
+  note top of EventTargetSW
+    Listen for "message" events
+    dispatched by clients
+    and "fetch" events to
+    intercept HTTP requests
+  end note
+
+  note top of ClientsPostMessage
+    Broadcast messages to clients
+    using the Clients interface of
+    the Service Workers API
+  end note
+
+}
+@enduml
