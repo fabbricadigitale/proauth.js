@@ -1,6 +1,14 @@
 import Controller from "./service/Controller"
 
-const controller = new Controller(self, fetch);
+self.addEventListener("install", (event) => {
+  event.waitUntil(self.skipWaiting())
+})
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
+const controller = new Controller(self, fetch)
 
 const service = { controller }
 
