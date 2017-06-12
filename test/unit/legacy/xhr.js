@@ -67,7 +67,7 @@ describe("Xhr patch", function () {
 
     expect(xhttp.readyState).toBe(0) // UNSENT
 
-    xhttp.open("GET", "http://invalid-url")
+    xhttp.open("GET", "http://invalid-url" + Math.random())
     expect(xhttp.readyState).toBe(1) // OPENED
 
     xhttp.send()
@@ -173,7 +173,7 @@ describe("Xhr patch", function () {
     }
     spyOn(xhttp, 'onloadend').and.callThrough()
 
-    xhttp.open("GET", "http://invalid-url")
+    xhttp.open("GET", "http://invalid-url" + Math.random())
     xhttp.send()
 
     setTimeout(function () {
