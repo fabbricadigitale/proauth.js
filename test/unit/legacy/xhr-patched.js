@@ -97,7 +97,7 @@ describe("Xhr patch", function () {
     }
     spyOn(xhttp, 'onreadystatechange').and.callThrough()
 
-    xhttp.open("GET", "http://invalid-url")
+    xhttp.open("GET", "http://invalid-url" + Math.random())
     xhttp.send()
 
     setTimeout(function () {
