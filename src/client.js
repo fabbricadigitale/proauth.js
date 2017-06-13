@@ -1,27 +1,10 @@
 import Client from './client/Client'
 import absolutePath from './common/absolute-path'
 
-const loadScript = (url, callback = () => { }) => {
-  // Adding the script tag to the head as suggested before
-  let head = document.getElementsByTagName('head')[0];
-  let script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = url;
-
-  // Then bind the event to the callback function.
-  // There are several events for cross browser compatibility.
-  script.onreadystatechange = callback;
-  script.onload = callback;
-
-  // Fire the loading
-  head.appendChild(script);
-}
-
 const boot = () => {
   let settings = {
     // Put defaults here
     legacyMode: false,
-    legacySrc: "lib/legacy.js", // FIXME: default path should be computed
     serviceSrc: "lib/service.js",
     swSrc: "/service-worker.js",
     swOptions: {},
@@ -44,10 +27,6 @@ const boot = () => {
   }
 
   const client = new Client(settings)
-
-  if (settings.legacyMode) {
-    loadScript(settings.legacySrc)
-  }
 
   delete settings.legacyMode
 
