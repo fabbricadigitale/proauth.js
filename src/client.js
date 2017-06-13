@@ -4,7 +4,6 @@ import absolutePath from './common/absolute-path'
 const boot = () => {
   const settings = {
     // Put defaults here
-    legacyMode: false,
     swSrc: "/service-worker.js",
     swOptions: {},
     oauthUrl: "/oauth",
@@ -26,8 +25,6 @@ const boot = () => {
   }
 
   const client = new Client(settings)
-
-  delete settings.legacyMode
 
   return client;
 }
