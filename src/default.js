@@ -1,10 +1,5 @@
 const client = proauth.client
 
-const setServiceWorker = (sw) => {
-  client.legacyMode = false
-  client.serviceWorker = sw
-}
-
 if (navigator.serviceWorker) {
 
   if (client.settings.swSrc) {
@@ -17,14 +12,14 @@ if (navigator.serviceWorker) {
 
     if (registration.active.state === "activated") {
 
-      setServiceWorker(navigator.serviceWorker)
+      client.serviceWorker = navigator.serviceWorker
 
     } else {
 
       registration.active.addEventListener("statechange", () => {
         if (registration.active.state === "activated") {
 
-          setServiceWorker(navigator.serviceWorker)
+          client.serviceWorker = navigator.serviceWorker
 
         }
       })

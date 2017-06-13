@@ -25,7 +25,6 @@ const effectiveFetch = originalFetch.polyfill ?
 
 
 const controller = new Controller(serviceWorker.self, effectiveFetch)
-client.legacyMode = true
 client.serviceWorker = serviceWorker
 
 const legacy = { fetch, xhr, serviceWorker }
