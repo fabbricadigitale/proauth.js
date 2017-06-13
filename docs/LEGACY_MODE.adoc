@@ -1,0 +1,103 @@
+@startuml
+skinparam componentStyle uml2
+
+node "Page context (window)" {
+
+  interface "EventTarget" as AEventTargetSW
+  interface "Clients / postMessage()" as ClientsPostMessage
+  interface "postMessage()" as postMessage
+  interface "EventTarget" as EventTarget
+  interface "Storage" as Storage
+
+  package "proauth" {
+    [client] .down.> EventTarget
+    [client] .down.> postMessage
+    [client] .down.> Storage
+  }
+
+  [localStorage] -up- Storage
+
+  package "proauth.legacy" {
+
+    package "serviceWorker" {
+
+      component serviceWorker.controller [
+        controller
+      ]
+      component serviceWorker.self [
+        self
+      ]
+
+      component serviceWorker.self.clients [
+        self.clients
+      ]
+
+      [serviceWorker.self] -up- AEventTargetSW
+      [serviceWorker.self.clients] -up- ClientsPostMessage
+      [serviceWorker.controller] -up- postMessage
+      [serviceWorker.self.clients] -right- [serviceWorker.self]
+
+    }
+
+    [serviceWorker] -up- [serviceWorker.controller]
+    [serviceWorker] -up- [serviceWorker.self]
+
+    [fetch] .up.> AEventTargetSW
+    [serviceWorker] -up- EventTarget
+    [xhr] -up-> [fetch]
+
+    note bottom of serviceWorker
+      Imitate a minimal
+      ServiceWorker interface
+    end note
+
+    note bottom of [xhr]
+      Replace XMLHttpRequest
+      to proxy HTTP requests
+      to the fetch component
+    end note
+
+    note bottom of [fetch]
+      Decorate window.fetch to
+      intercept HTTP request
+      and dispatch the
+      "fetch" event to
+      the serviceWorker
+    end note
+
+  }
+
+  note top of Storage
+    Web Storage API
+    are used to persist
+    session's tokens
+  end note
+
+  note top of EventTarget
+    Listen for "message" events
+    dispatched by the serviceWorker
+  end note
+
+  note bottom of postMessage
+    Send message to the
+    serviceWorker's controller
+  end note
+
+  package "proauth.service" {
+
+    [controller]
+
+  [controller] .left.> AEventTargetSW
+  [controller] .right.> ClientsPostMessage
+
+  }
+
+  note top of AEventTargetSW
+    Listen for "message" events
+    dispatched by clients
+    and "fetch" events to
+    intercept HTTP requests
+  end note
+
+}
+@enduml
