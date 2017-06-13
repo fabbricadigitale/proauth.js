@@ -23,6 +23,8 @@ const boot = () => {
     legacyMode: false,
     legacySrc: "lib/legacy.js", // FIXME: default path should be computed
     serviceSrc: "lib/service.js",
+    swSrc: "/service-worker.js",
+    swOptions: {},
     oauthUrl: "/oauth",
     oauthClientId: "proauth",
     sessionStorage: "localStorage",

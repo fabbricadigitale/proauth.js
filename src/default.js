@@ -7,30 +7,30 @@ const setServiceWorker = (sw) => {
 
 if (navigator.serviceWorker) {
 
-  navigator.serviceWorker.register("/service-worker.js")
-    .then(() => {
-      return navigator.serviceWorker.ready
-    })
-    .then((registration) => {
-      // SW is ready, but its state can be either activating or activated.
-      // We must wait until it's activated, so the clients will be claimed.
+  if (client.settings.swSrc) {
+    navigator.serviceWorker.register(client.settings.swSrc, client.settings.swOptions)
+  }
 
-      if (registration.active.state === "activated") {
+  navigator.serviceWorker.ready.then((registration) => {
+    // SW is ready, but its state can be either activating or activated.
+    // We must wait until it's activated, so the clients will be claimed.
 
-        setServiceWorker(navigator.serviceWorker)
+    if (registration.active.state === "activated") {
 
-      } else {
+      setServiceWorker(navigator.serviceWorker)
 
-        registration.active.addEventListener("statechange", () => {
-          if (registration.active.state === "activated") {
+    } else {
 
-            setServiceWorker(navigator.serviceWorker)
+      registration.active.addEventListener("statechange", () => {
+        if (registration.active.state === "activated") {
 
-          }
-        })
+          setServiceWorker(navigator.serviceWorker)
 
-      }
-    })
+        }
+      })
+
+    }
+  })
 }
 
 export default { client }
