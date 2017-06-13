@@ -67,7 +67,7 @@ describe("Xhr patch", function () {
 
     expect(xhttp.readyState).toBe(0) // UNSENT
 
-    xhttp.open("GET", "http://invalid-url")
+    xhttp.open("GET", "http://invalid-url" + Math.random())
     expect(xhttp.readyState).toBe(1) // OPENED
 
     xhttp.send()
@@ -95,33 +95,6 @@ describe("Xhr patch", function () {
 
     setTimeout(function () {
       expect(xhttp.onreadystatechange).toHaveBeenCalledTimes(4)
-      done()
-    }, config.pauseAfterRequests)
-
-  }, config.pauseAfterRequests * 2)
-
-  it("fires readyStateChange events correctly when request encounters an error", function (done) {
-
-    var currReadyState = 0
-    var xhttp = new XMLHttpRequest()
-
-    xhttp.onreadystatechange = function () {
-      if (currReadyState === 0) {
-        expect(this.readyState).toBe(1)
-        currReadyState = 1
-      } else {
-        expect(currReadyState).toBe(1)
-        expect(this.readyState).toBe(4)
-        currReadyState = 4
-      }
-    }
-    spyOn(xhttp, 'onreadystatechange').and.callThrough()
-
-    xhttp.open("GET", "http://invalid-url")
-    xhttp.send()
-
-    setTimeout(function () {
-      expect(xhttp.onreadystatechange).toHaveBeenCalledTimes(2)
       done()
     }, config.pauseAfterRequests)
 
@@ -200,7 +173,7 @@ describe("Xhr patch", function () {
     }
     spyOn(xhttp, 'onloadend').and.callThrough()
 
-    xhttp.open("GET", "http://invalid-url")
+    xhttp.open("GET", "http://invalid-url" + Math.random())
     xhttp.send()
 
     setTimeout(function () {
@@ -368,19 +341,6 @@ describe("Xhr patch", function () {
 
     setTimeout(function () {
       expect(xhttp.responseXML).toBeNull()
-      done()
-    }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
-
-  it("overrides mimetype correctly", function (done) {
-    var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", config.oauthServerUrl + "/return-empty-response", true)
-    xhttp.overrideMimeType("text/xml")
-
-    xhttp.send()
-
-    setTimeout(function () {
-      expect(xhttp.getResponseHeader("content-type")).toBe("text/xml")
       done()
     }, config.pauseAfterRequests)
   }, config.pauseAfterRequests * 2)

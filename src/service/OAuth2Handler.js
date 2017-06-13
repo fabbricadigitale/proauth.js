@@ -2,9 +2,21 @@ import OAuth2Client from "../common/OAuth2Client"
 
 const attachAuthorization = (session, request) => {
   const tokens = session.content || {}
+
   if (tokens.accessToken) {
+
+    /*
+     * We have to create a new request based on the old one because the headers of the
+     * original request are immutable in ServiceWorker.
+     * Note that this is unnecessary if the code doesn't run in the ServiceWorker.
+     * TODO: search for a better way to achieve the same result.
+     */
+    request = new Request(request)
+
     request.headers.set("Authorization", `${tokens.tokenType} ${tokens.accessToken}`)
   }
+
+  return request
 }
 
 const updateSession = (session, grantPromise) => {
@@ -63,7 +75,7 @@ export default class Oauth2Handler {
     console.log(`proauth.js Oauth2Handler::handle for ${event.request.url}`)
 
     const { oauthUrl } = this.settings
-    const request = event.request
+    let request = event.request
     const url = request.url
     const fetch = this.fetch
 
@@ -76,23 +88,23 @@ export default class Oauth2Handler {
     if (this._pendingRefresh) {
       // Wait for the fresh token
       this._pendingRefresh.then(() => {
-        attachAuthorization(this.session, request)
+        request = attachAuthorization(this.session, request)
         event.respondWith(fetch(request))
       })
       return
     }
 
     // Attach the current token
-    attachAuthorization(this.session, request)
+    request = attachAuthorization(this.session, request)
 
     // Finally, fetch and handle the response
-    const requestCopy = request.clone()
+    let requestCopy = request.clone()
     event.respondWith(fetch(request).then((response) => {
 
       if (this._pendingRefresh) {
         // Wait for the fresh token
         return this._pendingRefresh.then(() => {
-          attachAuthorization(this.session, requestCopy)
+          requestCopy = attachAuthorization(this.session, requestCopy)
           return fetch(requestCopy)
         })
       }
@@ -118,7 +130,7 @@ export default class Oauth2Handler {
             // We got a new token?
             // Then try to re-fetch the original request...
             if (newSession) {
-              attachAuthorization(this.session, requestCopy)
+              requestCopy = attachAuthorization(this.session, requestCopy)
               return fetch(requestCopy)
             } //...else passthrough the 401 response
             return response
