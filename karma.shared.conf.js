@@ -5,22 +5,16 @@ module.exports = function (config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: "",
 
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ["jasmine"],
 
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: 'lib/service-worker.es2015.js', included: false }, // service-worker.es2015.js can be downloaded under /base/src/, but will not be loaded at startup
-      'test/fixture/proauth-settings.js',
-      'test/fixture/tests-settings.js',
-      'lib/client.js',
-      'lib/default.js',
-      'test/**/*.js'
     ],
 
 
@@ -36,9 +30,9 @@ module.exports = function (config) {
 
 
     // test results reporter to use
-    // possible values: 'dots', 'progress'
+    // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ["progress"],
 
 
     // web server port
@@ -60,17 +54,17 @@ module.exports = function (config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox'],
+    browsers: [],
 
     proxies: {
-      '/webserver': 'http://127.0.0.1:8060',
-      '/service-worker.js': '/base/lib/service-worker.es2015.js'
+      "/webserver": "http://127.0.0.1:8060",
+      "/service-worker.js": "/base/lib/service-worker.es2015.js"
     },
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
 
     // Concurrency level

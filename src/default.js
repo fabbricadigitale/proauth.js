@@ -15,8 +15,6 @@ if (navigator.serviceWorker) {
       // SW is ready, but its state can be either activating or activated.
       // We must wait until it's activated, so the clients will be claimed.
 
-      console.log(registration.active, registration.active.state)
-
       if (registration.active.state === "activated") {
 
         setServiceWorker(navigator.serviceWorker)
