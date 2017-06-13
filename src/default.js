@@ -1,8 +1,8 @@
 const client = proauth.client
 
 const setServiceWorker = (sw) => {
+  client.legacyMode = false
   client.serviceWorker = sw
-  client.settings.legacyMode = false
 }
 
 if (navigator.serviceWorker) {
