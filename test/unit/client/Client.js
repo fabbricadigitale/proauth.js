@@ -16,7 +16,6 @@ describe("Proauth client", function () {
     var client = proauth.client
     var settings = client.settings
     var sessionContainer = client.sessionContainer
-    expect(settings.legacySrc).toBe("lib/legacy.js")
     expect(settings.serviceSrc).toBe("lib/service.js")
     expect(settings.swSrc).toBe("/service-worker.js")
     expect(settings.swOptions).toEqual({})
