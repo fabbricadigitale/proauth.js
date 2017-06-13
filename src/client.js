@@ -2,7 +2,7 @@ import Client from './client/Client'
 import absolutePath from './common/absolute-path'
 
 const boot = () => {
-  let settings = {
+  const settings = {
     // Put defaults here
     legacyMode: false,
     serviceSrc: "lib/service.js",
@@ -11,7 +11,7 @@ const boot = () => {
     oauthUrl: "/oauth",
     oauthClientId: "proauth",
     sessionStorage: "localStorage",
-    namespace: document.origin && document.origin != "null" ? document.origin : "",
+    namespace: document.origin && document.origin !== "null" ? document.origin : "",
     managedUrls: [
       "/" // Manage the current url root by default
     ]
