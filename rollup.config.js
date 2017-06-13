@@ -6,7 +6,7 @@ const inDevelopment = () => process.env.BUILD_ENV && ['development', 'dev', 'dev
 
 const target = (target => {
   target = String(target).toLowerCase()
-  if (['client', 'legacy', 'service'].indexOf(target) < 0) throw Error('Invalid target')
+  if (['client', 'default', 'legacy', 'service', 'service-worker'].indexOf(target) < 0) throw Error('Invalid target')
   return target
 })(process.env.BUILD_TARGET)
 
