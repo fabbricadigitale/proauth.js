@@ -16,7 +16,6 @@ describe("Proauth client", function () {
     var client = proauth.client
     var settings = client.settings
     var sessionContainer = client.sessionContainer
-    expect(settings.serviceSrc).toBe("lib/service.js")
     expect(settings.swSrc).toBe("/service-worker.js")
     expect(settings.swOptions).toEqual({})
     expect(settings.oauthUrl).toBe(config.oauthServerUrl + "/oauth")
