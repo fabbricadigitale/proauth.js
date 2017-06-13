@@ -5,7 +5,6 @@ const boot = () => {
   const settings = {
     // Put defaults here
     legacyMode: false,
-    serviceSrc: "lib/service.js",
     swSrc: "/service-worker.js",
     swOptions: {},
     oauthUrl: "/oauth",
