@@ -21,11 +21,26 @@ describe("Proauth client", function () {
     expect(settings.oauthUrl).toBe(config.oauthServerUrl + "/oauth")
     expect(settings.oauthClientId).toBe("test")
     expect(settings.sessionStorage).toBe("localStorage")
-    // expect(settings.namespace).toBe("")
     expect(settings.managedUrls).toEqual([window.location.protocol + "//" + window.location.host + "/", config.oauthServerUrl + "/"])
     expect(sessionContainer.namespace).toBe(settings.namespace)
     expect(client.sessionContainer.content).toBeNull()
     expect(client.serviceWorker).not.toBeNull()
+  })
+
+  it("throws error if trying to set legacyMode", function () {
+    var client = proauth.client
+
+    expect(function () {
+      client.legacyMode = true
+    }).toThrowError("legacyMode is a read-only property")
+
+    expect(function () {
+      client.legacyMode = false
+    }).toThrowError("legacyMode is a read-only property")
+
+    expect(function () {
+      client.legacyMode = undefined
+    }).toThrowError("legacyMode is a read-only property")
   })
 
   it("set sessions correctly", function (done) {
