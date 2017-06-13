@@ -77,6 +77,15 @@ const parseXML = function (text) {
   if (typeof DOMParser !== "undefined") {
     const parser = new DOMParser()
     xmlDoc = parser.parseFromString(text, "text/xml")
+
+    // Return an XML parse error to get namespace of "parsererror" tag
+    const parsererrorNS = parser.parseFromString("INVALID", "text/xml")
+      .getElementsByTagName("parsererror")[0].namespaceURI
+
+    // Check if xmlDoc resulted in an XML parse error
+    if (xmlDoc.getElementsByTagNameNS(parsererrorNS, "parsererror").length > 0) {
+      return null
+    }
   } else {
     xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
     xmlDoc.async = "false"
@@ -109,7 +118,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
   }
 
   get statusText() {
-    return this[_response] ? this[_response].statusText : null
+    return this[_response] ? this[_response].statusText : ""
   }
 
   get response() {
@@ -138,10 +147,16 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   get responseText() {
     const responseType = this.responseType
-    if (responseType === "" || responseType === "text") {
-      return this[_responseBody]
+    if (responseType !== "" && responseType !== "text") {
+      throwReadPropError("responseType", `The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}')`)
     }
-    throwReadPropError("responseType", `The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}')`)
+
+    const state = this[_readyState]
+    if (state !== this.LOADING && state !== this.DONE) {
+      return ""
+    }
+
+    return this[_responseBody] || ""
   }
 
   get responseXML() {
@@ -152,7 +167,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
     const body = this[_responseBody]
 
-    if (this[_readyState] !== this.DONE || body === null) {
+    if (this[_readyState] !== this.DONE || !!body) {
       return null
     }
 
@@ -166,9 +181,13 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       return null
     }
 
+    /* Maybe this try is not needed, since DOMParser does not throw exceptions on invalid XML,
+     * but it send the error in the resulting XML.
+     * Needed to test the behavior of ActiveX method
+     */
     try {
       return parseXML(body)
-    } catch (error) {}
+    } catch (error) { }
 
     return null
 
@@ -186,6 +205,10 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
    * Duplicates the behavior of native XMLHttpRequest's open function
    */
   open(method, url, async = true, username, password) {
+
+    if (method === undefined || url === undefined) {
+      throw new TypeError("Not enough arguments to XMLHttpRequest.open")
+    }
 
     if (!async) {
       console && console.log && console.log("Synchronous XHR are not supported")
@@ -207,7 +230,8 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
     verifyState(this, "setRequestHeader")
 
     if (unsafeHeaders[String(header).toLowerCase()] || /^(Sec-|Proxy-)/i.test(header)) {
-      throw new Error(`Refused to set unsafe header '${header}'`)
+      console.error(`Refused to set unsafe header '${header}'`)
+      return
     }
 
     if (this[_requestHeaders][header]) {
@@ -240,47 +264,77 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       fetchInit.credentials = "include"
     }
 
-    fetch(this[_url], fetchInit).then((response) => {
-
-      this[_response] = response
-
-      // HEADERS_RECEIVED Stage
-      const headers = response.headers
-      this[_responseHeaders] = {}
-      headers.forEach((value, key) => {
-        if (this[_forceMimeType] && key.toLowerCase() === "content-type") {
-          this[_responseHeaders][key] = this[_forceMimeType]
-        } else {
-          this[_responseHeaders][key] = value
+    const p = Promise.race([
+      fetch(this[_url], fetchInit).then(
+        (response) => response,
+        (reason) => new Promise((resolve, reject) => reject(reason))
+      ),
+      new Promise((resolve, reject) => {
+        if (this.timeout > 0) {
+          setTimeout(() => reject(new Error("request timeout")), this.timeout)
         }
       })
+    ])
 
-      readyStateChange(this, this.HEADERS_RECEIVED)
+    p.then(
+      (response) => {
+        // fetch resolved
 
-      // LOADING Stage
-      readyStateChange(this, this.LOADING)
-      this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
-      // FIXME: we need body size?
-      //this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
-      return response[
-        responseParser[this.responseType] || "text"
-      ]()
-    }, (reason) => {
-      if (!this[_aborted]) {
+        this[_response] = response
+
+        // HEADERS_RECEIVED Stage
+        const headers = response.headers
+        this[_responseHeaders] = {}
+        headers.forEach((value, key) => {
+          if (this[_forceMimeType] && key.toLowerCase() === "content-type") {
+            this[_responseHeaders][key] = this[_forceMimeType]
+          } else {
+            this[_responseHeaders][key] = value
+          }
+        })
+
+        readyStateChange(this, this.HEADERS_RECEIVED)
+
+        // LOADING Stage
+        readyStateChange(this, this.LOADING)
+        this.dispatchEvent(new ProgressEvent("progress", { bubbles: false, cancelable: false }))
+        // TODO: do we need body size?
+
+        return response[
+          responseParser[this.responseType] || "text"
+        ]()
+      },
+      (reason) => {
+        // fetch rejected || request timeout
         readyStateChange(this, this.DONE)
-        this.dispatchEvent(new ProgressEvent("error", { bubbles: false, cancelable: false }))
+
+        if (reason instanceof Error && reason.message === "request timeout") {
+          // request timeout
+          this.dispatchEvent(new ProgressEvent("timeout", { bubbles: false, cancelable: false }))
+        } else if (!this[_aborted]) {
+          // fetch rejected
+          this.dispatchEvent(new ProgressEvent("error", { bubbles: false, cancelable: false }))
+        }
+
+        return new Promise((resolve, reject) => reject(reason))
       }
-      this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
-    }).then((body) => {
-      // DONE Stage
-      if (!this[_aborted]) {
+    ).then((body) => {
+      // fetch resolved && body is ready
+      if (!this[_aborted] && this[_readyState]) {
         this[_responseBody] = body
         this[_sendFlag] = false
         readyStateChange(this, this.DONE)
         this.dispatchEvent(new ProgressEvent("load", { bubbles: false, cancelable: false }))
       }
-      this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
-    })
+    }).then(
+      // finally, fire loadend event when the fetch completed (success or failure)
+      () => {
+        this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
+      },
+      () => {
+        this.dispatchEvent(new ProgressEvent("loadend", { bubbles: false, cancelable: false }))
+      }
+      )
   }
 
   /**
@@ -291,7 +345,9 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
     this[_errorFlag] = true
     this[_requestHeaders] = {}
 
-    if (this[_readyState] > this.UNSENT && this[_sendFlag]) {
+    if ((this[_readyState] === this.OPENED && this[_sendFlag]) ||
+      this[_readyState] === this.HEADERS_RECEIVED ||
+      this[_readyState] === this.LOADING) {
       readyStateChange(this, this.DONE)
       this[_sendFlag] = false
     }
@@ -332,11 +388,16 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       return ""
     }
 
+    let responseHeaders = this[_responseHeaders]
+    if (responseHeaders && responseHeaders.length) {
+      // Clone headers and sort them (@see https://xhr.spec.whatwg.org/#dom-xmlhttprequest-getallresponseheaders)
+      responseHeaders = responseHeaders.slice().sort()
+    }
     let headers = ""
 
-    for (const header in this[_responseHeaders]) {
-      if (this[_responseHeaders].hasOwnProperty(header) && !/^Set-Cookie2?$/i.test(header)) {
-        headers += `${header}: ${this[_responseHeaders][header]}\r\n`
+    for (const header in responseHeaders) {
+      if (responseHeaders.hasOwnProperty(header) && !/^Set-Cookie2?$/i.test(header)) {
+        headers += `${header}: ${responseHeaders[header]}\r\n`
       }
     }
 

@@ -6,10 +6,10 @@ import Controller from './service/Controller'
 const client = proauth.client
 
 // Init elements for legacy mode
-const serviceWorker = new ServiceWorker(); // Fake serviceWorker
-fetch.install(serviceWorker.self);  // FetchAPI proxy
+const serviceWorker = new ServiceWorker() // Fake serviceWorker
+fetch.install(serviceWorker.self) // FetchAPI proxy
 
-xhr.install(); // XMLHttpRequest to FetchAPI proxy
+xhr.install() // XMLHttpRequest to FetchAPI proxy
 
 // Setup service environment
 const originalFetch = fetch.fetch
@@ -21,12 +21,11 @@ const effectiveFetch = originalFetch.polyfill ?
     xhr.install()
     return ret
   } :
-  originalFetch;
+  originalFetch
 
 
-const controller = new Controller(serviceWorker.self, effectiveFetch);
-client.serviceWorker = serviceWorker;
-client.settings.legacyMode = true
+const controller = new Controller(serviceWorker.self, effectiveFetch)
+client.serviceWorker = serviceWorker
 
 const legacy = { fetch, xhr, serviceWorker }
 const service = { controller }

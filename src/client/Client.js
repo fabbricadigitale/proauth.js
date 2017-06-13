@@ -55,12 +55,12 @@ export default class Client {
       console.log("proauth.js client received a broadcast message", event.data)
 
       switch (command) {
-      case "session":
-        this.sessionContainer.content = params[0];
-        break;
+        case "session":
+          this.sessionContainer.content = params[0];
+          break;
 
-      default:
-        console.log(`proauth.js client, invalid command received: ${command}.`)
+        default:
+          console.log(`proauth.js client, invalid command received: ${command}.`)
       }
 
       // (todo): set session race condition must be avoided, dirty-checking data may be a solution
@@ -68,7 +68,15 @@ export default class Client {
   }
 
   get ready() {
-    return this._serviceWorker && this._ready;
+    return this._serviceWorker && this._ready
+  }
+
+  get legacyMode() {
+    return this._legacyMode
+  }
+
+  set legacyMode(sw) {
+    throw Error("legacyMode is a read-only property")
   }
 
   get serviceWorker() {
@@ -85,6 +93,7 @@ export default class Client {
 
     this._ready = false
     this._serviceWorker = sw
+    this._legacyMode = sw === navigator.serviceWorker
 
     sendMessage(sw, {
       namespace: this.settings.namespace,
