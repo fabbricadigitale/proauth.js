@@ -93,7 +93,7 @@ export default class Client {
 
     this._ready = false
     this._serviceWorker = sw
-    this._legacyMode = sw === navigator.serviceWorker
+    this._legacyMode = sw !== navigator.serviceWorker
 
     sendMessage(sw, {
       namespace: this.settings.namespace,

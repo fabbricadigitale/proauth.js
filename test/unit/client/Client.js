@@ -27,6 +27,15 @@ describe("Proauth client", function () {
     expect(client.serviceWorker).not.toBeNull()
   })
 
+  it("set legacyMode correctly", function() {
+    var client = proauth.client
+    var legacy = proauth.legacy
+    expect(client.legacyMode).toBe(!!legacy)
+    if (client.legacyMode) {
+      expect(client.serviceWorker).toEqual(legacy.serviceWorker)
+    }
+  })
+
   it("throws error if trying to set legacyMode", function () {
     var client = proauth.client
 
