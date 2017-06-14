@@ -8,7 +8,6 @@ module.exports = function (config) {
     files: [
       "test/fixture/proauth-settings.js",
       "test/fixture/tests-settings.js",
-      "lib/client.js",
       "lib/legacy.js",
       "test/**/*.js"
     ],

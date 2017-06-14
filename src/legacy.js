@@ -2,8 +2,9 @@ import fetch from './legacy/fetch'
 import xhr from './legacy/xhr'
 import ServiceWorker from './legacy/ServiceWorker'
 import Controller from './service/Controller'
+import proauthClient from './client'
 
-const client = proauth.client
+const client = proauthClient.client
 
 // Init elements for legacy mode
 const serviceWorker = new ServiceWorker() // Fake serviceWorker

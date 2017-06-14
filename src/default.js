@@ -1,4 +1,6 @@
-const client = proauth.client
+import proauthClient from "./client"
+
+const client = proauthClient.client
 
 if (navigator.serviceWorker) {
 
