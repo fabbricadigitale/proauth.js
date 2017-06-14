@@ -12,6 +12,24 @@ module.exports = function (config) {
       "test/**/*.js"
     ],
 
+    preprocessors: {
+      "!lib/*.es2015.js": "coverage",
+      "lib/*.js": "coverage"
+    },
+
+    reporters: [
+      "spec",
+      "coverage"
+    ],
+
+    coverageReporter: {
+      dir: 'coverage',
+      reporters: [
+        { type: 'lcovonly', subdir: '.', file: 'legacy.lcov.info' },
+        { type: 'text', subdir: '.', file: 'legacy.text.txt' },  
+        { type: 'text-summary', subdir: '.', file: 'legacy.text.summary.txt' }
+      ]
+    },
 
     exclude: [
     ],

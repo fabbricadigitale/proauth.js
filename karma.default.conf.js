@@ -13,6 +13,23 @@ module.exports = function (config) {
       "test/**/*.js"
     ],
 
+    preprocessors: {
+      "lib/*.es2015.js": "coverage"
+    },
+
+    reporters: [
+      "spec",
+      "coverage"
+    ],
+
+    coverageReporter: {
+      dir: 'coverage',
+      reporters: [
+        { type: 'lcovonly', subdir: '.', file: 'default.lcov.info' },
+        { type: 'text', subdir: '.', file: 'default.text.txt' },        
+        { type: 'text-summary', subdir: '.', file: 'default.text.summary.txt' }
+      ]
+    },
 
     exclude: [
       "test/unit/legacy/xhr-patched.js"
