@@ -9,8 +9,8 @@ describe("Proauth client", function () {
       expect(proauth.client.ready).toBe(true)
       expect(proauth.client.hasSession()).toBe(false)
       done()
-    }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+    }, config.pauseAfterRequests * 2)
+  }, config.pauseAfterRequests * 3)
 
   it("has correct default values", function () {
     var client = proauth.client

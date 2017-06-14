@@ -5,8 +5,8 @@ describe("Xhr patch", function () {
       expect(proauth.client.ready).toBe(true)
       expect(proauth.client.hasSession()).toBe(false)
       done()
-    }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+    }, config.pauseAfterRequests * 2)
+  }, config.pauseAfterRequests * 3)
 
   it("has correct values when unsent", function () {
     var xhttp = new XMLHttpRequest()
