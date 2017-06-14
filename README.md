@@ -1,4 +1,5 @@
 [![Build Status](https://img.shields.io/travis/fabbricadigitale/proauth.js.svg?style=flat-square)](https://travis-ci.org/fabbricadigitale/proauth.js)
+[![Code Coverage](https://img.shields.io/codecov/c/github/fabbricadigitale/proauth.js.svg?style=flat-square)]()
 
 proauth.js
 ==========
