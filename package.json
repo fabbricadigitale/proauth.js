@@ -25,7 +25,7 @@
     "test:default": "karma start karma.default.conf.js",
     "test:legacy": "karma start karma.legacy.conf.js",
     "pretest": "go run test/server/server.go & echo $! > pid",
-    "test": "run-s test:*",
+    "test": "run-s build test:*",
     "posttest": "kill -s 9 `cat pid`",
     "clean": "shx rm -rf *.log lib/",
     "lint": "eslint src/**/*.js",
