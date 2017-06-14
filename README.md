@@ -27,12 +27,34 @@ Just include the following snippet within `<head>`:
     // Put your settings here!
   }
 </script>
-<script src="lib/client.js"></script>
+<script src="lib/default.es2015.js"></script>
 ```
 
 ### Configuration
 
-TODO
+You can configure *proauth.js* changing properties of the global `proauth` variable, before loading the library.
+
+For example:
+
+```js
+  proauth = {
+    swSrc: "/sw.js",
+    managedUrls: [
+      "/",
+      "http://example.com/folder/"
+    ]
+    ...
+  }
+```
+
+The properties you can customize are:
+* `swSrc`: path to the service worker that will be registered when `default` package is loaded by the browser. Set it to a falsey value to avoid the auto-registration of service worker. (default: **"/service-worker.js"**)
+* `swOptions`: object that will be passed as 2nd parameter to [ServiceWorkerContainer.register()](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register). Note that this setting has effect only if `swSrc` is a valid service worker URL. (default: **{}**)
+* `oauthUrl`: URL of the OAuth service that will be used to negotiate tokens. (default: **"/oauth"**)
+* `authClientId`: OAuth client that will be used during negotiation of tokens. (default: **"proauth"**)
+* `sessionStorage`: where to store tokens and session informations. At the moment, only `localStorage` is supported. (default: **"localStorage"**)
+* `namespace`: namespace that will be used to distinguish between sessions. (default: **document.origin && document.origin !== "null" ? document.origin : ""**)
+* `managedUrls`: array of URLs where to attach the *Authorization* header. (default: **["/"]**)
 
 ## How it works
 
