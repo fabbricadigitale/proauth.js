@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -51,7 +50,7 @@ func ReturnAuthorizationHeader(w http.ResponseWriter, r *http.Request, _ httprou
 func ReturnSomeHeaders(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-  // Header purposely not in alphabetical order and upper/lowercased
+	// Header purposely not in alphabetical order and upper/lowercased
 	w.Header().Set("Key-A", "Value-A")
 	w.Header().Set("Key-B", "Value-B")
 	w.Header().Set("Key-c", "Value-c")
@@ -97,6 +96,12 @@ func AllowCors(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	fmt.Fprint(w, "")
 }
 
+var server = &http.Server{Addr: ":8060"}
+
+func Shutdown(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	server.Close()
+}
+
 func main() {
 	router := httprouter.New()
 
@@ -121,5 +126,9 @@ func main() {
 	router.OPTIONS("/return-401", AllowCors)
 	router.GET("/return-401", Return401)
 
-	log.Fatal(http.ListenAndServe(":8060", router))
+	router.POST("/shutdown", Shutdown)
+
+	server.Handler = router
+	server.ListenAndServe()
+
 }
