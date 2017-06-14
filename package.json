@@ -24,9 +24,9 @@
     "postlib": "npm run transpile",
     "test:default": "karma start karma.default.conf.js",
     "test:legacy": "karma start karma.legacy.conf.js",
-    "pretest": "go run test/server/server.go & echo $! > pid",
-    "test": "run-s build test:*",
-    "posttest": "kill -s 9 `cat pid`",
+    "server:test:start": "go run test/server/server.go &",
+    "server:test:stop": "go run test/server/shutdown.go",
+    "test": "run-s server:test:start build test:* server:test:stop",
     "clean": "shx rm -rf *.log lib/",
     "lint": "eslint src/**/*.js",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
@@ -81,8 +81,7 @@
     "rollup": "^0.43.0",
     "rollup-plugin-strip": "^1.1.1",
     "shx": "^0.2.1",
-    "validate-commit": "^3.2.1",
-    "wget-improved": "^1.4.0"
+    "validate-commit": "^3.2.1"
   },
   "eslintConfig": {
     "extends": "walmart/configurations/es6-browser",
