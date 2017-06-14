@@ -38,7 +38,9 @@
     "version": "npm run changelog && npm run changelog:edit && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && git checkout develop && git merge master && git push && git checkout master",
     "build": "npm run lib",
-    "coverage": "shx cat ./coverage/default.lcov.info | coveralls"
+    "coverage:legacy": "codecov -f ./coverage/legacy.lcov.info -F legacy",
+    "coverage:default": "codecov -f ./coverage/default.lcov.info -F default",
+    "coverage": "run-s coverage:*"
   },
   "bug": {
     "url": "https://github.com/fabbricadigitale/proauth.js/issues"
@@ -68,6 +70,7 @@
     "babel-plugin-transform-builtin-extend": "^1.1.0",
     "babel-plugin-transform-es2015-classes": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",
+    "codecov": "^2.2.0",
     "conventional-changelog-cli": "^1.2.0",
     "coveralls": "^2.13.1",
     "eslint": "^4.0.0",
