@@ -1,3 +1,5 @@
+[![Build Status](https://img.shields.io/travis/fabbricadigitale/proauth.js.svg?style=flat-square)](https://travis-ci.org/fabbricadigitale/proauth.js)
+
 proauth.js
 ==========
 
