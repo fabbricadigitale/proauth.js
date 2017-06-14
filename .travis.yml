@@ -1,0 +1,19 @@
+dist: trusty
+addons:
+  firefox: latest
+  apt:
+    packages:
+      - google-chrome-stable
+language: node_js
+node_js:
+  - "7"
+  - "6"
+cache: yarn
+before_install:
+  - pushd ./test/server && go get -d ./... && popd
+  # starting a GUI to run tests
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+script:
+  - npm run build
+  - npm run test
