@@ -1,12 +1,13 @@
 proauth.js
 ==========
 
-> Lightweight OAuth 2.0 client with automatic session handling.
+> Automagically attach OAuth2's tokens to HTTP requests.
 
-Basically, when *proauth.js* is used alongside your app, it automatically stores OAuth's tokens
-and handles any *managed URL*s (i.e. endpoints that require authentication, that you can specify within settings).
+**proauth.js** is an OAuth 2.0 client with session management functionality and ability to attach the `Authorization` header to HTTP requests made by the browser.
+Basically, when *proauth.js* is used alongside your app, it stores OAuth's tokens then handles any *managed URL*s
+(ie. endpoints that require authentication, that you can specify within settings).
 
-Any request made by the browser to a *managed URL* (i.e. an ajax to your authenticatated API endpoint) will be intercepted in a seamless way.
+Any request to a *managed URL* (ie. an ajax to your authenticatated API endpoint) will be intercepted in a seamless way.
 
 For each HTTP request to a *managed URL*, once tokens are obtained and stored, *proauth.js* will:
 - Attach the `Authorization` header containing the current access token
@@ -30,22 +31,41 @@ Just include the following snippet within `<head>`:
 <script src="lib/default.es2015.js"></script>
 ```
 
+To start a new session you have just to make an API call to the configured oauth endpoint or you can use the following commodity:
+```js
+proauth.client.login(<username>, <password>)
+```
+> Return a promise fulfilled when the response is obtained
+
+If authentication is successful, tokens are stored within the `localStorage` and used for subsequent request to *managed URLs*.
+
+To end the session you can use:
+```js
+proauth.client.clearSession()
+```
+or you can clear the `localStorage` by yourself.
+
+
 ### Configuration
 
 You can configure *proauth.js* changing properties of the global `proauth` variable, before loading the library.
 
 For example:
-
 ```js
-  proauth = {
-    swSrc: "/sw.js",
-    managedUrls: [
-      "/",
-      "http://example.com/folder/"
-    ]
-    ...
-  }
+proauth = {
+  swSrc: "/service-worker.js",
+  swOptions: {},
+  oauthUrl: "/oauth",
+  oauthClientId: "proauth",
+  sessionStorage: "localStorage",
+  namespace: "",
+  managedUrls: [
+      "/"
+  ]
+}
 ```
+> User settings must be set proior to load the library
+
 
 The properties you can customize are:
 * `swSrc`: path to the service worker that will be registered when `default` package is loaded by the browser. Set it to a falsey value to avoid the auto-registration of service worker. (default: **"/service-worker.js"**)
@@ -54,38 +74,32 @@ The properties you can customize are:
 * `authClientId`: OAuth client that will be used during negotiation of tokens. (default: **"proauth"**)
 * `sessionStorage`: where to store tokens and session informations. At the moment, only `localStorage` is supported. (default: **"localStorage"**)
 * `namespace`: namespace that will be used to distinguish between sessions. (default: **document.origin && document.origin !== "null" ? document.origin : ""**)
-* `managedUrls`: array of URLs where to attach the *Authorization* header. (default: **["/"]**)
+* `managedUrls`: array of base URLs where to attach the *Authorization* header. (default: **["/"]**)
+
 
 ## How it works
 
-TODO
-
-### Architecture
-
 This library implements a Client-Service model (both on browser side), also defining its own communication protocol.
 The Client will communicate with the Service using the *postMessage* technique.
-It is exposing a very thin API that allows you to set the configuration and perform basic tasks (i.e. clearing the session).
+It is exposing a very thin API that allows you to set the configuration and perform basic tasks (ie. clearing the session).
 Instead, the Service will perform the real job by handling all HTTP requests.
-The more powerful way to accomplish this goal is to implement it within a *serviceWorker* that allows to intercept the requests, furthermore one Service can handle multiple Client instances that are sharing the same origin (i.e. when using your app in multiple tabs concurrently).
+The more powerful way to accomplish this goal is to implement it within a *serviceWorker* that allows to intercept the requests, furthermore one Service can handle multiple Client instances that are sharing the same origin (ie. when using your app in multiple tabs concurrently).
 
-#### Legacy mode
+### Legacy mode
 
-When the *ServiceWorker* is not available (i.e. the browser lacks support for it) then *proauth.js* will load the *legacy package* that will imitate the Service behavior. This is done by monkey patching the *XHR* and *fetch* components of the browser in order to hook HTTP requests.
+When the *ServiceWorker* is not available (ie. the browser lacks support for it) the *legacy package* will imitate the Service behavior. This is done by hooking the *XHR* and *fetch* components of the browser in order to intercept HTTP requests.
 Even this approach has some caveats (of course it's not ideal), BTW it should work without issues with the majority of 3rd-party libraries because all standardized interfaces are strongly respected, also it has no issue when polyfills are needed.
 
-## Developers
+### Packages
 
-### Requirements:
-* **Node.js** LTS version (6.9+ at the moment of writing)
+This library provides the following packages:
 
-### First setup
-* Clone this repo
-* Install dependencies with following command:
-```
-yarn install
-```
+- [src/client.js](./src/client.js) is imported by `legacy` and `default`. You should not import this package directly, unless you need to make a custom bundle of *proauth.js* that may be usefull if you want build it within your app.
+- [src/legacy.js](./src/legacy.js) is required when a browser has no *seviceWorker* support. It loads stuff to work in *legacy mode* and bootstraps the `client`.
+- [src/default.js](./src/default.js) is required for the normal operational mode. It can register the `service-worker` and when ready bootstraps the `client`.
+- [src/service-worker.js](./src/service-worker.js) is required for the normal operatinal mode and is used in the *serviceWorker* context. You can use it directly or can include it in your own *serviceWorker* distribution.
 
-## Tests
+## Testing
 
 ### Requirements:
 * **Go** 1.8+
@@ -98,35 +112,6 @@ yarn install
 * `npm test`
 
 ---
-
-### Building
-
-You can primarily generate two kind of builds:
-* Build containing source maps for debugging purposes (ie., `BUILD_ENV=development`)
-* Build for production use
-
-The build generates three distinct and composable libraries.
-
-The commands to build them are:
-
-```
-npm run dev
-npm run lib
-```
-
-### Releasing
-
-The process is the following:
-
-1. Go on the **master** branch
-
-2. Ensure all dependencies are in place
-
-3. Start the **release process** executing
-
-    `npm version patch -m "New: Version %s"`
-
-4. The default git editor will be opened. Modify the **CHANGELOG** if needed, then save
 
 ## Demo
 
