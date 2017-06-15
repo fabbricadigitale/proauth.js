@@ -1,4 +1,6 @@
-### Building
+
+
+## Building
 
 You can primarily generate two kind of builds:
 * Build containing source maps for debugging purposes (ie., `BUILD_ENV=development`)
@@ -13,7 +15,7 @@ npm run dev
 npm run lib
 ```
 
-### Releasing
+## Releasing
 
 The process is the following:
 
@@ -25,4 +27,4 @@ The process is the following:
 
     `npm version patch -m "New: Version %s"`
 
-4. The default git editor will be opened. Modify the **CHANGELOG** if needed, then save
+4. The default git editor will be opened: edit the **CHANGELOG** where needed, then save

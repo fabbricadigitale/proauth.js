@@ -22,6 +22,10 @@ So, you don't have to care anymore about handling OAuth.
 
 TODO
 
+### Requirements
+
+* Node.JS >= 4
+
 ## Usage
 
 Just include the following snippet within `<head>`:
@@ -104,15 +108,19 @@ This library provides the following packages:
 
 ## Testing
 
-### Requirements:
-* **Go** 1.8+
+The tests are run against a dummy server written in Go.
+
+### Requirements
+
+* **Go** >= 1.6
 
 ### First setup
+
 * `go get github.com/julienschmidt/httprouter`
 
 ### Run
-* `npm run lib`
-* `npm test`
+
+Simply execute `npm test`.
 
 ---
 
