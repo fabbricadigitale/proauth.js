@@ -10,7 +10,7 @@ proauth.js
 Basically, when *proauth.js* is used alongside your app, it stores OAuth's tokens then handles any *managed URL*s
 (ie. endpoints that require authentication, that you can specify within settings).
 
-Any request to a *managed URL* (ie. an ajax to your authenticatated API endpoint) will be intercepted in a seamless way.
+Any request to a *managed URL* (ie. an ajax to your authenticated API endpoint) will be intercepted in a seamless way.
 
 For each HTTP request to a *managed URL*, once tokens are obtained and stored, *proauth.js* will:
 - Attach the `Authorization` header containing the current access token
@@ -44,7 +44,7 @@ proauth.client.login(<username>, <password>)
 ```
 > Return a promise fulfilled when the response is obtained
 
-If authentication is successful, tokens are stored within the `localStorage` and used for subsequent request to *managed URLs*.
+If authentication is successful, tokens are stored within the `localStorage` and used for subsequent requests to *managed URLs*.
 
 To end the session you can use:
 ```js
@@ -95,7 +95,7 @@ The more powerful way to accomplish this goal is to implement it within a *servi
 ### Legacy mode
 
 When the *ServiceWorker* is not available (ie. the browser lacks support for it) the *legacy package* will imitate the Service behavior. This is done by hooking the *XHR* and *fetch* components of the browser in order to intercept HTTP requests.
-Even this approach has some caveats (of course it's not ideal), BTW it should work without issues with the majority of 3rd-party libraries because all standardized interfaces are strongly respected, also it has no issue when polyfills are needed.
+Even if this approach has some caveats (of course it's not ideal) it should work without issues with the majority of 3rd-party libraries because all standardized interfaces are strongly respected, also it has no issue when polyfills are needed.
 
 ### Packages
 
