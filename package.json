@@ -28,7 +28,7 @@
     "coverage:test:legacy": "shx cat ./coverage/legacy.text.txt && shx cat ./coverage/legacy.text.summary.txt",
     "server:test:start": "go run test/server/server.go &",
     "server:test:stop": "go run test/server/shutdown.go",
-    "test": "run-s server:test:start build test:* server:test:stop coverage:test:*",
+    "test": "run-s lint server:test:start build test:* server:test:stop coverage:test:*",
     "clean": "shx rm -rf *.log lib/ coverage/",
     "lint": "eslint src/**/*.js test/**/*.js",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
