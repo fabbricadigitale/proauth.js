@@ -9,15 +9,15 @@ describe("Xhr patch", function () {
   }, config.pauseAfterRequests * 2)
 
   it("shows a warning when open() is called with async = false", function () {
-    console.log = jasmine.createSpy("console.log")
+    console.warn = jasmine.createSpy("console.warn")
 
     var xhttp = new XMLHttpRequest()
     xhttp.open("GET", config.oauthServerUrl, true)
-    expect(console.log).not.toHaveBeenCalled()
+    expect(console.warn).not.toHaveBeenCalled()
 
     var xhttp2 = new XMLHttpRequest()
     xhttp2.open("GET", config.oauthServerUrl, false)
-    expect(console.log).toHaveBeenCalledWith("Synchronous XHR are not supported")
+    expect(console.warn).toHaveBeenCalledWith("Synchronous XHR are not supported")
   })
 
   it("logs an error if setRequestHeader() is called with unsafe headers", function () {
