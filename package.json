@@ -30,7 +30,7 @@
     "server:test:stop": "go run test/server/shutdown.go",
     "test": "run-s server:test:start build test:* server:test:stop coverage:test:*",
     "clean": "shx rm -rf *.log lib/ coverage/",
-    "lint": "eslint src/**/*.js",
+    "lint": "eslint src/**/*.js test/**/*.js",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
     "changelog:edit": "$(git var GIT_EDITOR) CHANGELOG.md",
     "from:master": "node -e 'process.exit(require(\"git-rev-sync\").branch(process.cwd()) !== \"master\")'",
