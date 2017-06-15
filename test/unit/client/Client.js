@@ -79,33 +79,6 @@ describe("Proauth client", function () {
     }, config.pauseAfterRequests)
   }, config.pauseAfterRequests * 4)
 
-  it("set sessions correctly", function (done) {
-    var client = proauth.client
-
-    expect(client.hasSession()).toBe(false)
-
-    var sessionData = { "someKey": "someValue" }
-    client.setSession(sessionData)
-
-    setTimeout(function () {
-      expect(client.sessionContainer.content).toEqual(sessionData)
-      expect(client.hasSession()).toBe(true)
-
-      var sessionData2 = { "someKey2": "someValue2" }
-      // Override old session
-      client.setSession(sessionData2)
-
-      setTimeout(function () {
-        expect(client.sessionContainer.content).toEqual(sessionData2)
-        expect(client.hasSession()).toBe(true)
-        proauth.client.sessionContainer.clear()
-        expect(client.hasSession()).toBe(false)
-        done()
-      }, config.pauseAfterRequests)
-
-    }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 4)
-
   it("executes login correctly", function (done) {
     var client = proauth.client
 
