@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -98,6 +99,11 @@ func AllowCors(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	fmt.Fprint(w, "")
 }
 
+func Sleep(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	time.Sleep(time.Second)
+	fmt.Fprint(w, "")
+}
+
 func Shutdown(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	os.Exit(0)
 }
@@ -125,6 +131,9 @@ func main() {
 
 	router.OPTIONS("/return-401", AllowCors)
 	router.GET("/return-401", Return401)
+
+	router.OPTIONS("/sleep", AllowCors)
+	router.GET("/sleep", Sleep)
 
 	router.POST("/shutdown", Shutdown)
 
