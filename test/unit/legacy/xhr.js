@@ -239,7 +239,7 @@ describe("Xhr patch", function () {
     spyOn(xhttp, 'onloadend')
 
     xhttp.timeout = 1
-    xhttp.open("GET", "/webserver/oauth")
+    xhttp.open("GET", "/webserver/sleep")
     xhttp.send()
 
     setTimeout(function () {
