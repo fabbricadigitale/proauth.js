@@ -2,7 +2,7 @@
   "name": "proauth.js",
   "version": "v0.2.5",
   "description": "Lightweight OAuth 2.0 client with automatic session handling",
-  "main": "lib/client.es2015.js",
+  "main": "lib/default.es2015.js",
   "scripts": {
     "dev": "run-p dev:*",
     "predev": "npm run clean",
