@@ -1,5 +1,7 @@
 'use strict'
 
+import strip from 'rollup-plugin-strip';
+
 /* global process */
 
 const inDevelopment = () => process.env.BUILD_ENV && ['development', 'dev', 'develop'].indexOf(process.env.BUILD_ENV.toLowerCase()) >= 0
@@ -14,11 +16,20 @@ const rollupOpts = {
   entry: `src/${target}.js`,
   moduleName: 'proauth',
   format: 'iife',
-  dest: `lib/${target}.es2015.js`
+  dest: `lib/${target}.es2015.js`,
+  plugins: []
 }
 
 if (inDevelopment()) {
   rollupOpts.sourceMap = 'inline'
+} else {
+  rollupOpts.plugins.push(
+    strip({
+      debugger: true,
+      functions: ['console.log'],
+      sourceMap: true
+    })
+  )
 }
 
 export default rollupOpts
