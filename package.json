@@ -58,7 +58,12 @@
     "auth",
     "authentication",
     "client",
-    "browser"
+    "browser",
+    "oauth",
+    "oauth2",
+    "service-worker",
+    "session",
+    "token"
   ],
   "license": "MIT",
   "dependencies": {
