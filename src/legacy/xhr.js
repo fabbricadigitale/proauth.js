@@ -211,7 +211,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
     }
 
     if (!async) {
-      console && console.log && console.log("Synchronous XHR are not supported")
+      console && console.warn && console.warn("Synchronous XHR are not supported")
     }
 
     this[_method] = method
