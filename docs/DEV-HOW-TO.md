@@ -1,4 +1,12 @@
+# DEV HOW-TO
 
+## Requirements
+
+* **Yarn** >= 0.21
+
+## Install dependencies
+
+Simply run `yarn install`
 
 ## Building
 

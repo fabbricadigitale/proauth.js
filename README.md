@@ -20,11 +20,11 @@ So, you don't have to care anymore about handling OAuth.
 
 ## Install
 
-TODO
+To install this library, you can simply run the following command:
 
-### Requirements
+`npm install proauth.js`
 
-* Node.JS >= 4
+Easy peasy!
 
 ## Usage
 
@@ -112,10 +112,13 @@ The tests are run against a dummy server written in Go.
 
 ### Requirements
 
+* **Node.js** >= 4
+* **Yarn** >= 0.21
 * **Go** >= 1.6
 
 ### First setup
 
+* `yarn install`
 * `go get github.com/julienschmidt/httprouter`
 
 ### Run
