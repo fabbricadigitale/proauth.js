@@ -20,7 +20,7 @@
     "transpile:legacy": "babel lib/legacy.es2015.js --out-file lib/legacy.js",
     "transpile": "run-p transpile:*",
     "prelib": "npm run clean",
-    "lib": "run-p lib:*",
+    "lib": "shx mkdir -p lib && run-p lib:*",
     "postlib": "npm run transpile",
     "test:default": "karma start karma.default.conf.js",
     "coverage:test:default": "shx cat ./coverage/default.text.txt && shx cat ./coverage/default.text.summary.txt",
