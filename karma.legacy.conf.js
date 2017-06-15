@@ -8,13 +8,12 @@ module.exports = function (config) {
     files: [
       "test/fixture/proauth-settings.js",
       "test/fixture/tests-settings.js",
-      "lib/legacy.js",
+      "lib/legacy.es2015.js",
       "test/**/*.js"
     ],
 
     preprocessors: {
-      "!lib/*.es2015.js": "coverage",
-      "lib/*.js": "coverage"
+     "lib/legacy.es2015.js": "coverage"
     },
 
     reporters: [
@@ -23,11 +22,12 @@ module.exports = function (config) {
     ],
 
     coverageReporter: {
-      dir: 'coverage',
+      dir: "coverage",
       reporters: [
-        { type: 'lcovonly', subdir: '.', file: 'legacy.lcov.info' },
-        { type: 'text', subdir: '.', file: 'legacy.text.txt' },  
-        { type: 'text-summary', subdir: '.', file: 'legacy.text.summary.txt' }
+        { type: "lcovonly", subdir: ".", file: "legacy.lcov.info" },
+        { type: "text", subdir: ".", file: "legacy.text.txt" },
+        { type: "text-summary", subdir: ".", file: "legacy.text.summary.txt" },
+        { type: "html", subdir: "html/legacy" }
       ]
     },
 
