@@ -98,6 +98,9 @@
       "no-console": "off"
     }
   },
+  "engines": {
+    "node" : ">=4"
+  },
   "babel": {
     "presets": [
       [
