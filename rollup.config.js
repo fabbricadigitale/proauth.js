@@ -23,11 +23,11 @@ const rollupOpts = {
 if (inDevelopment()) {
   rollupOpts.sourceMap = 'inline'
 } else {
+  rollupOpts.sourceMap = true
   rollupOpts.plugins.push(
     strip({
       debugger: true,
-      functions: ['console.log'],
-      sourceMap: true
+      functions: ['console.log']
     })
   )
 }
