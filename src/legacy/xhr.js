@@ -72,7 +72,7 @@ const verifyState = function (xhr, method) {
   Borrowed from JSpec
 */
 const parseXML = function (text) {
-  let xmlDoc
+  let xmlDoc = null
 
   if (typeof DOMParser !== "undefined") {
     const parser = new DOMParser()
@@ -87,7 +87,7 @@ const parseXML = function (text) {
       return null
     }
   } else {
-    xmlDoc = new ActiveXObject("Microsoft.XMLDOM")
+    xmlDoc = new ActiveXObject("Microsoft.XMLDOM") // eslint-disable-line no-undef
     xmlDoc.async = "false"
     xmlDoc.loadXML(text)
   }
@@ -148,7 +148,11 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
   get responseText() {
     const responseType = this.responseType
     if (responseType !== "" && responseType !== "text") {
-      throwReadPropError("responseType", `The value is only accessible if the object's 'responseType' is '' or 'text' (was '${responseType}')`)
+      throwReadPropError(
+        "responseType",
+        `The value is only accessible if the object's 'responseType' is '' ` +
+        `or 'text' (was '${responseType}')`
+      )
     }
 
     const state = this[_readyState]
@@ -162,7 +166,10 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
   get responseXML() {
     const responseType = this.responseType
     if (responseType !== "" && responseType !== "document") {
-      throwReadPropError("responseXML", `The value is only accessible if the object's 'responseType' is '' or 'document' (was '${responseType}')`)
+      throwReadPropError(
+        "responseXML",
+        `The value is only accessible if the object's 'responseType' is '' ` +
+        `or 'document' (was '${responseType}')`)
     }
 
     const body = this[_responseBody]
@@ -173,7 +180,8 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
     const finalMimeType = this.getResponseHeader("Content-Type")
 
-    if (finalMimeType !== null && !/(text\/html)|(text\/xml)|(application\/xml)|(\+xml)/i.test(finalMimeType)) {
+    if (finalMimeType !== null &&
+      !/(text\/html)|(text\/xml)|(application\/xml)|(\+xml)/i.test(finalMimeType)) {
       return null
     }
 
@@ -181,16 +189,7 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
       return null
     }
 
-    /* Maybe this try is not needed, since DOMParser does not throw exceptions on invalid XML,
-     * but it send the error in the resulting XML.
-     * Needed to test the behavior of ActiveX method
-     */
-    try {
-      return parseXML(body)
-    } catch (error) { }
-
-    return null
-
+    return parseXML(body)
   }
 
   get withCredentials() {
@@ -203,15 +202,22 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   /**
    * Duplicates the behavior of native XMLHttpRequest's open function
+   *
+   * @param {string} method Method of the request
+   * @param {string} url URL of the request
+   * @param {boolean} async Wheter to make the request synchronously or not
+   * @param {string} username Username to use in the request
+   * @param {string} password Password to use in the request
+   * @returns {void}
    */
-  open(method, url, async = true, username, password) {
+  open(method, url, async = true, username, password) { // eslint-disable-line max-params
 
     if (method === undefined || url === undefined) {
       throw new TypeError("Not enough arguments to XMLHttpRequest.open")
     }
 
     if (!async) {
-      console && console.warn && console.warn("Synchronous XHR are not supported")
+      if (console && console.warn) { console.warn("Synchronous XHR are not supported") }
     }
 
     this[_method] = method
@@ -225,6 +231,10 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   /**
    * Duplicates the behavior of native XMLHttpRequest's setRequestHeader function
+   *
+   * @param {string} header Header key
+   * @param {string} value Header value
+   * @returns {void}
    */
   setRequestHeader(header, value) {
     verifyState(this, "setRequestHeader")
@@ -242,7 +252,10 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
   }
 
   /**
-   *  Duplicates the behavior of native XMLHttpRequest's send function
+   * Duplicates the behavior of native XMLHttpRequest's send function
+   *
+   * @param {object|null} data Request body
+   * @returns {void}
    */
   send(data) {
     verifyState(this, "send")
@@ -339,6 +352,8 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   /**
    * Duplicates the behavior of native XMLHttpRequest's abort function
+   *
+   * @returns {void}
    */
   abort() {
     this[_aborted] = true
@@ -359,6 +374,9 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   /**
    * Duplicates the behavior of native XMLHttpRequest's getResponseHeader function
+   *
+   * @param {string} header Header key
+   * @returns {string|null} Header value
    */
   getResponseHeader(header) {
     if (this[_readyState] < this.HEADERS_RECEIVED) {
@@ -382,6 +400,8 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   /**
    * Duplicates the behavior of native XMLHttpRequest's getAllResponseHeaders function
+   *
+   * @returns {array} List of response headers
    */
   getAllResponseHeaders() {
     if (this[_readyState] < this.HEADERS_RECEIVED) {
@@ -406,6 +426,9 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
 
   /**
    * Duplicates the behavior of native XMLHttpRequest's overrideMimeType function
+   *
+   * @param {string} mimeType MimeType that will be used
+   * @returns {void}
    */
   overrideMimeType(mimeType) {
     if (typeof mimeType === "string") {
