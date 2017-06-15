@@ -14,7 +14,7 @@ module.exports = function (config) {
     ],
 
     preprocessors: {
-      "lib/*.es2015.js": "coverage"
+      "lib/default.es2015.js": "coverage"
     },
 
     reporters: [
@@ -23,11 +23,12 @@ module.exports = function (config) {
     ],
 
     coverageReporter: {
-      dir: 'coverage',
+      dir: "coverage",
       reporters: [
-        { type: 'lcovonly', subdir: '.', file: 'default.lcov.info' },
-        { type: 'text', subdir: '.', file: 'default.text.txt' },        
-        { type: 'text-summary', subdir: '.', file: 'default.text.summary.txt' }
+        { type: "lcovonly", subdir: ".", file: "default.lcov.info" },
+        { type: "text", subdir: ".", file: "default.text.txt" },
+        { type: "text-summary", subdir: ".", file: "default.text.summary.txt" },
+        { type: "html", subdir: "html/default" }
       ]
     },
 
