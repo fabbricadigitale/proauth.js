@@ -38,8 +38,8 @@
     "version": "npm run changelog && npm run changelog:edit && git add CHANGELOG.md",
     "postversion": "git push && git push --tags && git checkout develop && git merge master && git push && git checkout master",
     "build": "npm run lib",
-    "coverage:legacy": "codecov -f ./coverage/legacy.lcov.info -F legacy",
-    "coverage:default": "codecov -f ./coverage/default.lcov.info -F default",
+    "coverage:legacy": "cat coverage/legacy.coverage.json | remap-istanbul -o coverage/legacy.coverage.remap.json && codecov -f coverage/legacy.coverage.remap.json -F legacy",
+    "coverage:default": "cat coverage/default.coverage.json | remap-istanbul -o coverage/default.coverage.remap.json && codecov -f coverage/default.coverage.remap.json -F default",
     "coverage": "run-s coverage:*"
   },
   "bug": {
@@ -86,6 +86,7 @@
     "karma-jasmine": "^1.1.0",
     "karma-spec-reporter": "^0.0.31",
     "npm-run-all": "^4.0.2",
+    "remap-istanbul": "^0.9.5",
     "rollup": "^0.43.0",
     "rollup-plugin-strip": "^1.1.1",
     "shx": "^0.2.1",
@@ -99,7 +100,7 @@
     }
   },
   "engines": {
-    "node" : ">=4"
+    "node": ">=4"
   },
   "babel": {
     "presets": [
