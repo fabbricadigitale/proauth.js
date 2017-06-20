@@ -298,13 +298,20 @@ class XMLHttpRequestToFetch extends XMLHttpRequest {
         // HEADERS_RECEIVED Stage
         const headers = response.headers
         this[_responseHeaders] = {}
+        let mimeTypeForced = false
+
         headers.forEach((value, key) => {
           if (this[_forceMimeType] && key.toLowerCase() === "content-type") {
             this[_responseHeaders][key] = this[_forceMimeType]
+            mimeTypeForced = true
           } else {
             this[_responseHeaders][key] = value
           }
         })
+
+        if (this[_forceMimeType] && !mimeTypeForced) {
+          this[_responseHeaders]["Content-Type"] = this[_forceMimeType]
+        }
 
         readyStateChange(this, this.HEADERS_RECEIVED)
 
