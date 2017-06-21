@@ -25,13 +25,17 @@ describe("Proauth client", function () {
     expect(settings.oauthUrl).toBe("http://localhost:9876/oauth")
     expect(settings.oauthClientId).toBe("test")
     expect(settings.sessionStorage).toBe("localStorage")
-    expect(settings.managedUrls).toEqual([window.location.protocol + "//" + window.location.host + "/"])
+    expect(settings.managedUrls).toEqual(
+      [
+        window.location.protocol + "//" + window.location.host + "/"
+      ]
+    )
     expect(sessionContainer.namespace).toBe(settings.namespace)
     expect(client.sessionContainer.content).toBeNull()
     expect(client.serviceWorker).not.toBeNull()
   })
 
-  it("set legacyMode correctly", function() {
+  it("set legacyMode correctly", function () {
     var client = proauth.client
     var legacy = proauth.legacy
     expect(client.legacyMode).toBe(!!legacy)
@@ -81,7 +85,7 @@ describe("Proauth client", function () {
       }, config.pauseAfterRequests)
 
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 4)
+  }, config.testTimeout)
 
   it("executes login correctly", function (done) {
     var client = proauth.client
@@ -94,7 +98,7 @@ describe("Proauth client", function () {
       expect(client.hasSession()).toBe(true)
       done()
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("fails login if credentials are wrong", function (done) {
     var client = proauth.client
@@ -107,7 +111,7 @@ describe("Proauth client", function () {
       expect(client.hasSession()).toBe(false)
       done()
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("sends headers in ajax after login", function (done) {
     var client = proauth.client
@@ -119,7 +123,7 @@ describe("Proauth client", function () {
       var response
       xhttp.open("GET", "/return-authorization-header")
       xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState === 4 && this.status === 200) {
           response = this.responseText
         }
       }
@@ -132,7 +136,7 @@ describe("Proauth client", function () {
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 4)
+  }, config.testTimeout)
 
   it("sends headers in fetch after login", function (done) {
     var client = proauth.client
@@ -154,7 +158,7 @@ describe("Proauth client", function () {
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 4)
+  }, config.testTimeout)
 
   it("re-negotiates token with ajax if it is expired", function (done) {
     var client = proauth.client
@@ -166,7 +170,7 @@ describe("Proauth client", function () {
       var response
       xhttp.open("GET", "/simulate-token-expired")
       xhttp.onreadystatechange = function () {
-        if (this.readyState == 4) {
+        if (this.readyState === 4) {
           expect(this.status).toBe(200)
           response = this.responseText
         }
@@ -180,7 +184,7 @@ describe("Proauth client", function () {
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 4)
+  }, config.testTimeout)
 
   it("re-negotiates token with fetch if it is expired", function (done) {
     var client = proauth.client
@@ -203,7 +207,7 @@ describe("Proauth client", function () {
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 4)
+  }, config.testTimeout)
 
   it("doesn't go in an infinite loop if 401 is always returned with ajax", function (done) {
     var client = proauth.client
@@ -215,7 +219,7 @@ describe("Proauth client", function () {
       var status
       xhttp.open("GET", "/return-error-401")
       xhttp.onreadystatechange = function () {
-        if (this.readyState == 4) {
+        if (this.readyState === 4) {
           status = this.status
         }
       }
@@ -228,7 +232,7 @@ describe("Proauth client", function () {
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 4)
+  }, config.testTimeout)
 
   it("doesn't go in an infinite loop if 401 is always returned with fetch", function (done) {
     var client = proauth.client
@@ -248,6 +252,6 @@ describe("Proauth client", function () {
         done()
       }, config.pauseAfterRequests)
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 4)
+  }, config.testTimeout)
 
 })
