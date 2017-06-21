@@ -52,7 +52,7 @@ describe("Xhr patch", function () {
       done()
     }, config.pauseAfterRequests)
 
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("changes readyState correctly when request encounters an error", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -69,28 +69,29 @@ describe("Xhr patch", function () {
       done()
     }, config.pauseAfterRequests)
 
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
 
-  it("fires readyStateChange events correctly when request finishes without problems", function (done) {
+  it("fires readyStateChange events correctly when request finishes without problems",
+    function (done) {
 
-    var currReadyState = 0
-    var xhttp = new XMLHttpRequest()
+      var currReadyState = 0
+      var xhttp = new XMLHttpRequest()
 
-    xhttp.onreadystatechange = function () {
-      expect(this.readyState).toBe(++currReadyState)
-    }
-    spyOn(xhttp, 'onreadystatechange').and.callThrough()
+      xhttp.onreadystatechange = function () {
+        expect(this.readyState).toBe(++currReadyState)
+      }
+      spyOn(xhttp, "onreadystatechange").and.callThrough()
 
-    xhttp.open("GET", "/oauth")
-    xhttp.send()
+      xhttp.open("GET", "/oauth")
+      xhttp.send()
 
-    setTimeout(function () {
-      expect(xhttp.onreadystatechange).toHaveBeenCalledTimes(4)
-      done()
-    }, config.pauseAfterRequests)
+      setTimeout(function () {
+        expect(xhttp.onreadystatechange).toHaveBeenCalledTimes(4)
+        done()
+      }, config.pauseAfterRequests)
 
-  }, config.pauseAfterRequests * 2)
+    }, config.testTimeout)
 
   it("fires load events in correct order when request finishes without problems", function (done) {
 
@@ -105,25 +106,25 @@ describe("Xhr patch", function () {
       expect(evtIndex).toBe(0)
       evtIndex++
     }
-    spyOn(xhttp, 'onloadstart').and.callThrough()
+    spyOn(xhttp, "onloadstart").and.callThrough()
 
     xhttp.onprogress = function () {
       expect(evtIndex).toBe(1)
       evtIndex++
     }
-    spyOn(xhttp, 'onprogress').and.callThrough()
+    spyOn(xhttp, "onprogress").and.callThrough()
 
     xhttp.onload = function () {
       expect(evtIndex).toBe(2)
       evtIndex++
     }
-    spyOn(xhttp, 'onload').and.callThrough()
+    spyOn(xhttp, "onload").and.callThrough()
 
     xhttp.onloadend = function () {
       expect(evtIndex).toBe(3)
       evtIndex++
     }
-    spyOn(xhttp, 'onloadend').and.callThrough()
+    spyOn(xhttp, "onloadend").and.callThrough()
 
     xhttp.open("GET", "/oauth")
     xhttp.send()
@@ -136,7 +137,7 @@ describe("Xhr patch", function () {
       done()
     }, config.pauseAfterRequests)
 
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("fires load events in correct order when request encounters an error", function (done) {
 
@@ -147,13 +148,13 @@ describe("Xhr patch", function () {
       expect(evtIndex).toBe(1)
       evtIndex++
     }
-    spyOn(xhttp, 'onerror').and.callThrough()
+    spyOn(xhttp, "onerror").and.callThrough()
 
     xhttp.onloadstart = function () {
       expect(evtIndex).toBe(0)
       evtIndex++
     }
-    spyOn(xhttp, 'onloadstart').and.callThrough()
+    spyOn(xhttp, "onloadstart").and.callThrough()
 
     xhttp.onload = function () {
       fail()
@@ -163,7 +164,7 @@ describe("Xhr patch", function () {
       expect(evtIndex).toBe(2)
       evtIndex++
     }
-    spyOn(xhttp, 'onloadend').and.callThrough()
+    spyOn(xhttp, "onloadend").and.callThrough()
 
     xhttp.open("GET", "http://invalid-url" + Math.random())
     xhttp.send()
@@ -175,7 +176,7 @@ describe("Xhr patch", function () {
       done()
     }, config.pauseAfterRequests)
 
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("fires events correctly when aborted", function (done) {
 
@@ -193,9 +194,9 @@ describe("Xhr patch", function () {
       fail()
     }
 
-    spyOn(xhttp, 'onloadstart').and.callThrough()
-    spyOn(xhttp, 'onabort')
-    spyOn(xhttp, 'onloadend')
+    spyOn(xhttp, "onloadstart").and.callThrough()
+    spyOn(xhttp, "onabort")
+    spyOn(xhttp, "onloadend")
 
     xhttp.open("GET", "/oauth")
     xhttp.send()
@@ -208,7 +209,7 @@ describe("Xhr patch", function () {
       done()
     }, config.pauseAfterRequests)
 
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("goes in timeout correctly", function (done) {
 
@@ -226,9 +227,9 @@ describe("Xhr patch", function () {
       fail()
     }
 
-    spyOn(xhttp, 'onloadstart').and.callThrough()
-    spyOn(xhttp, 'ontimeout')
-    spyOn(xhttp, 'onloadend')
+    spyOn(xhttp, "onloadstart").and.callThrough()
+    spyOn(xhttp, "ontimeout")
+    spyOn(xhttp, "onloadend")
 
     xhttp.timeout = 1
     xhttp.open("GET", "/sleep")
@@ -241,7 +242,7 @@ describe("Xhr patch", function () {
       done()
     }, config.pauseAfterRequests)
 
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("set withCredentials always as a boolean", function () {
     var xhttp = new XMLHttpRequest()
@@ -311,7 +312,7 @@ describe("Xhr patch", function () {
       }).toThrow()
       done()
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("returns null in responseXML if document is empty", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -323,7 +324,7 @@ describe("Xhr patch", function () {
       expect(xhttp.responseXML).toBeNull()
       done()
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("returns null in responseXML if document is invalid", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -335,7 +336,7 @@ describe("Xhr patch", function () {
       expect(xhttp.responseXML).toBeNull()
       done()
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("returns headers in case unsensitive way", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -355,7 +356,7 @@ describe("Xhr patch", function () {
       expect(xhttp.getResponseHeader("KEY-D")).toBe("VALUE-D")
       done()
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("returns response url correctly", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -365,9 +366,13 @@ describe("Xhr patch", function () {
     xhttp.send()
 
     setTimeout(function () {
-      expect(xhttp.responseURL).toBe(window.location.protocol + "//" + window.location.host + "/return-some-headers?query&key=value")
+      expect(xhttp.responseURL).toBe(
+        window.location.protocol +
+        "//" +
+        window.location.host + "/return-some-headers?query&key=value"
+      )
       done()
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
 })
