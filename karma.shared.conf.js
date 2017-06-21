@@ -172,11 +172,7 @@ module.exports = function (config) {
     },
 
     plugins: [
-      "karma-chrome-launcher",
-      "karma-coverage",
-      "karma-firefox-launcher",
-      "karma-jasmine",
-      "karma-spec-reporter",
+      "karma-*",
       { "middleware:oauth": ["factory", oauthFactory] },
       { "middleware:return-authorization-header": ["factory", returnAuthorizationHeader] },
       { "middleware:return-empty-response": ["factory", returnEmptyResponse] },
