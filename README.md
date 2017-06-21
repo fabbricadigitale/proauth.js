@@ -108,18 +108,14 @@ This library provides the following packages:
 
 ## Testing
 
-The tests are run against a dummy server written in Go.
-
 ### Requirements
 
 * **Node.js** >= 4
 * **Yarn** >= 0.21
-* **Go** >= 1.6
 
 ### First setup
 
 * `yarn install`
-* `go get github.com/julienschmidt/httprouter`
 
 ### Run
 

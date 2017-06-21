@@ -1,3 +1,5 @@
+"use strict"
+
 const sharedConf = require("./karma.shared.conf.js");
 
 module.exports = function (config) {
@@ -34,7 +36,6 @@ module.exports = function (config) {
 
     exclude: [
     ],
-
 
     browsers: ["Chrome", "Firefox"]
 
