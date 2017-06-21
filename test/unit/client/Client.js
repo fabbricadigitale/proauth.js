@@ -4,13 +4,17 @@ describe("Proauth client", function () {
     proauth.client.sessionContainer.clear()
   })
 
+  it("whenReady is a promise", function() {
+    expect(proauth.client.whenReady instanceof Promise).toBe(true)
+  })
+
   it("is ready", function (done) {
-    setTimeout(function () {
+    proauth.client.whenReady.then(() => {
       expect(proauth.client.ready).toBe(true)
       expect(proauth.client.hasSession()).toBe(false)
       done()
-    }, config.pauseAfterRequests * 2)
-  }, config.pauseAfterRequests * 3)
+    })
+  })
 
   it("has correct default values", function () {
     var client = proauth.client

@@ -4,13 +4,6 @@ describe("Session container", function () {
     proauth.client.sessionContainer.clear()
   })
 
-  it("is ready", function (done) {
-    setTimeout(function () {
-      expect(proauth.client.ready).toBe(true)
-      done()
-    }, config.pauseAfterRequests * 2)
-  }, config.pauseAfterRequests * 3)
-
   it("handles sessions correctly on storage", function () {
     var client = proauth.client
 
