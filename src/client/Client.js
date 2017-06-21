@@ -65,10 +65,18 @@ export default class Client {
 
       // (todo): set session race condition must be avoided, dirty-checking data may be a solution
     }
+
+    this._whenReady = new Promise((resolve) => {
+      this._resolveWhenReady = resolve
+    })
   }
 
   get ready() {
     return this._serviceWorker && this._ready
+  }
+
+  get whenReady() {
+    return this._whenReady
   }
 
   get legacyMode() {
@@ -102,7 +110,9 @@ export default class Client {
     }).then((data) => {
       this._serviceWorker.addEventListener("message", this._onMessage)
       this._ready = !!data
-      // (todo): dispatch global ready event
+      if (this._ready) {
+        this._resolveWhenReady()
+      }
       console.log("proauth.js is ready!")
     })
   }
