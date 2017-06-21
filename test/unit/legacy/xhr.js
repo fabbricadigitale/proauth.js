@@ -50,7 +50,7 @@ describe("Xhr patch", function () {
 
     expect(xhttp.readyState).toBe(0) // UNSENT
 
-    xhttp.open("GET", config.oauthServerUrl)
+    xhttp.open("GET", "/")
     expect(xhttp.readyState).toBe(1) // OPENED
 
     xhttp.send()
@@ -90,7 +90,7 @@ describe("Xhr patch", function () {
     }
     spyOn(xhttp, 'onreadystatechange').and.callThrough()
 
-    xhttp.open("GET", "/webserver/oauth")
+    xhttp.open("GET", "/oauth")
     xhttp.send()
 
     setTimeout(function () {
@@ -133,7 +133,7 @@ describe("Xhr patch", function () {
     }
     spyOn(xhttp, 'onloadend').and.callThrough()
 
-    xhttp.open("GET", "/webserver/oauth")
+    xhttp.open("GET", "/oauth")
     xhttp.send()
 
     setTimeout(function () {
@@ -205,7 +205,7 @@ describe("Xhr patch", function () {
     spyOn(xhttp, 'onabort')
     spyOn(xhttp, 'onloadend')
 
-    xhttp.open("GET", "/webserver/oauth")
+    xhttp.open("GET", "/oauth")
     xhttp.send()
     xhttp.abort()
 
@@ -239,7 +239,7 @@ describe("Xhr patch", function () {
     spyOn(xhttp, 'onloadend')
 
     xhttp.timeout = 1
-    xhttp.open("GET", "/webserver/sleep")
+    xhttp.open("GET", "/sleep")
     xhttp.send()
 
     setTimeout(function () {
@@ -295,7 +295,7 @@ describe("Xhr patch", function () {
 
     expect(xhttp.readyState).toBe(0)
 
-    xhttp.open("GET", "/webserver/oauth")
+    xhttp.open("GET", "/oauth")
     expect(xhttp.readyState).toBe(1)
   })
 
@@ -306,7 +306,7 @@ describe("Xhr patch", function () {
       xhttp.setRequestHeader("key", "value")
     }).toThrow()
 
-    xhttp.open("GET", config.oauthServerUrl)
+    xhttp.open("GET", "/")
     expect(function () {
       xhttp.setRequestHeader("key", "value")
     }).not.toThrow()
@@ -323,7 +323,7 @@ describe("Xhr patch", function () {
 
   it("returns null in responseXML if document is empty", function (done) {
     var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", config.oauthServerUrl + "/return-empty-response", true)
+    xhttp.open("GET", "/return-empty-response", true)
 
     xhttp.send()
 
@@ -335,7 +335,7 @@ describe("Xhr patch", function () {
 
   it("returns null in responseXML if document is invalid", function (done) {
     var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", config.oauthServerUrl + "/return-invalid-xml", true)
+    xhttp.open("GET", "/return-invalid-xml", true)
 
     xhttp.send()
 
@@ -347,7 +347,7 @@ describe("Xhr patch", function () {
 
   it("returns headers in case unsensitive way", function (done) {
     var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", "/webserver/return-some-headers", true)
+    xhttp.open("GET", "/return-some-headers", true)
 
     xhttp.send()
 
@@ -367,13 +367,13 @@ describe("Xhr patch", function () {
 
   it("returns response url correctly", function (done) {
     var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", "/webserver/return-some-headers?query&key=value#fragment", true)
+    xhttp.open("GET", "/return-some-headers?query&key=value#fragment", true)
     expect(xhttp.responseURL).toBe("")
 
     xhttp.send()
 
     setTimeout(function () {
-      expect(xhttp.responseURL).toBe(window.location.protocol + "//" + window.location.host + "/webserver/return-some-headers?query&key=value")
+      expect(xhttp.responseURL).toBe(window.location.protocol + "//" + window.location.host + "/return-some-headers?query&key=value")
       done()
     }, config.pauseAfterRequests)
   }, config.pauseAfterRequests * 2)
