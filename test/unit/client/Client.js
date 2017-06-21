@@ -18,10 +18,10 @@ describe("Proauth client", function () {
     var sessionContainer = client.sessionContainer
     expect(settings.swSrc).toBe("/service-worker.js")
     expect(settings.swOptions).toEqual({})
-    expect(settings.oauthUrl).toBe(config.oauthServerUrl + "/oauth")
+    expect(settings.oauthUrl).toBe("http://localhost:9876/oauth")
     expect(settings.oauthClientId).toBe("test")
     expect(settings.sessionStorage).toBe("localStorage")
-    expect(settings.managedUrls).toEqual([window.location.protocol + "//" + window.location.host + "/", config.oauthServerUrl + "/"])
+    expect(settings.managedUrls).toEqual([window.location.protocol + "//" + window.location.host + "/"])
     expect(sessionContainer.namespace).toBe(settings.namespace)
     expect(client.sessionContainer.content).toBeNull()
     expect(client.serviceWorker).not.toBeNull()
@@ -113,7 +113,7 @@ describe("Proauth client", function () {
     setTimeout(function () {
       var xhttp = new XMLHttpRequest()
       var response
-      xhttp.open("GET", config.oauthServerUrl + "/return-authorization-header")
+      xhttp.open("GET", "/return-authorization-header")
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           response = this.responseText
@@ -137,7 +137,7 @@ describe("Proauth client", function () {
 
     setTimeout(function () {
       var response
-      fetch(config.oauthServerUrl + "/return-authorization-header").then(function (data) {
+      fetch("/return-authorization-header").then(function (data) {
         data.text().then(function (text) {
           response = text
         })
@@ -160,7 +160,7 @@ describe("Proauth client", function () {
     setTimeout(function () {
       var xhttp = new XMLHttpRequest()
       var response
-      xhttp.open("GET", config.oauthServerUrl + "/simulate-token-expired")
+      xhttp.open("GET", "/simulate-token-expired")
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
           expect(this.status).toBe(200)
@@ -185,7 +185,7 @@ describe("Proauth client", function () {
 
     setTimeout(function () {
       var response
-      fetch(config.oauthServerUrl + "/simulate-token-expired").then(function (data) {
+      fetch("/simulate-token-expired").then(function (data) {
         expect(data.ok).toBe(true)
         data.text().then(function (text) {
           response = text
@@ -209,7 +209,7 @@ describe("Proauth client", function () {
     setTimeout(function () {
       var xhttp = new XMLHttpRequest()
       var status
-      xhttp.open("GET", config.oauthServerUrl + "/return-401")
+      xhttp.open("GET", "/return-error-401")
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
           status = this.status
@@ -233,7 +233,7 @@ describe("Proauth client", function () {
 
     setTimeout(function () {
       var status
-      fetch(config.oauthServerUrl + "/return-401").then(function (data) {
+      fetch("/return-error-401").then(function (data) {
         status = data.status
       })
 

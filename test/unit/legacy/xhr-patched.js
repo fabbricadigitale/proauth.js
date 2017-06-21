@@ -12,11 +12,11 @@ describe("Xhr patch", function () {
     console.warn = jasmine.createSpy("console.warn")
 
     var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", config.oauthServerUrl, true)
+    xhttp.open("GET", "/", true)
     expect(console.warn).not.toHaveBeenCalled()
 
     var xhttp2 = new XMLHttpRequest()
-    xhttp2.open("GET", config.oauthServerUrl, false)
+    xhttp2.open("GET", "/", false)
     expect(console.warn).toHaveBeenCalledWith("Synchronous XHR are not supported")
   })
 
@@ -69,7 +69,7 @@ describe("Xhr patch", function () {
 
   it("overrides mimetype correctly", function (done) {
     var xhttp = new XMLHttpRequest()
-    xhttp.open("GET", config.oauthServerUrl + "/return-empty-response", true)
+    xhttp.open("GET", "/return-empty-response", true)
     xhttp.overrideMimeType("text/xml")
 
     xhttp.send()

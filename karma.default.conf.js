@@ -1,3 +1,5 @@
+"use strict"
+
 const sharedConf = require("./karma.shared.conf.js");
 
 module.exports = function (config) {
@@ -6,7 +8,7 @@ module.exports = function (config) {
   config.set({
 
     files: [
-      { pattern: "lib/service-worker.es2015.js", included: false }, // service-worker.es2015.js can be downloaded under /base/src/, but will not be loaded at startup
+      { pattern: "lib/service-worker.es2015.js", included: false }, // service-worker.es2015.js can be downloaded under /base/lib/, but will not be loaded at startup
       "test/fixture/proauth-settings.js",
       "test/fixture/tests-settings.js",
       "lib/default.es2015.js",
@@ -36,7 +38,6 @@ module.exports = function (config) {
     exclude: [
       "test/unit/legacy/xhr-patched.js"
     ],
-
 
     browsers: ["Chrome", "Firefox"]
 
