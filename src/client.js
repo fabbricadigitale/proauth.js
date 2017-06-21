@@ -1,5 +1,5 @@
-import Client from './client/Client'
-import absolutePath from './common/absolute-path'
+import Client from "./client/Client"
+import absolutePath from "./common/absolute-path"
 
 const boot = () => {
   const settings = {
