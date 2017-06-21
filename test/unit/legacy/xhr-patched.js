@@ -70,7 +70,7 @@ describe("Xhr patch", function () {
       expect(xhttp.getResponseHeader("content-type")).toBe("text/xml")
       done()
     }, config.pauseAfterRequests)
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
   it("fires readyStateChange events correctly when request encounters an error", function (done) {
 
@@ -87,7 +87,7 @@ describe("Xhr patch", function () {
         currReadyState = 4
       }
     }
-    spyOn(xhttp, 'onreadystatechange').and.callThrough()
+    spyOn(xhttp, "onreadystatechange").and.callThrough()
 
     xhttp.open("GET", "http://invalid-url" + Math.random())
     xhttp.send()
@@ -97,6 +97,6 @@ describe("Xhr patch", function () {
       done()
     }, config.pauseAfterRequests)
 
-  }, config.pauseAfterRequests * 2)
+  }, config.testTimeout)
 
 })

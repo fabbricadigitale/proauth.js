@@ -28,7 +28,7 @@
     "coverage:test:legacy": "shx cat ./coverage/legacy.text.txt && shx cat ./coverage/legacy.text.summary.txt",
     "test": "run-s lint build test:* coverage:test:*",
     "clean": "shx rm -rf *.log lib/ coverage/",
-    "lint": "eslint src/",
+    "lint": "eslint src/ test/",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s",
     "changelog:edit": "$(git var GIT_EDITOR) CHANGELOG.md",
     "from:master": "node -e 'process.exit(require(\"git-rev-sync\").branch(process.cwd()) !== \"master\")'",
