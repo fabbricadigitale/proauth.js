@@ -1,13 +1,5 @@
 describe("Xhr patch", function () {
 
-  it("is ready", function (done) {
-    setTimeout(function () {
-      expect(proauth.client.ready).toBe(true)
-      expect(proauth.client.hasSession()).toBe(false)
-      done()
-    }, config.pauseAfterRequests * 2)
-  }, config.pauseAfterRequests * 3)
-
   it("shows a warning when open() is called with async = false", function () {
     console.warn = jasmine.createSpy("console.warn")
 
