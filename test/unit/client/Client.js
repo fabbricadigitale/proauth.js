@@ -4,7 +4,7 @@ describe("Proauth client", function () {
     proauth.client.sessionContainer.clear()
   })
 
-  it("whenReady is a promise", function() {
+  it("whenReady is a promise", function () {
     expect(proauth.client.whenReady instanceof Promise).toBe(true)
   })
 
@@ -66,14 +66,14 @@ describe("Proauth client", function () {
     expect(client.hasSession()).toBe(false)
 
     var sessionData = { "someKey": "someValue" }
-    var handler = function() {
+    var handler = function () {
       client.serviceWorker.removeEventListener("message", handler)
 
       expect(client.sessionContainer.content).toEqual(sessionData)
       expect(client.hasSession()).toBe(true)
 
       var sessionData2 = { "someKey2": "someValue2" }
-      var handler2 = function() {
+      var handler2 = function () {
         client.serviceWorker.removeEventListener("message", handler2)
         expect(client.sessionContainer.content).toEqual(sessionData2)
         expect(client.hasSession()).toBe(true)
@@ -89,36 +89,36 @@ describe("Proauth client", function () {
     client.serviceWorker.addEventListener("message", handler)
     expect(client.setSession(sessionData) instanceof Promise).toBe(true)
 
-})
+  })
 
   it("executes login correctly", function (done) {
     var client = proauth.client
 
     expect(client.hasSession()).toBe(false)
 
-      var handler = function() {
-        client.serviceWorker.removeEventListener("message", handler)
-        expect(client.hasSession()).toBe(true)
-        done()
-      }
-      client.serviceWorker.addEventListener("message", handler)
+    var handler = function () {
+      client.serviceWorker.removeEventListener("message", handler)
+      expect(client.hasSession()).toBe(true)
+      done()
+    }
+    client.serviceWorker.addEventListener("message", handler)
 
     client.login("user", "qwerty")
-})
+  })
 
   it("fails login if credentials are wrong", function (done) {
     var client = proauth.client
 
     expect(client.hasSession()).toBe(false)
 
-      var handler = function() {
-        client.serviceWorker.removeEventListener("message", handler)
-        expect(client.hasSession()).toBe(false)
-        done()
-      }
+    var handler = function () {
+      client.serviceWorker.removeEventListener("message", handler)
+      expect(client.hasSession()).toBe(false)
+      done()
+    }
     client.serviceWorker.addEventListener("message", handler)
     client.login("user_wrong", "qwerty_wrong")
-})
+  })
 
   it("sends headers in ajax after login", function (done) {
     var client = proauth.client
@@ -137,7 +137,7 @@ describe("Proauth client", function () {
       }
       xhttp.send()
     })
-})
+  })
 
   it("sends headers in fetch after login", function (done) {
     var client = proauth.client
@@ -152,7 +152,7 @@ describe("Proauth client", function () {
         })
       })
     })
-})
+  })
 
   it("re-negotiates token with ajax if it is expired", function (done) {
     var client = proauth.client
@@ -172,7 +172,7 @@ describe("Proauth client", function () {
       }
       xhttp.send()
     })
-})
+  })
 
   it("re-negotiates token with fetch if it is expired", function (done) {
     var client = proauth.client
@@ -188,7 +188,7 @@ describe("Proauth client", function () {
         })
       })
     })
-})
+  })
 
   it("doesn't go in an infinite loop if 401 is always returned with ajax", function (done) {
     var client = proauth.client
@@ -206,7 +206,7 @@ describe("Proauth client", function () {
       }
       xhttp.send()
     })
-})
+  })
 
   it("doesn't go in an infinite loop if 401 is always returned with fetch", function (done) {
     var client = proauth.client
@@ -219,6 +219,32 @@ describe("Proauth client", function () {
         done()
       })
     })
-})
+  })
+
+  it("doesn't not refresh tokens concurrently", function (done) {
+
+    var client = proauth.client
+
+      var count = 0
+      var handler = function(event) {
+        if (event.data.command === "session") {
+          count++
+        }
+      }
+      client.serviceWorker.addEventListener("message", handler)
+
+      Promise.all([
+        fetch("/return-error-401"),
+        fetch("/return-error-401"),
+        fetch("/return-error-401")
+      ]).then(function() {
+        client.serviceWorker.removeEventListener("message", handler)
+
+        expect(client.hasSession()).toBe(false)
+        expect(count).toBe(1)
+        done()
+      })
+  })
+
 
 })
