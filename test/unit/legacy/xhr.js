@@ -52,7 +52,7 @@ describe("Xhr patch", function () {
 
     xhttp.send()
 
-  }, config.testTimeout)
+})
 
   it("changes readyState correctly when request encounters an error", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -69,7 +69,7 @@ describe("Xhr patch", function () {
 
     xhttp.send()
 
-  }, config.testTimeout)
+})
 
 
   it("fires readyStateChange events correctly when request finishes without problems",
@@ -92,7 +92,7 @@ describe("Xhr patch", function () {
 
       xhttp.send()
 
-    }, config.testTimeout)
+  })
 
   it("fires load events in correct order when request finishes without problems", function (done) {
 
@@ -134,7 +134,7 @@ describe("Xhr patch", function () {
     xhttp.open("GET", "/oauth")
     xhttp.send()
 
-  }, config.testTimeout)
+})
 
   it("fires load events in correct order when request encounters an error", function (done) {
 
@@ -169,7 +169,7 @@ describe("Xhr patch", function () {
     xhttp.open("GET", "http://invalid-url" + Math.random())
     xhttp.send()
 
-  }, config.testTimeout)
+})
 
   it("fires events correctly when aborted", function (done) {
 
@@ -202,7 +202,7 @@ describe("Xhr patch", function () {
     xhttp.send()
     xhttp.abort()
 
-  }, config.testTimeout)
+})
 
   it("goes in timeout correctly", function (done) {
 
@@ -235,7 +235,7 @@ describe("Xhr patch", function () {
     xhttp.open("GET", "/sleep")
     xhttp.send()
 
-  }, config.testTimeout)
+})
 
   it("set withCredentials always as a boolean", function () {
     var xhttp = new XMLHttpRequest()
@@ -305,7 +305,7 @@ describe("Xhr patch", function () {
     }
 
     xhttp.send()
-  }, config.testTimeout)
+})
 
   it("returns null in responseXML if document is empty", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -317,7 +317,7 @@ describe("Xhr patch", function () {
     }
 
     xhttp.send()
-  }, config.testTimeout)
+})
 
   it("returns null in responseXML if document is invalid", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -329,7 +329,7 @@ describe("Xhr patch", function () {
     }
 
     xhttp.send()
-  }, config.testTimeout)
+})
 
   it("returns headers in case unsensitive way", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -349,7 +349,7 @@ describe("Xhr patch", function () {
     }
 
     xhttp.send()
-  }, config.testTimeout)
+})
 
   it("returns response url correctly", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -366,6 +366,6 @@ describe("Xhr patch", function () {
     }
 
     xhttp.send()
-  }, config.testTimeout)
+})
 
 })

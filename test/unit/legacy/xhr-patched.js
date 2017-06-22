@@ -71,7 +71,7 @@ describe("Xhr patch", function () {
 
     xhttp.send()
 
-  }, config.testTimeout)
+})
 
   it("fires readyStateChange events correctly when request encounters an error", function (done) {
 
@@ -99,6 +99,6 @@ describe("Xhr patch", function () {
 
     xhttp.send()
 
-  }, config.testTimeout)
+})
 
 })

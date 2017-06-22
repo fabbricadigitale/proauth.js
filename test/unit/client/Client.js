@@ -89,7 +89,7 @@ describe("Proauth client", function () {
     client.serviceWorker.addEventListener("message", handler)
     expect(client.setSession(sessionData) instanceof Promise).toBe(true)
 
-  }, config.testTimeout)
+})
 
   it("executes login correctly", function (done) {
     var client = proauth.client
@@ -104,7 +104,7 @@ describe("Proauth client", function () {
       client.serviceWorker.addEventListener("message", handler)
 
     client.login("user", "qwerty")
-  }, config.testTimeout)
+})
 
   it("fails login if credentials are wrong", function (done) {
     var client = proauth.client
@@ -118,7 +118,7 @@ describe("Proauth client", function () {
       }
     client.serviceWorker.addEventListener("message", handler)
     client.login("user_wrong", "qwerty_wrong")
-  }, config.testTimeout)
+})
 
   it("sends headers in ajax after login", function (done) {
     var client = proauth.client
@@ -137,7 +137,7 @@ describe("Proauth client", function () {
       }
       xhttp.send()
     })
-  }, config.testTimeout)
+})
 
   it("sends headers in fetch after login", function (done) {
     var client = proauth.client
@@ -152,7 +152,7 @@ describe("Proauth client", function () {
         })
       })
     })
-  }, config.testTimeout)
+})
 
   it("re-negotiates token with ajax if it is expired", function (done) {
     var client = proauth.client
@@ -172,7 +172,7 @@ describe("Proauth client", function () {
       }
       xhttp.send()
     })
-  }, config.testTimeout)
+})
 
   it("re-negotiates token with fetch if it is expired", function (done) {
     var client = proauth.client
@@ -188,7 +188,7 @@ describe("Proauth client", function () {
         })
       })
     })
-  }, config.testTimeout)
+})
 
   it("doesn't go in an infinite loop if 401 is always returned with ajax", function (done) {
     var client = proauth.client
@@ -206,7 +206,7 @@ describe("Proauth client", function () {
       }
       xhttp.send()
     })
-  }, config.testTimeout)
+})
 
   it("doesn't go in an infinite loop if 401 is always returned with fetch", function (done) {
     var client = proauth.client
@@ -219,6 +219,6 @@ describe("Proauth client", function () {
         done()
       })
     })
-  }, config.testTimeout)
+})
 
 })
