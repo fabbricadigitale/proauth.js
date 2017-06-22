@@ -1,6 +1,6 @@
 {
   "name": "proauth.js",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Lightweight OAuth 2.0 client with automatic session handling",
   "main": "lib/default.es2015.js",
   "scripts": {

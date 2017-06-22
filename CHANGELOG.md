@@ -1,3 +1,30 @@
+<a name="0.3.1"></a>
+## [0.3.1](https://github.com/fabbricadigitale/proauth.js/compare/v0.3.0...v0.3.1) (2017-06-22)
+
+
+### Build
+
+* Avoid race condition when making lib dir ([2ab7aae3dfb7698c42682fbcc503685e318fe59a](https://github.com/fabbricadigitale/proauth.js/commit/2ab7aae3dfb7698c42682fbcc503685e318fe59a))
+
+### Fix
+
+* Override mimetype also when no "content-type" header was received ([6ae208434d9747e11a9ae2e7fcfeeda945971458](https://github.com/fabbricadigitale/proauth.js/commit/6ae208434d9747e11a9ae2e7fcfeeda945971458))
+
+### New
+
+* Client whenReady promise ([a0a1567067043dc25aef41afa1562ce03c7f4cd7](https://github.com/fabbricadigitale/proauth.js/commit/a0a1567067043dc25aef41afa1562ce03c7f4cd7))
+* Use native Karma webserver to avoid golang dependency ([3cc532ee676bb611494946247b72f7183297fb5a](https://github.com/fabbricadigitale/proauth.js/commit/3cc532ee676bb611494946247b72f7183297fb5a))
+
+### Update
+
+* Add linting to tests ([f622aa021d295fc2d930ce5f32c22384a9698da0](https://github.com/fabbricadigitale/proauth.js/commit/f622aa021d295fc2d930ce5f32c22384a9698da0))
+* Keywords in package.json ([9c41de0acdcf2fc18d9fcf968e8355ebf459731b](https://github.com/fabbricadigitale/proauth.js/commit/9c41de0acdcf2fc18d9fcf968e8355ebf459731b))
+* Lint correctly every file under "src" folder ([980f00c8e3eb68c7fcb76ca56cf10a6930c95d8b](https://github.com/fabbricadigitale/proauth.js/commit/980f00c8e3eb68c7fcb76ca56cf10a6930c95d8b))
+* Refactor config ([dba7d72c9360dc2f886116ffca5d76c0db8ebb73](https://github.com/fabbricadigitale/proauth.js/commit/dba7d72c9360dc2f886116ffca5d76c0db8ebb73))
+* Tests refactoring  ([0de381b334c5d0711f608c8e619d12b593323ef8](https://github.com/fabbricadigitale/proauth.js/commit/0de381b334c5d0711f608c8e619d12b593323ef8)), closes [#22](https://github.com/fabbricadigitale/proauth.js/issues/22)
+
+
+
 <a name="0.3.0"></a>
 # 0.3.0 (2017-06-15)
 
