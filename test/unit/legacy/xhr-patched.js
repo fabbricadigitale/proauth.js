@@ -64,12 +64,13 @@ describe("Xhr patch", function () {
     xhttp.open("GET", "/return-empty-response", true)
     xhttp.overrideMimeType("text/xml")
 
-    xhttp.send()
-
-    setTimeout(function () {
+    xhttp.onload = function () {
       expect(xhttp.getResponseHeader("content-type")).toBe("text/xml")
       done()
-    }, config.pauseAfterRequests)
+    }
+
+    xhttp.send()
+
   }, config.testTimeout)
 
   it("fires readyStateChange events correctly when request encounters an error", function (done) {
@@ -90,12 +91,13 @@ describe("Xhr patch", function () {
     spyOn(xhttp, "onreadystatechange").and.callThrough()
 
     xhttp.open("GET", "http://invalid-url" + Math.random())
-    xhttp.send()
 
-    setTimeout(function () {
+    xhttp.onloadend = function() {
       expect(xhttp.onreadystatechange).toHaveBeenCalledTimes(2)
       done()
-    }, config.pauseAfterRequests)
+    }
+
+    xhttp.send()
 
   }, config.testTimeout)
 
