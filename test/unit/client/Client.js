@@ -221,7 +221,7 @@ describe("Proauth client", function () {
     })
   })
 
-  it("doesn't not refresh tokens concurrently", function (done) {
+  it("doesn't refresh tokens concurrently", function (done) {
 
     var client = proauth.client
 
