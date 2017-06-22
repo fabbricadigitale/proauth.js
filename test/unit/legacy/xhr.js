@@ -45,14 +45,14 @@ describe("Xhr patch", function () {
     xhttp.open("GET", "/")
     expect(xhttp.readyState).toBe(1) // OPENED
 
-    xhttp.send()
-
-    setTimeout(function () {
+    xhttp.onload = function () {
       expect(xhttp.readyState).toBe(4) // DONE
       done()
-    }, config.pauseAfterRequests)
+    }
 
-  }, config.testTimeout)
+    xhttp.send()
+
+})
 
   it("changes readyState correctly when request encounters an error", function (done) {
     var xhttp = new XMLHttpRequest()
@@ -62,14 +62,14 @@ describe("Xhr patch", function () {
     xhttp.open("GET", "http://invalid-url" + Math.random())
     expect(xhttp.readyState).toBe(1) // OPENED
 
-    xhttp.send()
-
-    setTimeout(function () {
+    xhttp.onloadend = function () {
       expect(xhttp.readyState).toBe(4) // DONE
       done()
-    }, config.pauseAfterRequests)
+    }
 
-  }, config.testTimeout)
+    xhttp.send()
+
+})
 
 
   it("fires readyStateChange events correctly when request finishes without problems",
@@ -84,14 +84,15 @@ describe("Xhr patch", function () {
       spyOn(xhttp, "onreadystatechange").and.callThrough()
 
       xhttp.open("GET", "/oauth")
-      xhttp.send()
 
-      setTimeout(function () {
+      xhttp.onload = function () {
         expect(xhttp.onreadystatechange).toHaveBeenCalledTimes(4)
         done()
-      }, config.pauseAfterRequests)
+      }
 
-    }, config.testTimeout)
+      xhttp.send()
+
+  })
 
   it("fires load events in correct order when request finishes without problems", function (done) {
 
@@ -122,22 +123,18 @@ describe("Xhr patch", function () {
 
     xhttp.onloadend = function () {
       expect(evtIndex).toBe(3)
-      evtIndex++
+      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
+      expect(xhttp.onload).toHaveBeenCalledTimes(1)
+      expect(xhttp.onprogress).toHaveBeenCalledTimes(1)
+      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
+      done()
     }
     spyOn(xhttp, "onloadend").and.callThrough()
 
     xhttp.open("GET", "/oauth")
     xhttp.send()
 
-    setTimeout(function () {
-      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
-      expect(xhttp.onload).toHaveBeenCalledTimes(1)
-      expect(xhttp.onprogress).toHaveBeenCalledTimes(1)
-      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
-      done()
-    }, config.pauseAfterRequests)
-
-  }, config.testTimeout)
+})
 
   it("fires load events in correct order when request encounters an error", function (done) {
 
@@ -162,21 +159,17 @@ describe("Xhr patch", function () {
 
     xhttp.onloadend = function () {
       expect(evtIndex).toBe(2)
-      evtIndex++
+      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
+      expect(xhttp.onerror).toHaveBeenCalledTimes(1)
+      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
+      done()
     }
     spyOn(xhttp, "onloadend").and.callThrough()
 
     xhttp.open("GET", "http://invalid-url" + Math.random())
     xhttp.send()
 
-    setTimeout(function () {
-      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
-      expect(xhttp.onerror).toHaveBeenCalledTimes(1)
-      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
-      done()
-    }, config.pauseAfterRequests)
-
-  }, config.testTimeout)
+})
 
   it("fires events correctly when aborted", function (done) {
 
@@ -194,22 +187,22 @@ describe("Xhr patch", function () {
       fail()
     }
 
+    xhttp.onloadend = function () {
+      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
+      expect(xhttp.onabort).toHaveBeenCalledTimes(1)
+      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
+      done()
+    }
+
     spyOn(xhttp, "onloadstart").and.callThrough()
-    spyOn(xhttp, "onabort")
-    spyOn(xhttp, "onloadend")
+    spyOn(xhttp, "onabort").and.callThrough()
+    spyOn(xhttp, "onloadend").and.callThrough()
 
     xhttp.open("GET", "/oauth")
     xhttp.send()
     xhttp.abort()
 
-    setTimeout(function () {
-      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
-      expect(xhttp.onabort).toHaveBeenCalledTimes(1)
-      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
-      done()
-    }, config.pauseAfterRequests)
-
-  }, config.testTimeout)
+})
 
   it("goes in timeout correctly", function (done) {
 
@@ -227,22 +220,22 @@ describe("Xhr patch", function () {
       fail()
     }
 
+    xhttp.onloadend = function () {
+      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
+      expect(xhttp.ontimeout).toHaveBeenCalledTimes(1)
+      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
+      done()
+    }
+
     spyOn(xhttp, "onloadstart").and.callThrough()
-    spyOn(xhttp, "ontimeout")
-    spyOn(xhttp, "onloadend")
+    spyOn(xhttp, "ontimeout").and.callThrough()
+    spyOn(xhttp, "onloadend").and.callThrough()
 
     xhttp.timeout = 1
     xhttp.open("GET", "/sleep")
     xhttp.send()
 
-    setTimeout(function () {
-      expect(xhttp.onloadstart).toHaveBeenCalledTimes(1)
-      expect(xhttp.ontimeout).toHaveBeenCalledTimes(1)
-      expect(xhttp.onloadend).toHaveBeenCalledTimes(1)
-      done()
-    }, config.pauseAfterRequests)
-
-  }, config.testTimeout)
+})
 
   it("set withCredentials always as a boolean", function () {
     var xhttp = new XMLHttpRequest()
@@ -304,47 +297,45 @@ describe("Xhr patch", function () {
       xhttp.setRequestHeader("key", "value")
     }).not.toThrow()
 
-    xhttp.send()
-
-    setTimeout(function () {
+    xhttp.onloadend = function () {
       expect(function () {
         xhttp.setRequestHeader("key", "value")
       }).toThrow()
       done()
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    }
+
+    xhttp.send()
+})
 
   it("returns null in responseXML if document is empty", function (done) {
     var xhttp = new XMLHttpRequest()
     xhttp.open("GET", "/return-empty-response", true)
 
-    xhttp.send()
-
-    setTimeout(function () {
+    xhttp.onload = function () {
       expect(xhttp.responseXML).toBeNull()
       done()
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    }
+
+    xhttp.send()
+})
 
   it("returns null in responseXML if document is invalid", function (done) {
     var xhttp = new XMLHttpRequest()
     xhttp.open("GET", "/return-invalid-xml", true)
 
-    xhttp.send()
-
-    setTimeout(function () {
+    xhttp.onload = function () {
       expect(xhttp.responseXML).toBeNull()
       done()
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    }
+
+    xhttp.send()
+})
 
   it("returns headers in case unsensitive way", function (done) {
     var xhttp = new XMLHttpRequest()
     xhttp.open("GET", "/return-some-headers", true)
 
-    xhttp.send()
-
-    setTimeout(function () {
+    xhttp.onload = function () {
       expect(xhttp.getResponseHeader("key-a")).toBe("Value-A")
       expect(xhttp.getResponseHeader("Key-a")).toBe("Value-A")
       expect(xhttp.getResponseHeader("Key-A")).toBe("Value-A")
@@ -355,24 +346,26 @@ describe("Xhr patch", function () {
       expect(xhttp.getResponseHeader("Key-D")).toBe("VALUE-D")
       expect(xhttp.getResponseHeader("KEY-D")).toBe("VALUE-D")
       done()
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    }
+
+    xhttp.send()
+})
 
   it("returns response url correctly", function (done) {
     var xhttp = new XMLHttpRequest()
     xhttp.open("GET", "/return-some-headers?query&key=value#fragment", true)
     expect(xhttp.responseURL).toBe("")
 
-    xhttp.send()
-
-    setTimeout(function () {
+    xhttp.onload = function () {
       expect(xhttp.responseURL).toBe(
         window.location.protocol +
         "//" +
         window.location.host + "/return-some-headers?query&key=value"
       )
       done()
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    }
+
+    xhttp.send()
+})
 
 })

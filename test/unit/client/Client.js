@@ -4,7 +4,7 @@ describe("Proauth client", function () {
     proauth.client.sessionContainer.clear()
   })
 
-  it("whenReady is a promise", function() {
+  it("whenReady is a promise", function () {
     expect(proauth.client.whenReady instanceof Promise).toBe(true)
   })
 
@@ -66,192 +66,185 @@ describe("Proauth client", function () {
     expect(client.hasSession()).toBe(false)
 
     var sessionData = { "someKey": "someValue" }
-    client.setSession(sessionData)
+    var handler = function () {
+      client.serviceWorker.removeEventListener("message", handler)
 
-    setTimeout(function () {
       expect(client.sessionContainer.content).toEqual(sessionData)
       expect(client.hasSession()).toBe(true)
 
       var sessionData2 = { "someKey2": "someValue2" }
-      // Override old session
-      client.setSession(sessionData2)
-
-      setTimeout(function () {
+      var handler2 = function () {
+        client.serviceWorker.removeEventListener("message", handler2)
         expect(client.sessionContainer.content).toEqual(sessionData2)
         expect(client.hasSession()).toBe(true)
         proauth.client.sessionContainer.clear()
         expect(client.hasSession()).toBe(false)
         done()
-      }, config.pauseAfterRequests)
+      }
+      // Override old session
+      client.serviceWorker.addEventListener("message", handler2)
+      expect(client.setSession(sessionData2) instanceof Promise).toBe(true)
+    }
 
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    client.serviceWorker.addEventListener("message", handler)
+    expect(client.setSession(sessionData) instanceof Promise).toBe(true)
+
+  })
 
   it("executes login correctly", function (done) {
     var client = proauth.client
 
     expect(client.hasSession()).toBe(false)
 
-    client.login("user", "qwerty")
-
-    setTimeout(function () {
+    var handler = function () {
+      client.serviceWorker.removeEventListener("message", handler)
       expect(client.hasSession()).toBe(true)
       done()
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    }
+    client.serviceWorker.addEventListener("message", handler)
+
+    client.login("user", "qwerty")
+  })
 
   it("fails login if credentials are wrong", function (done) {
     var client = proauth.client
 
     expect(client.hasSession()).toBe(false)
 
-    client.login("user_wrong", "qwerty_wrong")
-
-    setTimeout(function () {
+    var handler = function () {
+      client.serviceWorker.removeEventListener("message", handler)
       expect(client.hasSession()).toBe(false)
       done()
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    }
+    client.serviceWorker.addEventListener("message", handler)
+    client.login("user_wrong", "qwerty_wrong")
+  })
 
   it("sends headers in ajax after login", function (done) {
     var client = proauth.client
 
-    client.login("user", "qwerty")
-
-    setTimeout(function () {
+    client.login("user", "qwerty").then(function () {
       var xhttp = new XMLHttpRequest()
-      var response
       xhttp.open("GET", "/return-authorization-header")
       xhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
-          response = this.responseText
+          var response = this.responseText
+          // Check session was not cleared
+          expect(client.hasSession()).toBe(true)
+          expect(response).toBe("bearer tkn0.1234567890")
+          done()
         }
       }
       xhttp.send()
-
-      setTimeout(function () {
-        // Check session was not cleared
-        expect(client.hasSession()).toBe(true)
-        expect(response).toBe("bearer tkn0.1234567890")
-        done()
-      }, config.pauseAfterRequests)
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    })
+  })
 
   it("sends headers in fetch after login", function (done) {
     var client = proauth.client
 
-    client.login("user", "qwerty")
-
-    setTimeout(function () {
-      var response
+    client.login("user", "qwerty").then(function () {
       fetch("/return-authorization-header").then(function (data) {
         data.text().then(function (text) {
-          response = text
+          // Check session was not cleared
+          expect(client.hasSession()).toBe(true)
+          expect(text).toBe("bearer tkn0.1234567890")
+          done()
         })
       })
-
-      setTimeout(function () {
-        // Check session was not cleared
-        expect(client.hasSession()).toBe(true)
-        expect(response).toBe("bearer tkn0.1234567890")
-        done()
-      }, config.pauseAfterRequests)
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    })
+  })
 
   it("re-negotiates token with ajax if it is expired", function (done) {
     var client = proauth.client
 
-    client.login("user", "qwerty")
-
-    setTimeout(function () {
+    client.login("user", "qwerty").then(function () {
       var xhttp = new XMLHttpRequest()
-      var response
       xhttp.open("GET", "/simulate-token-expired")
       xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
           expect(this.status).toBe(200)
-          response = this.responseText
+          var response = this.responseText
+          // Check session was not cleared
+          expect(client.hasSession()).toBe(true)
+          expect(response).toBe("bearer tkn1.1234567890")
+          done()
         }
       }
       xhttp.send()
-
-      setTimeout(function () {
-        // Check session was not cleared
-        expect(client.hasSession()).toBe(true)
-        expect(response).toBe("bearer tkn1.1234567890")
-        done()
-      }, config.pauseAfterRequests)
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    })
+  })
 
   it("re-negotiates token with fetch if it is expired", function (done) {
     var client = proauth.client
 
-    client.login("user", "qwerty")
-
-    setTimeout(function () {
-      var response
+    client.login("user", "qwerty").then(function () {
       fetch("/simulate-token-expired").then(function (data) {
         expect(data.ok).toBe(true)
         data.text().then(function (text) {
-          response = text
+          // Check session was not cleared
+          expect(client.hasSession()).toBe(true)
+          expect(text).toBe("bearer tkn1.1234567890")
+          done()
         })
       })
-
-      setTimeout(function () {
-        // Check session was not cleared
-        expect(client.hasSession()).toBe(true)
-        expect(response).toBe("bearer tkn1.1234567890")
-        done()
-      }, config.pauseAfterRequests)
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    })
+  })
 
   it("doesn't go in an infinite loop if 401 is always returned with ajax", function (done) {
     var client = proauth.client
 
-    client.login("user", "qwerty")
-
-    setTimeout(function () {
+    client.login("user", "qwerty").then(function () {
       var xhttp = new XMLHttpRequest()
-      var status
       xhttp.open("GET", "/return-error-401")
       xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
-          status = this.status
+          // Check session was not cleared
+          expect(client.hasSession()).toBe(true)
+          expect(this.status).toBe(401)
+          done()
         }
       }
       xhttp.send()
-
-      setTimeout(function () {
-        // Check session was not cleared
-        expect(client.hasSession()).toBe(true)
-        expect(status).toBe(401)
-        done()
-      }, config.pauseAfterRequests)
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+    })
+  })
 
   it("doesn't go in an infinite loop if 401 is always returned with fetch", function (done) {
     var client = proauth.client
 
-    client.login("user", "qwerty")
-
-    setTimeout(function () {
-      var status
+    client.login("user", "qwerty").then(function () {
       fetch("/return-error-401").then(function (data) {
-        status = data.status
-      })
-
-      setTimeout(function () {
         // Check session was not cleared
         expect(client.hasSession()).toBe(true)
-        expect(status).toBe(401)
+        expect(data.status).toBe(401)
         done()
-      }, config.pauseAfterRequests)
-    }, config.pauseAfterRequests)
-  }, config.testTimeout)
+      })
+    })
+  })
+
+  it("doesn't refresh tokens concurrently", function (done) {
+
+    var client = proauth.client
+
+      var count = 0
+      var handler = function(event) {
+        if (event.data.command === "session") {
+          count++
+        }
+      }
+      client.serviceWorker.addEventListener("message", handler)
+
+      Promise.all([
+        fetch("/return-error-401"),
+        fetch("/return-error-401"),
+        fetch("/return-error-401")
+      ]).then(function() {
+        client.serviceWorker.removeEventListener("message", handler)
+
+        expect(client.hasSession()).toBe(false)
+        expect(count).toBe(1)
+        done()
+      })
+  })
+
 
 })
