@@ -156,6 +156,124 @@ const sleepFactory = function (config) {
   }
 }
 
+const customLaunchers = {
+  sl_chrome_latest_winXP: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    platform: "Windows XP",
+    version: "latest"
+  },
+  sl_chrome_latest_win7: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    platform: "Windows 7",
+    version: "latest"
+  },
+  sl_chrome_latest_win8: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    platform: "Windows 8",
+    version: "latest"
+  },
+  sl_chrome_latest_win10: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    platform: "Windows 10",
+    version: "latest"
+  },
+
+  sl_chrome_latest_linux: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    platform: "Linux",
+    version: "latest"
+  },
+
+  sl_chrome_latest_OSX10_8: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    platform: "OS X 10.8",
+    version: "latest"
+  },
+  sl_chrome_latest_macOS10_12: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    platform: "MacOS 10.12",
+    version: "latest"
+  },
+
+  sl_firefox_47_win7: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "Windows 7",
+    version: "47"
+  },
+  sl_firefox_51_win7: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "Windows 7",
+    version: "51"
+  },
+  sl_firefox_latest_winXP: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "Windows XP",
+    version: "latest"
+  },
+  sl_firefox_latest_win7: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "Windows 7",
+    version: "latest"
+  },
+  sl_firefox_latest_win8: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "Windows 8",
+    version: "latest"
+  },
+  sl_firefox_latest_win10: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "Windows 10",
+    version: "latest"
+  },
+
+  sl_firefox_latest_linux: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "Linux",
+    version: "latest"
+  },
+
+  sl_firefox_latest_OSX10_8: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "OS X 10.8",
+    version: "latest"
+  },
+  sl_firefox_latest_macOS10_12: {
+    base: "SauceLabs",
+    browserName: "firefox",
+    platform: "MacOS 10.12",
+    version: "latest"
+  },
+
+  sl_edge_latest_win10: {
+    base: "SauceLabs",
+    browserName: "microsoftedge",
+    platform: "Windows 10",
+    version: "latest"
+  },
+
+  sl_safari_latest_macos10_12: {
+    base: "SauceLabs",
+    browserName: "safari",
+    platform: "MacOS 10.12",
+    version: "latest"
+  }
+}
+
 module.exports = function (config) {
   config.set({
 
@@ -182,7 +300,7 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress"],
+    reporters: ["progress", "saucelabs"],
 
     // web server port
     port: 9876,
@@ -229,6 +347,14 @@ module.exports = function (config) {
       "simulate-token-expired",
       "sleep"
     ],
+
+    sauceLabs: {
+      testName: "Proauth.js Tests"
+    },
+
+    browserNoActivityTimeout: 600000,
+
+    customLaunchers,
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
