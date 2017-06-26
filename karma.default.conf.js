@@ -1,6 +1,21 @@
 "use strict"
 
-const sharedConf = require("./karma.shared.conf.js");
+const sharedConf = require("./karma.shared.conf.js")
+
+const launchers = [
+  "tb_chrome_latest_winXP",
+  "tb_chrome_latest_win7",
+  "tb_chrome_latest_win8",
+  "tb_chrome_latest_win10",
+  "tb_chrome_latest_OSX10_8",
+  "tb_chrome_latest_macOS10_12",
+  "tb_firefox_51_win7",
+  "tb_firefox_latest_win7",
+  "tb_firefox_latest_win8",
+  "tb_firefox_latest_win10",
+  "tb_firefox_latest_macOS10_12"
+]
+
 
 module.exports = function (config) {
   sharedConf(config)
@@ -39,7 +54,7 @@ module.exports = function (config) {
       "test/unit/legacy/xhr-patched.js"
     ],
 
-    browsers: ["Chrome", "Firefox"]
+    browsers: launchers
 
   })
 }

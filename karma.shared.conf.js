@@ -122,6 +122,124 @@ const sleepFactory = function (config) {
   }
 }
 
+const customLaunchers = {
+  tb_chrome_latest_winXP: {
+    base: "TestingBot",
+    browserName: "chrome",
+    platform: "XP",
+    version: "latest"
+  },
+  tb_chrome_latest_win7: {
+    base: "TestingBot",
+    browserName: "chrome",
+    platform: "WIN7",
+    version: "latest"
+  },
+  tb_chrome_latest_win8: {
+    base: "TestingBot",
+    browserName: "chrome",
+    platform: "WIN8",
+    version: "latest"
+  },
+  tb_chrome_latest_win10: {
+    base: "TestingBot",
+    browserName: "chrome",
+    platform: "WIN10",
+    version: "latest"
+  },
+
+  tb_chrome_latest_linux: {
+    base: "TestingBot",
+    browserName: "chrome",
+    platform: "LINUX",
+    version: "latest"
+  },
+
+  tb_chrome_latest_OSX10_8: {
+    base: "TestingBot",
+    browserName: "chrome",
+    platform: "MAVERICKS",
+    version: "latest"
+  },
+  tb_chrome_latest_macOS10_12: {
+    base: "TestingBot",
+    browserName: "chrome",
+    platform: "SIERRA",
+    version: "latest"
+  },
+
+  tb_firefox_47_win7: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "WIN7",
+    version: "47"
+  },
+  tb_firefox_51_win7: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "WIN7",
+    version: "51"
+  },
+  tb_firefox_latest_winXP: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "XP",
+    version: "latest"
+  },
+  tb_firefox_latest_win7: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "WIN7",
+    version: "latest"
+  },
+  tb_firefox_latest_win8: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "WIN8",
+    version: "latest"
+  },
+  tb_firefox_latest_win10: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "WIN10",
+    version: "latest"
+  },
+
+  tb_firefox_latest_linux: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "LINUX",
+    version: "latest"
+  },
+
+  tb_firefox_latest_OSX10_8: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "MAVERICKS",
+    version: "latest"
+  },
+  tb_firefox_latest_macOS10_12: {
+    base: "TestingBot",
+    browserName: "firefox",
+    platform: "SIERRA",
+    version: "latest"
+  },
+
+  tb_edge_latest_win10: {
+    base: "TestingBot",
+    browserName: "microsoftedge",
+    platform: "WIN10",
+    version: "latest"
+  },
+
+  tb_safari_latest_macos10_12: {
+    base: "TestingBot",
+    browserName: "safari",
+    platform: "SIERRA",
+    version: "latest"
+  }
+}
+
 module.exports = function (config) {
   config.set({
 
@@ -148,7 +266,7 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress"],
+    reporters: ["progress", "testingbot"],
 
     // web server port
     port: 9876,
@@ -193,6 +311,16 @@ module.exports = function (config) {
       "simulate-token-expired",
       "sleep"
     ],
+
+    testingbot: {
+      apiKey: "7558872fa56a947a238e97f43cc67687",
+      apiSecret: "742e6eb85bdb17948b0146650362c026",
+      testName: "Proauth.js Tests"
+    },
+
+    browserNoActivityTimeout: 600000,
+
+    customLaunchers,
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
