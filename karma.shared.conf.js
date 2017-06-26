@@ -64,6 +64,31 @@ const returnError401 = function (config) {
   }
 }
 
+
+const returnError401Concurrently = function (config) {
+  const pendingUa = {}
+  const requestMap = {}
+  const concurrencyLimit = 3
+  return function (request, response, next) {
+    if (request.url.startsWith("/return-error-401-with-concurrency-3")) {
+      const ua = request.headers["user-agent"]
+      if (!requestMap[ua+request.url]) {
+        pendingUa[ua] = pendingUa[ua] ? (pendingUa[ua] + 1) : 1
+      }
+      requestMap[ua+request.url] = true
+      const intId = setInterval(function() {
+        if (pendingUa[ua] >= concurrencyLimit) {
+          clearInterval(intId)
+          response.writeHead(401)
+          return response.end(`{"title": "invalid_token","status":401}`)
+        }
+      }, 500)
+    } else {
+      return next()
+    }
+  }
+}
+
 const returnInvalidXML = function (config) {
   return function (request, response, next) {
     if (request.url === "/return-invalid-xml") {
@@ -177,6 +202,7 @@ module.exports = function (config) {
       { "middleware:return-authorization-header": ["factory", returnAuthorizationHeader] },
       { "middleware:return-empty-response": ["factory", returnEmptyResponse] },
       { "middleware:return-error-401": ["factory", returnError401] },
+      { "middleware:return-error-401-with-concurrency-3": ["factory", returnError401Concurrently] },
       { "middleware:return-invalid-xml": ["factory", returnInvalidXML] },
       { "middleware:return-some-headers": ["factory", returnSomeHeadersFactory] },
       { "middleware:simulate-token-expired": ["factory", simulateTokenExpiredFactory] },
@@ -188,6 +214,7 @@ module.exports = function (config) {
       "return-authorization-header",
       "return-empty-response",
       "return-error-401",
+      "return-error-401-with-concurrency-3",
       "return-invalid-xml",
       "return-some-headers",
       "simulate-token-expired",

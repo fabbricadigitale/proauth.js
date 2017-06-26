@@ -234,9 +234,9 @@ describe("Proauth client", function () {
       client.serviceWorker.addEventListener("message", handler)
 
       Promise.all([
-        fetch("/return-error-401"),
-        fetch("/return-error-401"),
-        fetch("/return-error-401")
+        fetch("/return-error-401-with-concurrency-3?1"),
+        fetch("/return-error-401-with-concurrency-3?2"),
+        fetch("/return-error-401-with-concurrency-3?3")
       ]).then(function() {
         client.serviceWorker.removeEventListener("message", handler)
 
