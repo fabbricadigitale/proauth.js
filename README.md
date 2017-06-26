@@ -106,6 +106,18 @@ This library provides the following packages:
 - [src/default.js](./src/default.js) is required for the normal operational mode. It can register the `service-worker` and when ready bootstraps the `client`.
 - [src/service-worker.js](./src/service-worker.js) is required for the normal operatinal mode and is used in the *serviceWorker* context. You can use it directly or can include it in your own *serviceWorker* distribution.
 
+## Compatibility
+
+### Default (ES6)
+
+* Chrome >= 45
+* Firefox >= 51
+
+### Legacy (ES5)
+
+* Chrome >= 45
+* Firefox >= 47
+
 ## Testing
 
 ### Requirements
