@@ -8,3 +8,4 @@ coverage/
 *.log
 lib/
 .vscode
+saucelabs.config.local.json

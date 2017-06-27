@@ -1,7 +1,16 @@
 describe("Proauth client", function () {
 
+  var handler
+
   afterEach(function () {
+    var client = proauth.client
+
     proauth.client.sessionContainer.clear()
+    try {
+      client.serviceWorker.removeEventListener("message", handler)
+    } catch (ex) {
+      // do nothing
+    }
   })
 
   it("whenReady is a promise", function () {
@@ -66,15 +75,15 @@ describe("Proauth client", function () {
     expect(client.hasSession()).toBe(false)
 
     var sessionData = { "someKey": "someValue" }
-    var handler = function () {
+    handler = function () {
       client.serviceWorker.removeEventListener("message", handler)
 
       expect(client.sessionContainer.content).toEqual(sessionData)
       expect(client.hasSession()).toBe(true)
 
       var sessionData2 = { "someKey2": "someValue2" }
-      var handler2 = function () {
-        client.serviceWorker.removeEventListener("message", handler2)
+      handler = function () {
+        client.serviceWorker.removeEventListener("message", handler)
         expect(client.sessionContainer.content).toEqual(sessionData2)
         expect(client.hasSession()).toBe(true)
         proauth.client.sessionContainer.clear()
@@ -82,7 +91,7 @@ describe("Proauth client", function () {
         done()
       }
       // Override old session
-      client.serviceWorker.addEventListener("message", handler2)
+      client.serviceWorker.addEventListener("message", handler)
       expect(client.setSession(sessionData2) instanceof Promise).toBe(true)
     }
 
@@ -96,7 +105,7 @@ describe("Proauth client", function () {
 
     expect(client.hasSession()).toBe(false)
 
-    var handler = function () {
+    handler = function () {
       client.serviceWorker.removeEventListener("message", handler)
       expect(client.hasSession()).toBe(true)
       done()
@@ -111,7 +120,7 @@ describe("Proauth client", function () {
 
     expect(client.hasSession()).toBe(false)
 
-    var handler = function () {
+    handler = function () {
       client.serviceWorker.removeEventListener("message", handler)
       expect(client.hasSession()).toBe(false)
       done()
@@ -225,25 +234,25 @@ describe("Proauth client", function () {
 
     var client = proauth.client
 
-      var count = 0
-      var handler = function(event) {
-        if (event.data.command === "session") {
-          count++
-        }
+    var count = 0
+    handler = function (event) {
+      if (event.data.command === "session") {
+        count++
       }
-      client.serviceWorker.addEventListener("message", handler)
+    }
+    client.serviceWorker.addEventListener("message", handler)
 
-      Promise.all([
-        fetch("/return-error-401-with-concurrency-3?1"),
-        fetch("/return-error-401-with-concurrency-3?2"),
-        fetch("/return-error-401-with-concurrency-3?3")
-      ]).then(function() {
-        client.serviceWorker.removeEventListener("message", handler)
+    Promise.all([
+      fetch("/return-error-401-with-concurrency-3?1"),
+      fetch("/return-error-401-with-concurrency-3?2"),
+      fetch("/return-error-401-with-concurrency-3?3")
+    ]).then(function () {
+      client.serviceWorker.removeEventListener("message", handler)
 
-        expect(client.hasSession()).toBe(false)
-        expect(count).toBe(1)
-        done()
-      })
+      expect(client.hasSession()).toBe(false)
+      expect(count).toBe(1)
+      done()
+    })
   })
 
 

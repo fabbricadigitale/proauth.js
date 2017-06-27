@@ -365,9 +365,7 @@ module.exports = function (config) {
       "sleep"
     ],
 
-    sauceLabs: {
-      testName: "Proauth.js Tests"
-    },
+    sauceLabs: require("./saucelabs.config.js"),
 
     browserNoActivityTimeout: 600000,
 

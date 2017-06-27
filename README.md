@@ -128,6 +128,7 @@ This library provides the following packages:
 ### First setup
 
 * `yarn install`
+* `cp saucelabs.config.local.json.dist saucelabs.config.local.json` and customize it
 
 ### Run
 
