@@ -271,7 +271,24 @@ const customLaunchers = {
     browserName: "safari",
     platform: "MacOS 10.12",
     version: "latest"
+  },
+
+
+  sl_chrome_latest_android6_0: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    deviceName: "Android Emulator",
+    platformName: "Android",
+    platformVersion: "6.0"
+  },
+  sl_chrome_latest_android7_0: {
+    base: "SauceLabs",
+    browserName: "chrome",
+    deviceName: "Android GoogleAPI Emulator",
+    platformName: "Android",
+    platformVersion: "7.0"
   }
+
 }
 
 module.exports = function (config) {
