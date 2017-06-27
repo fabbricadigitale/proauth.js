@@ -7,13 +7,19 @@ const launchers = [
   "sl_chrome_latest_win7",
   "sl_chrome_latest_win8",
   "sl_chrome_latest_win10",
+
   "sl_chrome_latest_OSX10_8",
   "sl_chrome_latest_macOS10_12",
+
   "sl_firefox_51_win7",
   "sl_firefox_latest_win7",
   "sl_firefox_latest_win8",
   "sl_firefox_latest_win10",
-  "sl_firefox_latest_macOS10_12"
+
+  "sl_firefox_latest_macOS10_12",
+
+  "sl_chrome_latest_android6_0",
+  "sl_chrome_latest_android7_0"
 ]
 
 
