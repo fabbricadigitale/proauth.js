@@ -2,7 +2,7 @@
 
 const sharedConf = require("./karma.shared.conf.js")
 
-const launchers = [
+const browsers = process.env.TEST_SAUCELABS ? [
   "sl_chrome_latest_winXP",
   "sl_chrome_latest_win7",
   "sl_chrome_latest_win8",
@@ -21,7 +21,7 @@ const launchers = [
 
   "sl_chrome_latest_android6_0",
   "sl_chrome_latest_android7_0"
-]
+] : ["Chrome", "Firefox"]
 
 module.exports = function (config) {
   sharedConf(config)
@@ -58,7 +58,7 @@ module.exports = function (config) {
     exclude: [
     ],
 
-    browsers: launchers
+    browsers
 
   })
 }
