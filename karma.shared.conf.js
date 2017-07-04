@@ -292,7 +292,7 @@ const customLaunchers = {
 }
 
 module.exports = function (config) {
-  config.set({
+  const cfg = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: "",
@@ -317,7 +317,7 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress", "saucelabs"],
+    reporters: ["progress"],
 
     // web server port
     port: 9876,
@@ -365,9 +365,9 @@ module.exports = function (config) {
       "sleep"
     ],
 
-    sauceLabs: require("./saucelabs.config.js"),
-
     browserNoActivityTimeout: 600000,
+
+    retryLimit: 5,
 
     customLaunchers,
 
@@ -377,6 +377,13 @@ module.exports = function (config) {
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: Infinity
-  })
+    concurrency: 1
+  }
+
+  if (process.env.TEST_SAUCELABS) {
+    cfg.reporters.push("saucelabs")
+    cfg.sauceLabs = require("./saucelabs.config.js")
+  }
+
+  config.set(cfg)
 }
