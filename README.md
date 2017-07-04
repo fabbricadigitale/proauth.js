@@ -18,6 +18,8 @@ For each HTTP request to a *managed URL*, once tokens are obtained and stored, *
 
 So, you don't have to care anymore about handling OAuth.
 
+[![Build Status](https://saucelabs.com/browser-matrix/proauth.svg)](https://saucelabs.com/u/proauth)
+
 ## Install
 
 To install this library, you can simply run the following command:
