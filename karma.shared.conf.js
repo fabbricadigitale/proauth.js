@@ -74,21 +74,27 @@ const returnError401Concurrently = function (config) {
       const ua = request.headers["user-agent"]
       let count = 0
 
+      console.log("requestMap[ua + request.url]", requestMap[ua + request.url])
+
       // Only increase pending UA if this is not the 2nd request (i.e. the request with token re-negotiated by proauth)
       if (!requestMap[ua + request.url]) {
         count = pendingUa[ua] = pendingUa[ua] ? (pendingUa[ua] + 1) : 1
+        console.log("count", count)
       }
 
       requestMap[ua + request.url] = true
 
       const intId = setInterval(function () {
         if (count >= concurrencyLimit) {
+          console.log("count (>= concurrencyLimit)", count)
+
           count = pendingUa[ua] = 0
           clearInterval(intId)
 
           response.writeHead(401)
           return response.end(`{"title": "invalid_token","status":401}`)
         } else {
+          console.log("count (< concurrencyLimit)", count)
           count = pendingUa[ua]
         }
       }, 500)
