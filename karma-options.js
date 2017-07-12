@@ -252,7 +252,7 @@ const customLaunchers = {
     platform: "OS X 10.8",
     version: "latest"
   },
-  
+
   sl_firefox_latest_macOS10_12: {
     base: "SauceLabs",
     browserName: "firefox",
@@ -292,8 +292,7 @@ const customLaunchers = {
 
 }
 
-module.exports = function (config) {
-  const cfg = {
+const options = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: "",
@@ -329,16 +328,12 @@ module.exports = function (config) {
     // enable / disable colors in the output (reporters and logs)
     colors: true,
 
-    // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
-
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [],
+    browsers: ["Chrome", "Firefox"],
 
     proxies: {
       "/service-worker.js": "/base/lib/service-worker.es2015.js"
@@ -382,12 +377,12 @@ module.exports = function (config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: 1
+
   }
 
-  if (process.env.TEST_SAUCELABS) {
-    cfg.reporters.push("saucelabs")
-    cfg.sauceLabs = require("./saucelabs.config.js")
-  }
-
-  config.set(cfg)
+if (process.env.TEST_SAUCELABS) {
+  options.reporters.push("saucelabs")
+  options.sauceLabs = require("./saucelabs.config.js")
 }
+
+module.exports = options
