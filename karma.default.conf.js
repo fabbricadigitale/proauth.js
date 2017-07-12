@@ -40,11 +40,6 @@ module.exports = function (config) {
       "lib/default.es2015.js": "coverage"
     },
 
-    reporters: [
-      "spec",
-      "coverage"
-    ],
-
     coverageReporter: {
       dir: "coverage",
       reporters: [

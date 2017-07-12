@@ -39,11 +39,6 @@ module.exports = function (config) {
       "lib/legacy.js": "coverage"
     },
 
-    reporters: [
-      "spec",
-      "coverage"
-    ],
-
     coverageReporter: {
       dir: "coverage",
       reporters: [
