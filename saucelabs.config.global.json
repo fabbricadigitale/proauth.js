@@ -1,3 +1,4 @@
 {
-  "testName": "Proauth.js Tests"
+  "recordScreenshots": true,
+  "public": "public"
 }
