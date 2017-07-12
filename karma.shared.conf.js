@@ -252,6 +252,7 @@ const customLaunchers = {
     platform: "OS X 10.8",
     version: "latest"
   },
+  
   sl_firefox_latest_macOS10_12: {
     base: "SauceLabs",
     browserName: "firefox",
@@ -317,8 +318,11 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress"],
-
+    reporters: [
+      "spec",
+      "progress",
+      "coverage"
+    ],
     // web server port
     port: 9876,
 
