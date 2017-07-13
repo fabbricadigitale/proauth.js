@@ -19,6 +19,9 @@ const sauceBrowsers =  [
   "sl_firefox_latest_OSX10_8",
   "sl_firefox_latest_macOS10_12",
 
+  "sl_safari_latest_macos10_12",
+  "sl_safari_9_macos10_11",
+
   "sl_chrome_latest_android6_0",
   "sl_chrome_latest_android7_0"
 ]
