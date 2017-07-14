@@ -208,11 +208,11 @@ const customLaunchers = {
     platform: "Windows 7",
     version: "47"
   },
-  sl_firefox_51_win7: {
+  sl_firefox_52_win10: {
     base: "SauceLabs",
     browserName: "firefox",
-    platform: "Windows 7",
-    version: "51"
+    platform: "Windows 10",
+    version: "52"
   },
   sl_firefox_latest_winXP: {
     base: "SauceLabs",
@@ -267,7 +267,35 @@ const customLaunchers = {
     version: "latest"
   },
 
+  sl_edge_14_win10: {
+    base: "SauceLabs",
+    browserName: "microsoftedge",
+    platform: "Windows 10",
+    version: "14"
+  },
+
+  sl_edge_15_win10: {
+    base: "SauceLabs",
+    browserName: "microsoftedge",
+    platform: "Windows 10",
+    version: "15"
+  },
+
+  sl_ie_11_win7: {
+    base: "SauceLabs",
+    browserName: "internetexplorer",
+    platform: "Windows 7",
+    version: "11"
+  },
+
   sl_safari_latest_macos10_12: {
+    base: "SauceLabs",
+    browserName: "safari",
+    platform: "MacOS 10.12",
+    version: "latest"
+  },
+
+  sl_safari_10_macos10_12: {
     base: "SauceLabs",
     browserName: "safari",
     platform: "MacOS 10.12",
@@ -294,6 +322,31 @@ const customLaunchers = {
     deviceName: "Android GoogleAPI Emulator",
     platformName: "Android",
     platformVersion: "7.0"
+  },
+  sl_browser_4_4_android4_4: {
+    base: "SauceLabs",
+    browserName: "Browser",
+    deviceName: "Android Emulator",
+    platformName: "Android",
+    platformVersion: "4.4",
+    appiumVersion: "1.6.5"
+  },
+
+  sl_safari_10_2_ios_10_2: {
+    base: "SauceLabs",
+    browserName: "Safari",
+    deviceName: "iPhone Simulator",
+    platformName: "iOS",
+    platformVersion: "10.2",
+    appiumVersion: "1.6.5"
+  },
+  sl_safari_10_3_ios_10_3: {
+    base: "SauceLabs",
+    browserName: "Safari",
+    deviceName: "iPhone Simulator",
+    platformName: "iOS",
+    platformVersion: "10.3",
+    appiumVersion: "1.6.5"
   }
 
 }

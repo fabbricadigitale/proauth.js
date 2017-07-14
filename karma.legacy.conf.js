@@ -2,27 +2,27 @@
 
 const sharedOpts = require("./karma-options.js")
 
+/**
+ * This should (approximately) match with the browser matrix used to build the legacy library.
+ */
 const sauceBrowsers =  [
-  "sl_chrome_latest_winXP",
-  "sl_chrome_latest_win7",
-  "sl_chrome_latest_win8",
-  "sl_chrome_latest_win10",
+  "sl_safari_10_macos10_12",
 
-  "sl_chrome_latest_OSX10_8",
-  "sl_chrome_latest_macOS10_12",
+  "sl_edge_14_win10",
+  "sl_edge_15_win10",
+
+  "sl_ie_11_win7",
 
   "sl_firefox_47_win7",
-  "sl_firefox_latest_win7",
-  "sl_firefox_latest_win8",
+  "sl_firefox_52_win10",
   "sl_firefox_latest_win10",
-
-  "sl_firefox_latest_OSX10_8",
   "sl_firefox_latest_macOS10_12",
+  "sl_firefox_latest_linux",
 
-  "sl_chrome_latest_android6_0",
-  "sl_chrome_latest_android7_0",
+  "sl_safari_10_2_ios_10_2",
+  "sl_safari_10_3_ios_10_3",
 
-  "sl_safari_latest_macos10_12"
+  "sl_browser_4_4_android4_4"
 ]
 
 const options = {
