@@ -18,7 +18,7 @@ describe("Proauth client", function () {
   })
 
   it("is ready", function (done) {
-    proauth.client.whenReady.then(() => {
+    proauth.client.whenReady.then(function () {
       expect(proauth.client.ready).toBe(true)
       expect(proauth.client.hasSession()).toBe(false)
       done()

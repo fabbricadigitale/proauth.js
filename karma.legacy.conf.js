@@ -20,16 +20,19 @@ const sauceBrowsers =  [
   "sl_firefox_latest_macOS10_12",
 
   "sl_chrome_latest_android6_0",
-  "sl_chrome_latest_android7_0"
+  "sl_chrome_latest_android7_0",
+
+  "sl_safari_latest_macos10_12"
 ]
 
 const options = {
   files: [
         "test/fixture/proauth-settings.js",
         "test/fixture/tests-settings.js",
+        "node_modules/whatwg-fetch/fetch.js",
         "lib/legacy.js",
         "test/**/*.js"
-      ],
+  ],
 
   preprocessors: {
     "lib/legacy.js": "coverage"
