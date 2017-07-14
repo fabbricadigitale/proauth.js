@@ -26,13 +26,6 @@ describe("Xhr patch", function () {
     expect(xhttp.timeout).toBe(0)
 
     expect(xhttp.upload instanceof XMLHttpRequestUpload).toBe(true)
-    expect(xhttp.upload.onabort).toBeNull()
-    expect(xhttp.upload.onerror).toBeNull()
-    expect(xhttp.upload.onload).toBeNull()
-    expect(xhttp.upload.onloadend).toBeNull()
-    expect(xhttp.upload.onloadstart).toBeNull()
-    expect(xhttp.upload.onprogress).toBeNull()
-    expect(xhttp.upload.ontimeout).toBeNull()
 
     expect(xhttp.withCredentials).toBe(false)
   })
