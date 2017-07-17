@@ -1,3 +1,33 @@
+<a name="0.3.2"></a>
+## [0.3.2](https://github.com/fabbricadigitale/proauth.js/compare/v0.3.1...v0.3.2) (2017-07-17)
+
+
+### Docs
+
+* Browser matrix badge ([377f61508307730b9fcbb0e5aba66e2e2bc8401c](https://github.com/fabbricadigitale/proauth.js/commit/377f61508307730b9fcbb0e5aba66e2e2bc8401c))
+* Update compatibility ([fdf3d3e5afd235d7481665a0caa76b4ba31cfc62](https://github.com/fabbricadigitale/proauth.js/commit/fdf3d3e5afd235d7481665a0caa76b4ba31cfc62))
+
+### Fix
+
+* Concurrency testing  ([1ad94c57948baf007f765c1d02baeb4a8a17e93e](https://github.com/fabbricadigitale/proauth.js/commit/1ad94c57948baf007f765c1d02baeb4a8a17e93e)), closes [#28](https://github.com/fabbricadigitale/proauth.js/issues/28)
+* Ensure SauceLabs reporter config is not overridden ([316f79930937bc10a556c7d08df3c346f1350e97](https://github.com/fabbricadigitale/proauth.js/commit/316f79930937bc10a556c7d08df3c346f1350e97))
+* Execute SauceLabs only on internal PRs ([804985785f08fba81ad8506b7177da3f513bd8be](https://github.com/fabbricadigitale/proauth.js/commit/804985785f08fba81ad8506b7177da3f513bd8be))
+* Race condition in tests  ([184cdc20d51db2523431499a7aca8892fa08aaa9](https://github.com/fabbricadigitale/proauth.js/commit/184cdc20d51db2523431499a7aca8892fa08aaa9)), closes [#28](https://github.com/fabbricadigitale/proauth.js/issues/28)
+* Tests for Safari 10 ([342b1e589da9939bbaa0d4b024d6e95d3553c42d](https://github.com/fabbricadigitale/proauth.js/commit/342b1e589da9939bbaa0d4b024d6e95d3553c42d))
+
+### New
+
+* Run tests on Saucelabs ([12ad9d818bc96799582692715d5171d8e633c3f5](https://github.com/fabbricadigitale/proauth.js/commit/12ad9d818bc96799582692715d5171d8e633c3f5))
+
+### Update
+
+* Add Android tests ([d85f889bac6a766ea0d66c31506ac4069346e64f](https://github.com/fabbricadigitale/proauth.js/commit/d85f889bac6a766ea0d66c31506ac4069346e64f))
+* Improve SauceLabs fault tolerance  ([16b4087e722e69df5d2e66b726b5caa1b0162348](https://github.com/fabbricadigitale/proauth.js/commit/16b4087e722e69df5d2e66b726b5caa1b0162348))
+* Refactor Saucelabs config to allow local testing ([418db72a6e0d8cd837fa8adabfad77a1c738446d](https://github.com/fabbricadigitale/proauth.js/commit/418db72a6e0d8cd837fa8adabfad77a1c738446d))
+* Refactor SauceLabs configuration ([6589707d0ec6be9559dffa246076d0100ca965e2](https://github.com/fabbricadigitale/proauth.js/commit/6589707d0ec6be9559dffa246076d0100ca965e2))
+
+
+
 <a name="0.3.1"></a>
 ## [0.3.1](https://github.com/fabbricadigitale/proauth.js/compare/v0.3.0...v0.3.1) (2017-06-22)
 
