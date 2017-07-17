@@ -110,15 +110,18 @@ This library provides the following packages:
 
 ## Compatibility
 
-### Default (ES6)
+### Default (ES6 + ServiceWorker)
 
 * Chrome >= 45
 * Firefox >= 51
+* Android Chrome >= 6
 
 ### Legacy (ES5)
 
 * Chrome >= 45
 * Firefox >= 47
+* Android Chrome >= 6
+* Safari >= 10
 
 ## Testing
 
