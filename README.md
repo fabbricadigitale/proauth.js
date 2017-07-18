@@ -104,7 +104,7 @@ Even if this approach has some caveats (of course it's not ideal) it should work
 This library provides the following packages:
 
 - [src/client.js](./src/client.js) is imported by `legacy` and `default`. You should not import this package directly, unless you need to make a custom bundle of *proauth.js* that may be usefull if you want build it within your app.
-- [src/legacy.js](./src/legacy.js) is required when a browser has no *seviceWorker* support. It loads stuff to work in *legacy mode* and bootstraps the `client`.
+- [src/legacy.js](./src/legacy.js) is required when a browser has no *serviceWorker* support. It loads stuff to work in *legacy mode* and bootstraps the `client`.
 - [src/default.js](./src/default.js) is required for the normal operational mode. It can register the `service-worker` and when ready bootstraps the `client`.
 - [src/service-worker.js](./src/service-worker.js) is required for the normal operatinal mode and is used in the *serviceWorker* context. You can use it directly or can include it in your own *serviceWorker* distribution.
 
